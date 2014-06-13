@@ -74,8 +74,7 @@ def gen_etf_list(path):
     agg_df = pandas.concat(d, axis = 0)
     agg_df.columns = ['Description']
     agg_df.index.name = 'Ticker'
-
-    agg_df.to_csv(path)
+    agg_df.to_csv(path, encoding = 'utf-8')
     return None
     
     
