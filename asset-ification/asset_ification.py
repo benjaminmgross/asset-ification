@@ -1,29 +1,18 @@
 #!/usr/bin/env python
 # encoding: utf-8
 """
-<script_name>.py
-
-Created by Benjamin Gross on <insert date here>.
-
-INPUTS:
---------
-
-RETURNS:
---------
-
-TESTING:
---------
-
+Created by Benjamin M. Gross
 
 """
 
 import argparse
 import pandas
 import numpy
-
+import os
+import pandas.io.data
 
 def scipt_function(arg_1, arg_2):
-	return None
+    return None
 
 def calibrate_model():
     """
@@ -31,7 +20,32 @@ def calibrate_model():
     on its website.  That's where the 'aggregate list' in `./dat`
     comes from
     """
+    
+
     return None
+
+def create_etf_store(path, ticker_list):
+    """
+    Creates the ETF store to run the training of the logistic 
+    classificaiton tree
+    """
+    #check to make sure the store doesn't already exist
+    if os.path.isfile(path):
+        print "File " + path + " already exists"
+        return
+    
+    store = pandas.HDF5tore(path, 'w')
+    for ticker in ticker_list:
+        try:
+            tmp = web.DataReader(ticker, 'yahoo', start = '01/01/2000')
+            store.put(ticker, tmp)
+            print ticker + " added to store"
+        except:
+            print "unable to add " + ticker + " to store"
+
+    store.close()
+    return None
+    
 
 def gen_etf_list(path):
     """
@@ -47,12 +61,17 @@ def gen_etf_list(path):
     """
 
     #the first three url's from price-data, the rest can be generated
-    p_a = "http://www.price-data.com/listing-of-exchange-traded-funds/"
-    p_b = "http://www.price-data.com/listing-of-exchange-traded-funds/listing-of-exchange-traded-funds-starting-with-b/"
-    p_c = "http://www.price-data.com/listing-of-exchange-traded-funds/list-of-exchange-traded-funds-starting-with-c/"
-    p_k = "http://www.price-data.com/listing-of-exchange-traded-funds/list-of-exchanged-traded-funds-starting-with-k/"
+    p_a = ("http://www.price-data.com/
+        listing-of-exchange-traded-funds/")
+    p_b = ("http://www.price-data.com/listing-of-exchange-traded-funds/
+        listing-of-exchange-traded-funds-starting-with-b/")
+    p_c = ("http://www.price-data.com/listing-of-exchange-traded-funds/
+        list-of-exchange-traded-funds-starting-with-c/")
+    p_k = ("http://www.price-data.com/listing-of-exchange-traded-funds/
+        list-of-exchanged-traded-funds-starting-with-k/")
 
-    base_url = "http://www.price-data.com/listing-of-exchange-traded-funds/list-of-exchange-traded-funds-starting-with-"
+    base_url = ("http://www.price-data.com/listing-of-exchange-traded-funds/
+        list-of-exchange-traded-funds-starting-with-")
     letters = 'defghijlmnopqrstuvwxyz'
     url_dict = dict(map(lambda x, y: [x, y], letters,
         map(lambda s: base_url + s, letters)))
@@ -66,7 +85,9 @@ def gen_etf_list(path):
     d =[]
     for letter in url_dict.keys():
         try:
-            d.extend(pandas.read_html(url_dict[letter], index_col = 0, infer_types = False))
+           f d.extend(pandas.read_html(url_dict[letter], index_col = 0, 
+                                       infer_types = False))
+
             print "succeeded for letter " + letter
         except:
             print "Did not succeed for letter " + letter
