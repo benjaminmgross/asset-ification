@@ -14,11 +14,24 @@ import pandas.io.data
 def scipt_function(arg_1, arg_2):
     return None
 
-def calibrate_model():
+def calibrate_model(class_list, test_list):
     """
-    Price data has all of the tickers of ETFs and descriptions available
-    on its website.  That's where the 'aggregate list' in `./dat`
-    comes from
+    Given a list of asset classes and a list of tickers to train
+    the asset classes, with a store located at ``path``, train the 
+    logistic classification tree
+    
+    :ARGS:
+
+        class_list: :class:`list` of asset class tickers `
+
+        test_list: :class:`list` of tickers to train the algorithm
+        with
+
+   .. note:: Requires Existing HDF5Store
+
+        Be sure to create an HDF5Store before using this function
+        as it looks for asset prices in the HDF5Store located at 
+        ``path``.
     """
     
 
