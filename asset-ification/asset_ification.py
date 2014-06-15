@@ -10,9 +10,95 @@ import pandas
 import numpy
 import os
 import pandas.io.data
+import scipy.optimize as sopt
 
-def scipt_function(arg_1, arg_2):
-    return None
+def best_fitting_weights(series, asset_class_prices):
+    """
+    Return the best fitting weights given a :class:`pandas.Series` of 
+    asset prices and a :class:`pandas.DataFrame` of asset class prices.  
+    Can be used with the :func:`clean_dates` function to ensure an 
+    intersection of the two indexes is being passed to the function
+    
+    :ARGS:
+
+        asset_prices: m x 1 :class:`pandas.TimeSeries` of asset_prices
+
+        ac_prices: m x n :class:`pandas.DataFrame` asset class ("ac") 
+        prices
+
+    :RETURNS:
+
+        :class:`pandas.TimeSeries` of nonnegative weights for each 
+        asset such that the r_squared from the regression of 
+        :math:`Y ~ Xw + e` is maximized
+
+    """
+
+    def _r_squared_adj(weights):
+        """
+        The Adjusted R-Squared that incorporates the number of 
+        independent variates using the `Formula Found of Wikipedia
+        <http://en.wikipedia.org/wiki/Coefficient_of_determination#Adjusted_R2>_`
+        """
+
+        estimate = numpy.dot(ac_rets, weights)
+        sse = ((estimate - series_rets)**2).sum()
+        sst = ((series_rets - series_rets.mean())**2).sum()
+        rsq = 1 - sse/sst
+        p, n = weights.shape[0], ac_rets.shape[0]
+        return rsq - (1 - rsq)*(float(p)/(n - p - 1))
+
+    def _obj_fun(weights):
+        """
+        To maximize the r_squared_adj minimize the negative of r_squared
+        """
+        return -_r_squared_adj(weights)
+
+    #linear price changes to create a weighted return
+    ac_rets = asset_class_prices.pct_change()
+    series_rets = series.pct_change()
+
+    #de-mean the sample
+    ac_rets = ac_rets.sub(ac_rets.mean() )
+    series_rets = series_rets.sub( series_rets.mean() )
+
+    num_assets = ac_rets.shape[1]
+    guess = numpy.zeros(num_assets,)
+
+    #ensure the boundaries of the function are (0, 1)
+    ge_zero = [(0,1) for i in numpy.arange(num_assets)]
+
+    #optimize to maximize r-squared, using the 'TNC' method 
+    #(that uses the boundary functionality)
+    opt = sopt.minimize(_obj_fun, x0 = guess, method = 'TNC', 
+                        bounds = ge_zero)
+    normed = opt.x*(1./numpy.sum(opt.x))
+
+    return pandas.TimeSeries(normed, index = ac_rets.columns)
+
+def clean_dates(arr_a, arr_b):
+    """
+    Return the intersection of two :class:`pandas` objects, either a
+    :class:`pandas.Series` or a :class:`pandas.DataFrame`
+
+    :ARGS:
+
+        arr_a: :class:`pandas.DataFrame` or :class:`pandas.Series`
+        arr_b: :class:`pandas.DataFrame` or :class:`pandas.Series`
+
+    :RETURNS:
+
+        :class:`pandas.DatetimeIndex` of the intersection of the two 
+        :class:`pandas` objects
+    """
+    arr_a = arr_a.sort_index()
+    arr_a.dropna(inplace = True)
+    arr_b = arr_b.sort_index()
+    arr_b.dropna(inplace = True)
+    if arr_a.index.equals(arr_b.index) == False:
+        return arr_a.index & arr_b.index
+    else:
+        return arr_a.index
 
 def update_store_prices(path):
     """
@@ -185,23 +271,34 @@ def calibrate_model(class_list, test_list):
                 'Foreign Real Estate':'WPS', 'U.S. Preferred Stock':'PFF'}
     return none
 
-def gen_all_rsquared(ticker_list, path):
-    store = pandas.HDF5Store(path, 'r')
+def gen_all_rsquared(path):
+
+    store = pandas.HDFStore(path, 'r')
     
     acs = ['GSG','IYR','WPS','PFF','EEM','EFV','EFG','SCZ','JKL',
            'JKK','JKI','JKH','JKF','JKE','IEF','TLT','SHY','HYG',
            'LQD','PCY','BWX','TIP']
-    
-    acs_df = pandas.DataFrame(dict(map(lambda x, y: [x, y], acs, 
-        map(lambda x: store.get(x)['Adj Close'], acs) )))
-    
-    
-    ret_d = {}
-    for ticker in ticker_list:
-        dat = pandas.io.data(ticker, 'yahoo', start = '01/01/1990')
-        ret_d[ticker] = r_squared(dat, acs_df)
 
-    return pandas.DataFrame(ret_d)
+    acs_df = pandas.DataFrame(dict(map(lambda x, y: [x, y], acs, 
+        map(lambda x: store.get(x)['Adj Close'], acs) ))).dropna()
+    
+    not_acs = numpy.setdiff1d(
+        map(lambda x: x.strip('/'), store.keys() ), acs)
+
+    rsq_d = {}
+    for ticker in not_acs:
+        tmp = store.get(ticker)['Adj Close']
+        ind = acs_df.index & tmp.index
+        import pdb
+        pdb.set_trace()
+        a = r_squared(tmp[ind], acs_df.loc[ind, :])
+        b = best_fitting_weights(tmp[ind], acs_df.loc[ind, :])
+        print "r_squared generated for " + ticker
+    
+    ret_df = pandas.DataFrame.from_dict(rsq_d, orient = 'index')
+    ret_df.columns = acs
+    
+    return ret_df
 
 
 def gen_etf_list(path):
