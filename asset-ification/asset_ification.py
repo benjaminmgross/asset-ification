@@ -12,9 +12,10 @@ import os
 import pandas.io.data
 import scipy.optimize as sopt
 
-ACS = ['GSG','IYR','WPS','PFF','EEM','EFV','EFG','SCZ','JKL',
-       'JKK','JKI','JKH','JKF','JKE','IEF','TLT','SHY','HYG',
-       'LQD','PCY','BWX','TIP']
+ACS = ['GSG','IYR','WPS','PFF','EEM','EFA','EFV','EFG','SCZ','JKL',
+       'JKK','JKI','JKH','JKF','JKE','IEF','TLT','SHY','HYG','LQD',
+       'PCY','BWX','TIP']
+
 def best_fitting_weights(series, asset_class_prices):
     """
     Return the best fitting weights given a :class:`pandas.Series` of 
@@ -72,7 +73,7 @@ def best_fitting_weights(series, asset_class_prices):
     series_rets = series_rets.sub( series_rets.mean() )
 
     num_assets = ac_rets.shape[1]
-    guess = numpy.zeros(num_assets,)
+    guess = numpy.ones(num_assets,)*1/num_assets
 
     #ensure the boundaries of the function are (0, 1)
     ge_zero = [(0,1) for i in numpy.arange(num_assets)]
@@ -83,7 +84,7 @@ def best_fitting_weights(series, asset_class_prices):
                         bounds = ge_zero)
     normed = opt.x*(1./numpy.sum(opt.x))
 
-    return pandas.TimeSeries(normed, index = ac_rets.columns)
+    return pandas.Series(normed, index = ac_rets.columns)
 
 def clean_dates(arr_a, arr_b):
     """
@@ -281,7 +282,7 @@ def class_dicts():
     return none
 
 
-def load_data(path, store):
+def load_data(store):
     acs_df = pandas.DataFrame(dict(map(lambda x, y: [x, y], ACS, 
         map(lambda x: store.get(x)['Adj Close'], ACS) ))).dropna()
     
@@ -292,7 +293,7 @@ def load_data(path, store):
 
 def gen_univariate_rsquared(path):
     store = pandas.HDFStore(path, 'r')
-    acs_df, not_acs = load_data(path, store)
+    acs_df, not_acs = load_data(store)
     rsq_d = {}
     for ticker in not_acs:
         tmp = store.get(ticker)['Adj Close']
@@ -301,25 +302,24 @@ def gen_univariate_rsquared(path):
         xs = acs_df.loc[ind, :].apply(numpy.log).diff().dropna()
         rsq_d[ticker] =  r2_uv(xs, ys)
         print "all univiariate r_squared generated for " + ticker
-    
-    ret_df = pandas.DataFrame.from_dict(rsq_d, orient = 'index')
-    ret_df.columns = ACS
+    ret_df = pandas.DataFrame(rsq_d).transpose()
     store.close()
 
     return ret_df
 
 def gen_linprog_maxrsquard(path):
     store = pandas.HDFStore(path, 'r')
-    acs_df, not_acs = load_data(path, store)
+    acs_df, not_acs = load_data(store)
     rsq_d = {}
     for ticker in not_acs:
         tmp = store.get(ticker)['Adj Close']
         ind = acs_df.index & tmp.index
-        rsq_d[ticker] = best_fitting_weights(tmp[ind], acs_df.loc[ind, :])
+        ys = tmp[ind].apply(numpy.log).diff().dropna()
+        xs = acs_df.loc[ind, :].apply(numpy.log).diff().dropna()
+        rsq_d[ticker] = best_fitting_weights(ys, xs)
         print "max r_squared generated for " + ticker
     
-    ret_df = pandas.DataFrame.from_dict(rsq_d, orient = 'index')
-    ret_df.columns = ACS    
+    ret_df = pandas.DataFrame(rsq_d).tranpose()
     return ret_df
 
 def gen_etf_list(path):
