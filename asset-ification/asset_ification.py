@@ -271,8 +271,8 @@ def class_dicts():
                 'Foreign Real Estate':'WPS', 'U.S. Preferred Stock':'PFF'}
     return none
 
-def gen_univariate_rsquared(path):
 
+def load_data(path):
     store = pandas.HDFStore(path, 'r')
     
     acs = ['GSG','IYR','WPS','PFF','EEM','EFV','EFG','SCZ','JKL',
@@ -284,12 +284,19 @@ def gen_univariate_rsquared(path):
     
     not_acs = numpy.setdiff1d(
         map(lambda x: x.strip('/'), store.keys() ), acs)
+    
+    return acs_df, not_acs
 
+def gen_univariate_rsquared(path):
+
+    acs_df, not_acs = load_data(path)
     rsq_d = {}
     for ticker in not_acs:
         tmp = store.get(ticker)['Adj Close']
         ind = acs_df.index & tmp.index
-        rsq_d[ticker] =  r_squared(tmp[ind], acs_df.loc[ind, :])
+        ys = tmp[ind].apply(numpy.log).diff().dropna()
+        xs = acs_df.loc[ind, :].apply(numpy.log).diff().dropna()
+        rsq_d[ticker] =  r2_uv(xs, ys)
         print "all univiariate r_squared generated for " + ticker
     
     ret_df = pandas.DataFrame.from_dict(rsq_d, orient = 'index')
@@ -299,19 +306,7 @@ def gen_univariate_rsquared(path):
     return ret_df
 
 def gen_linprog_maxrsquard(path):
-
-    store = pandas.HDFStore(path, 'r')
-    
-    acs = ['GSG','IYR','WPS','PFF','EEM','EFV','EFG','SCZ','JKL',
-           'JKK','JKI','JKH','JKF','JKE','IEF','TLT','SHY','HYG',
-           'LQD','PCY','BWX','TIP']
-
-    acs_df = pandas.DataFrame(dict(map(lambda x, y: [x, y], acs, 
-        map(lambda x: store.get(x)['Adj Close'], acs) ))).dropna()
-    
-    not_acs = numpy.setdiff1d(
-        map(lambda x: x.strip('/'), store.keys() ), acs)
-
+    acs_df, not_acs = load_data(path)
     rsq_d = {}
     for ticker in not_acs:
         tmp = store.get(ticker)['Adj Close']
@@ -323,8 +318,6 @@ def gen_linprog_maxrsquard(path):
     ret_df.columns = acs
     
     return ret_df
-    
-
 
 def gen_etf_list(path):
     """
@@ -384,7 +377,7 @@ def adj_r2_uv(x, y):
     p = 1
     return 1 - (1 - r2_uv(x, y))*(n - 1)/(n - p - 1)    
 
-def r2_uv(series, benchmark):
+def r2_uv(x, y):
     """
     Returns the R-Squared or `Coefficient of Determination
     <http://en.wikipedia.org/wiki/Coefficient_of_determination>`_ 
@@ -413,10 +406,10 @@ def r2_uv(series, benchmark):
         ss_tot = ((y - y.mean())**2).sum()
         return 1 - ss_res/ss_tot
 
-    if isinstance(benchmark, pandas.DataFrame):
-        return benchmark.apply(lambda x: _r2_uv(series, x))
+    if isinstance(x, pandas.DataFrame):
+        return x.apply(lambda x: _r2_uv(y, x))
     else:
-        return _r2_uv(series, benchmark)
+        return _r2_uv(x, y)
 
 def r2_mv(x, y):   
     """
