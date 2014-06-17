@@ -12,6 +12,9 @@ import os
 import pandas.io.data
 import scipy.optimize as sopt
 
+ACS = ['GSG','IYR','WPS','PFF','EEM','EFV','EFG','SCZ','JKL',
+       'JKK','JKI','JKH','JKF','JKE','IEF','TLT','SHY','HYG',
+       'LQD','PCY','BWX','TIP']
 def best_fitting_weights(series, asset_class_prices):
     """
     Return the best fitting weights given a :class:`pandas.Series` of 
@@ -41,12 +44,18 @@ def best_fitting_weights(series, asset_class_prices):
         <http://en.wikipedia.org/wiki/Coefficient_of_determination#Adjusted_R2>_`
         """
 
-        estimate = numpy.dot(ac_rets, weights)
-        sse = ((estimate - series_rets)**2).sum()
-        sst = ((series_rets - series_rets.mean())**2).sum()
-        rsq = 1 - sse/sst
+        est_rets = ac_rets.mul(weights)
+        beta = numpy.linalg.inv(est_rets.transpose().dot(est_rets)).dot(
+            est_rets.transpose().dot(series_rets) )
+        
+        y_est = est_rets.dot(beta)
+        ss_res = ((y_est - series_rets)**2).sum()
+        ss_tot = ((series_rets - series_rets.mean())**2).sum()
+
+
         p, n = weights.shape[0], ac_rets.shape[0]
-        return rsq - (1 - rsq)*(float(p)/(n - p - 1))
+        rsq = 1 - ss_res/ss_tot
+        return 1 - (1 - rsq)*(n - 1)/(n - p - 1)
 
     def _obj_fun(weights):
         """
@@ -272,24 +281,18 @@ def class_dicts():
     return none
 
 
-def load_data(path):
-    store = pandas.HDFStore(path, 'r')
-    
-    acs = ['GSG','IYR','WPS','PFF','EEM','EFV','EFG','SCZ','JKL',
-           'JKK','JKI','JKH','JKF','JKE','IEF','TLT','SHY','HYG',
-           'LQD','PCY','BWX','TIP']
-
-    acs_df = pandas.DataFrame(dict(map(lambda x, y: [x, y], acs, 
-        map(lambda x: store.get(x)['Adj Close'], acs) ))).dropna()
+def load_data(path, store):
+    acs_df = pandas.DataFrame(dict(map(lambda x, y: [x, y], ACS, 
+        map(lambda x: store.get(x)['Adj Close'], ACS) ))).dropna()
     
     not_acs = numpy.setdiff1d(
-        map(lambda x: x.strip('/'), store.keys() ), acs)
+        map(lambda x: x.strip('/'), store.keys() ), ACS)
     
     return acs_df, not_acs
 
 def gen_univariate_rsquared(path):
-
-    acs_df, not_acs = load_data(path)
+    store = pandas.HDFStore(path, 'r')
+    acs_df, not_acs = load_data(path, store)
     rsq_d = {}
     for ticker in not_acs:
         tmp = store.get(ticker)['Adj Close']
@@ -300,13 +303,14 @@ def gen_univariate_rsquared(path):
         print "all univiariate r_squared generated for " + ticker
     
     ret_df = pandas.DataFrame.from_dict(rsq_d, orient = 'index')
-    ret_df.columns = acs
+    ret_df.columns = ACS
     store.close()
 
     return ret_df
 
 def gen_linprog_maxrsquard(path):
-    acs_df, not_acs = load_data(path)
+    store = pandas.HDFStore(path, 'r')
+    acs_df, not_acs = load_data(path, store)
     rsq_d = {}
     for ticker in not_acs:
         tmp = store.get(ticker)['Adj Close']
@@ -315,14 +319,13 @@ def gen_linprog_maxrsquard(path):
         print "max r_squared generated for " + ticker
     
     ret_df = pandas.DataFrame.from_dict(rsq_d, orient = 'index')
-    ret_df.columns = acs
-    
+    ret_df.columns = ACS    
     return ret_df
 
 def gen_etf_list(path):
     """
     www.price-data.com has pages with all of the etf tickers
-    available on it.  This function accesses each of those pages,
+    available on it.  This function acesses each of those pages,
     stores the values to :class:`pandas.DataFrame` and saves to
     file
 
