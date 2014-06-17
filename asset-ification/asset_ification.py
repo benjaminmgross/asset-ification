@@ -44,17 +44,17 @@ def best_fitting_weights(series, asset_class_prices):
         independent variates using the `Formula Found of Wikipedia
         <http://en.wikipedia.org/wiki/Coefficient_of_determination#Adjusted_R2>_`
         """
-
-        est_rets = ac_rets.mul(weights)
+        #import pdb
+        #pdb.set_trace()
+        est_rets = ac_rets.loc[:, weights > 0].mul(weights[weights > 0])
         beta = numpy.linalg.inv(est_rets.transpose().dot(est_rets)).dot(
             est_rets.transpose().dot(series_rets) )
         
         y_est = est_rets.dot(beta)
         ss_res = ((y_est - series_rets)**2).sum()
         ss_tot = ((series_rets - series_rets.mean())**2).sum()
-
-
-        p, n = weights.shape[0], ac_rets.shape[0]
+        eps = 1e-6
+        n, p = est_rets.shape
         rsq = 1 - ss_res/ss_tot
         return 1 - (1 - rsq)*(n - 1)/(n - p - 1)
 
@@ -65,15 +65,13 @@ def best_fitting_weights(series, asset_class_prices):
         return -_r_squared_adj(weights)
 
     #linear price changes to create a weighted return
-    ac_rets = asset_class_prices.pct_change()
-    series_rets = series.pct_change()
-
-    #de-mean the sample
-    ac_rets = ac_rets.sub(ac_rets.mean() )
-    series_rets = series_rets.sub( series_rets.mean() )
+    ac_rets = asset_class_prices.pct_change().dropna()
+    series_rets = series.pct_change().dropna()
 
     num_assets = ac_rets.shape[1]
-    guess = numpy.ones(num_assets,)*1/num_assets
+    numpy.random.seed(seed = 13)
+    guess = numpy.random.rand(num_assets,)
+    guess[guess < 0.25] = 0.
 
     #ensure the boundaries of the function are (0, 1)
     ge_zero = [(0,1) for i in numpy.arange(num_assets)]
@@ -314,12 +312,10 @@ def gen_linprog_maxrsquard(path):
     for ticker in not_acs:
         tmp = store.get(ticker)['Adj Close']
         ind = acs_df.index & tmp.index
-        ys = tmp[ind].apply(numpy.log).diff().dropna()
-        xs = acs_df.loc[ind, :].apply(numpy.log).diff().dropna()
-        rsq_d[ticker] = best_fitting_weights(ys, xs)
+        rsq_d[ticker] = best_fitting_weights(tmp[ind], acs_df.loc[ind, :])
         print "max r_squared generated for " + ticker
     
-    ret_df = pandas.DataFrame(rsq_d).tranpose()
+    ret_df = pandas.DataFrame(rsq_d).transpose()
     return ret_df
 
 def gen_etf_list(path):
