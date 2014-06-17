@@ -233,7 +233,7 @@ def append_store_prices(ticker_list, path, start = '01/01/1990'):
     store.close()
     return None  
 
-def calibrate_model(class_list, test_list):
+def class_dicts():
     """
     Given a list of asset classes and a list of tickers to train
     the asset classes, with a store located at ``path``, train the 
@@ -271,7 +271,7 @@ def calibrate_model(class_list, test_list):
                 'Foreign Real Estate':'WPS', 'U.S. Preferred Stock':'PFF'}
     return none
 
-def gen_all_rsquared(path):
+def gen_univariate_rsquared(path):
 
     store = pandas.HDFStore(path, 'r')
     
@@ -289,16 +289,41 @@ def gen_all_rsquared(path):
     for ticker in not_acs:
         tmp = store.get(ticker)['Adj Close']
         ind = acs_df.index & tmp.index
-        import pdb
-        pdb.set_trace()
-        a = r_squared(tmp[ind], acs_df.loc[ind, :])
-        b = best_fitting_weights(tmp[ind], acs_df.loc[ind, :])
-        print "r_squared generated for " + ticker
+        rsq_d[ticker] =  r_squared(tmp[ind], acs_df.loc[ind, :])
+        print "all univiariate r_squared generated for " + ticker
+    
+    ret_df = pandas.DataFrame.from_dict(rsq_d, orient = 'index')
+    ret_df.columns = acs
+    store.close()
+
+    return ret_df
+
+def gen_linprog_maxrsquard(path):
+
+    store = pandas.HDFStore(path, 'r')
+    
+    acs = ['GSG','IYR','WPS','PFF','EEM','EFV','EFG','SCZ','JKL',
+           'JKK','JKI','JKH','JKF','JKE','IEF','TLT','SHY','HYG',
+           'LQD','PCY','BWX','TIP']
+
+    acs_df = pandas.DataFrame(dict(map(lambda x, y: [x, y], acs, 
+        map(lambda x: store.get(x)['Adj Close'], acs) ))).dropna()
+    
+    not_acs = numpy.setdiff1d(
+        map(lambda x: x.strip('/'), store.keys() ), acs)
+
+    rsq_d = {}
+    for ticker in not_acs:
+        tmp = store.get(ticker)['Adj Close']
+        ind = acs_df.index & tmp.index
+        rsq_d[ticker] = best_fitting_weights(tmp[ind], acs_df.loc[ind, :])
+        print "max r_squared generated for " + ticker
     
     ret_df = pandas.DataFrame.from_dict(rsq_d, orient = 'index')
     ret_df.columns = acs
     
     return ret_df
+    
 
 
 def gen_etf_list(path):
@@ -351,7 +376,15 @@ def gen_etf_list(path):
     agg_df.to_csv(path, encoding = 'utf-8')
     return None
 
-def r_squared(series, benchmark):
+def adj_r2_uv(x, y):
+    """
+    Returns the adjusted R-Squared for multivariate regression
+    """
+    n = len(y)
+    p = 1
+    return 1 - (1 - r2_uv(x, y))*(n - 1)/(n - p - 1)    
+
+def r2_uv(series, benchmark):
     """
     Returns the R-Squared or `Coefficient of Determination
     <http://en.wikipedia.org/wiki/Coefficient_of_determination>`_ 
@@ -371,21 +404,45 @@ def r_squared(series, benchmark):
 
         float: of the coefficient of variation
     """
-    def _r_squared(series, benchmark):
-        series_rets = series.apply(numpy.log).diff()
-        bench_rets = benchmark.apply(numpy.log).diff()       
-        series_rets = series_rets.sub( series_rets.mean() )
-        bench_rets = bench_rets.sub( bench_rets.mean() )
-
-        sse = ( (series_rets - bench_rets)**2).sum()
-        sst = ( (series_rets - series_rets.mean() )**2 ).sum()
-        return 1 - sse/sst
+    def _r2_uv(x, y):   
+        X = pandas.DataFrame({'ones':numpy.ones(len(x)), 'xs':x})
+        beta = numpy.linalg.inv(X.transpose().dot(X)).dot(
+            X.transpose().dot(y) )
+        y_est = beta[0] + beta[1]*x
+        ss_res = ((y_est - y)**2).sum()
+        ss_tot = ((y - y.mean())**2).sum()
+        return 1 - ss_res/ss_tot
 
     if isinstance(benchmark, pandas.DataFrame):
-        return benchmark.apply(lambda x: _r_squared(series, x))
+        return benchmark.apply(lambda x: _r2_uv(series, x))
     else:
-        return _r_squared(series, benchmark)
+        return _r2_uv(series, benchmark)
+
+def r2_mv(x, y):   
+    """
+    Multivariate r-squared
+    """
+    ones = pandas.Series(numpy.ones(len(y)), name = 'ones')
+    d = x.to_dict()
+    d['ones'] = ones
+    cols = ['ones']
+    cols.extend(x.columns)
+    X = pandas.DataFrame(d, columns = cols)
+    beta = numpy.linalg.inv(X.transpose().dot(X)).dot(
+        X.transpose().dot(y) )
+    y_est = beta[0] + x.dot(beta[1:])
+    ss_res = ((y_est - y)**2).sum()
+    ss_tot = ((y - y.mean())**2).sum()
+    return 1 - ss_res/ss_tot
     
+def adj_r2_mv(x, y):
+    """
+    Returns the adjusted R-Squared for multivariate regression
+    """
+    n = len(y)
+    p = x.shape[1]
+    return 1 - (1 - r2_mv(x, y))*(n - 1)/(n - p - 1)
+
 def tickers_to_dict(ticker_list, api = 'yahoo', start = '01/01/1990'):
     """
     Utility function to return ticker data where the input is either a 
