@@ -16,7 +16,7 @@ ACS = ['GSG','IYR','WPS','PFF','EEM','EFA','EFV','EFG','SCZ','JKL',
        'JKK','JKI','JKH','JKF','JKE','IEF','TLT','SHY','HYG','LQD',
        'PCY','BWX','TIP']
 
-def find_nearest_neighbors(series, store_path, training_series):
+def find_nearest_neighbors(price_series, store_path, training_series):
     """
     Calculate the "nearest neighbors" on trained asset class data to 
     determine probabilities the series belongs to given asset classes
@@ -35,10 +35,22 @@ def find_nearest_neighbors(series, store_path, training_series):
 
     """
     ac_freq = training_series.value_counts()
-    store = pandas.HDFStore(path, 'r')
-    
-    #
-    tickers = [key if key != class_key else "" for key in store.keys()]
+    store = pandas.HDFStore(store_path, 'r')
+    prob_d = {'ticker': [], 'r2_adj': [], 'asset_class': [] }
+    for ticker in training_series.index:
+        try:
+            comp_asset = store.get(ticker)['Adj Close']
+            ind = clean_dates(comp_asset, price_series)
+            prob_d['ticker'].append(ticker)
+            prob_d['r2_adj'].append(adj_r2_uv(
+                comp_asset[ind].apply(numpy.log).diff().dropna(),
+                price_series[ind].apply(numpy.log).diff().dropna()))
+            prob_d['asset_class'].append(training_series[ticker])
+        except:
+            print "Did not work for ticker " + ticker
+
+    prob_df = pandas.DataFrame(prob_d)
+    prob_df.sort(columns = ['r2_adj'], ascending = False, inplace = True)
     return prob_df
 
 def best_fitting_weights(series, asset_class_prices):
@@ -186,16 +198,20 @@ def create_data_store(path, ticker_list):
         print "File " + path + " already exists"
         return
     
-    store = pandas.HDF5tore(path, 'w')
+    store = pandas.HDFStore(path, 'w')
+    success = 0
     for ticker in ticker_list:
         try:
-            tmp = web.DataReader(ticker, 'yahoo', start = '01/01/2000')
+            tmp = tickers_to_dict(ticker, 'yahoo', start = '01/01/2000')
             store.put(ticker, tmp)
             print ticker + " added to store"
+            success += 1
         except:
             print "unable to add " + ticker + " to store"
     store.close()
 
+    if success == 0: #none of it worked, delete the store
+        os.remove(path)
     return None
 
 def first_valid_date(prices):
