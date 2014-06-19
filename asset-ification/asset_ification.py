@@ -12,10 +12,26 @@ import os
 import pandas.io.data
 import scipy.optimize as sopt
 
-ACS = ['GSG','IYR','WPS','PFF','EEM','EFA','EFV','EFG','SCZ','JKL',
-       'JKK','JKI','JKH','JKF','JKE','IEF','TLT','SHY','HYG','LQD',
-       'PCY','BWX','TIP']
+def run_classification():
+    """
+    See the classifications as they are run
+    """
+    etf_list = complete_etf_list()
+    trained_list = pandas.Series.from_csv('../dat/trained_assets.csv')
+    notin_trained = numpy.setdiff1d(etf_list.index.tolist(), 
+                                    trained_list.index.tolist())
+    #let 'er rip!
+    for ticker in notin_trained:
+        try:
+            series = tickers_to_dict(ticker)['Adj Close']
+            print find_nearest_neighbors(series, '../dat/trained_data.h5',
+                                         trained_list)
+        except:
+            print "Didn't work for " + ticker
 
+    return None
+            
+    
 def find_nearest_neighbors(price_series, store_path, training_series):
     """
     Calculate the "nearest neighbors" on trained asset class data to 
@@ -35,13 +51,15 @@ def find_nearest_neighbors(price_series, store_path, training_series):
 
     """
     ac_freq = training_series.value_counts()
+    #choice of k, 80% of minimum unique trained instances for now
+    k = int(round(0.8 * ac_freq.min() ))
     store = pandas.HDFStore(store_path, 'r')
-    prob_d = {'ticker': [], 'r2_adj': [], 'asset_class': [] }
+
+    prob_d = {'r2_adj': [], 'asset_class': [] }
     for ticker in training_series.index:
         try:
             comp_asset = store.get(ticker)['Adj Close']
             ind = clean_dates(comp_asset, price_series)
-            prob_d['ticker'].append(ticker)
             prob_d['r2_adj'].append(adj_r2_uv(
                 comp_asset[ind].apply(numpy.log).diff().dropna(),
                 price_series[ind].apply(numpy.log).diff().dropna()))
@@ -51,75 +69,8 @@ def find_nearest_neighbors(price_series, store_path, training_series):
 
     prob_df = pandas.DataFrame(prob_d)
     prob_df.sort(columns = ['r2_adj'], ascending = False, inplace = True)
-    return prob_df
+    return prob_df['asset_class'][:k].value_counts()/float(k)
 
-def best_fitting_weights(series, asset_class_prices):
-    """
-    Return the best fitting weights given a :class:`pandas.Series` of 
-    asset prices and a :class:`pandas.DataFrame` of asset class prices.  
-    Can be used with the :func:`clean_dates` function to ensure an 
-    intersection of the two indexes is being passed to the function
-    
-    :ARGS:
-
-        asset_prices: m x 1 :class:`pandas.TimeSeries` of asset_prices
-
-        ac_prices: m x n :class:`pandas.DataFrame` asset class ("ac") 
-        prices
-
-    :RETURNS:
-
-        :class:`pandas.TimeSeries` of nonnegative weights for each 
-        asset such that the r_squared from the regression of 
-        :math:`Y ~ Xw + e` is maximized
-
-    """
-
-    def _r_squared_adj(weights):
-        """
-        The Adjusted R-Squared that incorporates the number of 
-        independent variates using the `Formula Found of Wikipedia
-        <http://en.wikipedia.org/wiki/Coefficient_of_determination#Adjusted_R2>_`
-        """
-        #import pdb
-        #pdb.set_trace()
-        est_rets = ac_rets.loc[:, weights > 0].mul(weights[weights > 0])
-        beta = numpy.linalg.inv(est_rets.transpose().dot(est_rets)).dot(
-            est_rets.transpose().dot(series_rets) )
-        
-        y_est = est_rets.dot(beta)
-        ss_res = ((y_est - series_rets)**2).sum()
-        ss_tot = ((series_rets - series_rets.mean())**2).sum()
-        eps = 1e-6
-        n, p = est_rets.shape
-        rsq = 1 - ss_res/ss_tot
-        return 1 - (1 - rsq)*(n - 1)/(n - p - 1)
-
-    def _obj_fun(weights):
-        """
-        To maximize the r_squared_adj minimize the negative of r_squared
-        """
-        return -_r_squared_adj(weights)
-
-    #linear price changes to create a weighted return
-    ac_rets = asset_class_prices.pct_change().dropna()
-    series_rets = series.pct_change().dropna()
-
-    num_assets = ac_rets.shape[1]
-    numpy.random.seed(seed = 13)
-    guess = numpy.random.rand(num_assets,)
-    guess[guess < 0.25] = 0.
-
-    #ensure the boundaries of the function are (0, 1)
-    ge_zero = [(0,1) for i in numpy.arange(num_assets)]
-
-    #optimize to maximize r-squared, using the 'TNC' method 
-    #(that uses the boundary functionality)
-    opt = sopt.minimize(_obj_fun, x0 = guess, method = 'TNC', 
-                        bounds = ge_zero)
-    normed = opt.x*(1./numpy.sum(opt.x))
-
-    return pandas.Series(normed, index = ac_rets.columns)
 
 def clean_dates(arr_a, arr_b):
     """
@@ -280,84 +231,7 @@ def append_store_prices(ticker_list, path, start = '01/01/1990'):
         except:
             print val + " couldn't store"
     store.close()
-    return None  
-
-def class_dicts():
-    """
-    Given a list of asset classes and a list of tickers to train
-    the asset classes, with a store located at ``path``, train the 
-    logistic classification tree
-    
-    :ARGS:
-
-        class_list: :class:`list` of asset class tickers `
-
-        test_list: :class:`list` of tickers to train the algorithm
-        with
-
-   .. note:: Requires Existing HDF5Store
-
-        Be sure to create an HDF5Store before using this function
-        as it looks for asset prices in the HDF5Store located at 
-        ``path``.
-    """
-    fi_dict = {'US Inflation Protected':'TIP', 'Foreign Treasuries':'BWX',
-               'Foreign High Yield':'PCY','US Investment Grade':'LQD',
-               'US High Yield':'HYG', 'US Treasuries ST':'SHY',
-               'US Treasuries LT':'TLT', 'US Treasuries MT':'IEF'}
-
-    us_eq_dict = {'U.S. Large Cap Growth':'JKE', 'U.S. Large Cap Value':'JKF',
-                  'U.S. Mid Cap Growth':'JKH','U.S. Mid Cap Value':'JKI',
-                  'U.S. Small Cap Growth':'JKK', 'U.S. Small Cap Value':'JKL'}
-
-    for_eq_dict = {'Foreign Developed Small Cap':'SCZ',
-                   'Foreign Developed Large Growth':'EFG',
-                   'Foreign Developed Large Value':'EFV',
-                   'Foreign Emerging Market':'EEM'}
-
-
-    alt_dict = {'Commodities':'GSG', 'U.S. Real Estate':'IYR',
-                'Foreign Real Estate':'WPS', 'U.S. Preferred Stock':'PFF'}
-    return none
-
-
-def load_data(store):
-    acs_df = pandas.DataFrame(dict(map(lambda x, y: [x, y], ACS, 
-        map(lambda x: store.get(x)['Adj Close'], ACS) ))).dropna()
-    
-    not_acs = numpy.setdiff1d(
-        map(lambda x: x.strip('/'), store.keys() ), ACS)
-    
-    return acs_df, not_acs
-
-def gen_univariate_rsquared(path):
-    store = pandas.HDFStore(path, 'r')
-    acs_df, not_acs = load_data(store)
-    rsq_d = {}
-    for ticker in not_acs:
-        tmp = store.get(ticker)['Adj Close']
-        ind = acs_df.index & tmp.index
-        ys = tmp[ind].apply(numpy.log).diff().dropna()
-        xs = acs_df.loc[ind, :].apply(numpy.log).diff().dropna()
-        rsq_d[ticker] =  r2_uv(xs, ys)
-        print "all univiariate r_squared generated for " + ticker
-    ret_df = pandas.DataFrame(rsq_d).transpose()
-    store.close()
-
-    return ret_df
-
-def gen_linprog_maxrsquard(path):
-    store = pandas.HDFStore(path, 'r')
-    acs_df, not_acs = load_data(store)
-    rsq_d = {}
-    for ticker in not_acs:
-        tmp = store.get(ticker)['Adj Close']
-        ind = acs_df.index & tmp.index
-        rsq_d[ticker] = best_fitting_weights(tmp[ind], acs_df.loc[ind, :])
-        print "max r_squared generated for " + ticker
-    
-    ret_df = pandas.DataFrame(rsq_d).transpose()
-    return ret_df
+    return None
 
 def complete_etf_list(path = None):
     """
