@@ -16,7 +16,7 @@ ACS = ['GSG','IYR','WPS','PFF','EEM','EFA','EFV','EFG','SCZ','JKL',
        'JKK','JKI','JKH','JKF','JKE','IEF','TLT','SHY','HYG','LQD',
        'PCY','BWX','TIP']
 
-def find_nearest_neighbors(series, path, class_key):
+def find_nearest_neighbors(series, store_path, training_series):
     """
     Calculate the "nearest neighbors" on trained asset class data to 
     determine probabilities the series belongs to given asset classes
@@ -26,47 +26,20 @@ def find_nearest_neighbors(series, path, class_key):
         series: :class:`pandas.Series` of prices
    
 
-        path: :class:`string` leading to the store of both prices and 
-        asset class training data
+        store_path: :class:`string` leading to the store of trained  
+        asset class prices (each ticker should also appear in the 
+        ``.csv`` located at ``training_file_path``
 
-        class_key: :class:`string` of the key under which asset class
-        ticker pairings are stored
+        training_series: :class:`series` where Index is the tickers 
+        and the values are the asset classes
+
     """
-    n = num_unique_value
+    ac_freq = training_series.value_counts()
+    store = pandas.HDFStore(path, 'r')
+    
+    #
+    tickers = [key if key != class_key else "" for key in store.keys()]
     return prob_df
-
-
-def unique_classes_count(path, class_key):
-    """
-    This function takes the training (ticker, asset_class) pairings
-    from an ``HDFStore`` and returns a series with
-    the asset classes, and the number of occurrences of each of the 
-    asset classes
-
-    :ARGS:
-
-        path: :class:`string` for the path to the training file
-
-        class_col: :class:`string` the name of the column that details
-        what the asset class of the ticker is
-
-    :RETURNS:
-
-        :class:`pandas.Series` of the unique asset classes and their 
-        frequency of occurence
-
-    .. note:: The 'K' in K-Nearest Neighbor
-
-        The 'K' in the K-Nearest Neighbor is going to hinge on the minimum
-        number of training points -- for a given asset class -- that exist
-
-    """
-    store = pandas.HDFStore(path)
-    ac_frame = store.get(class_key)
-    store.close()
-    return ac_frame[class_col].value_counts()
-    
-    
 
 def best_fitting_weights(series, asset_class_prices):
     """
