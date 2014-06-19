@@ -16,12 +16,30 @@ ACS = ['GSG','IYR','WPS','PFF','EEM','EFA','EFV','EFG','SCZ','JKL',
        'JKK','JKI','JKH','JKF','JKE','IEF','TLT','SHY','HYG','LQD',
        'PCY','BWX','TIP']
 
-def num_unique_values(path, class_col):
+def find_nearest_neighbors(series, path, class_key):
     """
-    The 'K' in the K-Nearest Neighbor is going to hinge on the minimum
-    number of training points -- for a given asset class -- that exist
+    Calculate the "nearest neighbors" on trained asset class data to 
+    determine probabilities the series belongs to given asset classes
+    
+    :ARGS:
 
-    This function takes the training ``.csv`` and returns a series with
+        series: :class:`pandas.Series` of prices
+   
+
+        path: :class:`string` leading to the store of both prices and 
+        asset class training data
+
+        class_key: :class:`string` of the key under which asset class
+        ticker pairings are stored
+    """
+    n = num_unique_value
+    return prob_df
+
+
+def unique_classes_count(path, class_key):
+    """
+    This function takes the training (ticker, asset_class) pairings
+    from an ``HDFStore`` and returns a series with
     the asset classes, and the number of occurrences of each of the 
     asset classes
 
@@ -36,8 +54,16 @@ def num_unique_values(path, class_col):
 
         :class:`pandas.Series` of the unique asset classes and their 
         frequency of occurence
+
+    .. note:: The 'K' in K-Nearest Neighbor
+
+        The 'K' in the K-Nearest Neighbor is going to hinge on the minimum
+        number of training points -- for a given asset class -- that exist
+
     """
-    ac_frame = pandas.DataFrame.from_csv(path)
+    store = pandas.HDFStore(path)
+    ac_frame = store.get(class_key)
+    store.close()
     return ac_frame[class_col].value_counts()
     
     
