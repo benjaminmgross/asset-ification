@@ -344,7 +344,7 @@ def gen_linprog_maxrsquard(path):
     ret_df = pandas.DataFrame(rsq_d).transpose()
     return ret_df
 
-def gen_etf_list(path):
+def complete_etf_list(path = None):
     """
     www.price-data.com has pages with all of the etf tickers
     available on it.  This function acesses each of those pages,
@@ -354,7 +354,8 @@ def gen_etf_list(path):
     :ARGS:
     
         path: :class:`string` of the path to save the :class:`DataFrame`
-        of tickers
+        of tickers as a ``.csv``  If ``None`` is provided, only the 
+        :class:`pandas.DataFrame` will be returned
     """
 
     #the first three url's from price-data, the rest can be generated
@@ -391,8 +392,9 @@ def gen_etf_list(path):
     agg_df = pandas.concat(d, axis = 0)
     agg_df.columns = ['Description']
     agg_df.index.name = 'Ticker'
-    agg_df.to_csv(path, encoding = 'utf-8')
-    return None
+    if path != None:
+        agg_df.to_csv(path, encoding = 'utf-8')
+    return agg_df
 
 def adj_r2_uv(x, y):
     """
