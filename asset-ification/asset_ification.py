@@ -16,6 +16,32 @@ ACS = ['GSG','IYR','WPS','PFF','EEM','EFA','EFV','EFG','SCZ','JKL',
        'JKK','JKI','JKH','JKF','JKE','IEF','TLT','SHY','HYG','LQD',
        'PCY','BWX','TIP']
 
+def num_unique_values(path, class_col):
+    """
+    The 'K' in the K-Nearest Neighbor is going to hinge on the minimum
+    number of training points -- for a given asset class -- that exist
+
+    This function takes the training ``.csv`` and returns a series with
+    the asset classes, and the number of occurrences of each of the 
+    asset classes
+
+    :ARGS:
+
+        path: :class:`string` for the path to the training file
+
+        class_col: :class:`string` the name of the column that details
+        what the asset class of the ticker is
+
+    :RETURNS:
+
+        :class:`pandas.Series` of the unique asset classes and their 
+        frequency of occurence
+    """
+    ac_frame = pandas.DataFrame.from_csv(path)
+    return ac_frame[class_col].value_counts()
+    
+    
+
 def best_fitting_weights(series, asset_class_prices):
     """
     Return the best fitting weights given a :class:`pandas.Series` of 
