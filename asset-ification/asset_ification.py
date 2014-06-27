@@ -49,24 +49,42 @@ def crosstab_model_accuracy():
 
         :class:`pandas.DataFrame` of the confusion matrix
     """
-    trained_list = pandas.Series.from_csv('../dat/trained_assets.csv')
+    trained_list = pandas.Series.from_csv('../dat/trained_assets.csv',
+                                          header = 0)
     store = pandas.HDFStore('../dat/trained_data.h5', 'r')
     keys = map(lambda x: x.strip('/'),  store.keys())
     d = {}
-    for key in keys
+    for i, key in enumerate(keys):
+        print ('working on ' + key + '\n' + str(i + 1) + 
+               ' of ' + str(len(keys)+ 1))
         try:
             series = store.get(key)['Adj Close']
             #exclude that ticker for testing
             not_key = trained_list.index != key
-            d[key] = find_nearest_neighbors(series, '../dat/trained_data.h5',
+            d[key] = find_nearest_neighbors(series, store,
                    trained_list[not_key])
         except:
-            print "Didn't work for " + ticker
+            print "Didn't work for " + key
         
     store.close()
-
-    return pandas.DataFrame(d)
+    prob_df = pandas.DataFrame(d).transpose()
+    algo_results = prob_df.apply(lambda x: x.argmax(), axis = 1)
+    return pandas.crosstab(algo_results, trained_list)
     
+
+def plot_confusion_matrix():
+    """
+    Plot the confusion matrix
+    """
+    cm = crosstab_model_accuracy()
+    cm_pct = cm.apply(lambda x: x/float(x.sum()), axis = 0)
+    plt.imshow(cm_pct, interpolation = 'nearest')
+    plt.xticks(numpy.arange(len(cm.index)), cm.index)
+    plt.yticks(numpy.arange(len(cm.index)), cm.index)
+    plt.colorbar()
+    plt.title("Confusion Matrix for KNN Asset Classes", fontsize = 16)
+    plt.show()
+
     
 def find_nearest_neighbors(price_series, store, training_series):
     """
@@ -92,7 +110,7 @@ def find_nearest_neighbors(price_series, store, training_series):
     k = len(ac_freq) + 1
     
     #if a path is provided, open the store, otherwise it IS a store
-    if isinstance(store, string):
+    if isinstance(store, str):
         store = pandas.HDFStore(store, 'r')
 
     prob_d = {'r2_adj': [], 'asset_class': [] }
