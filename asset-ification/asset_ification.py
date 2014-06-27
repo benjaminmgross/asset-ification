@@ -1,6 +1,8 @@
 #!/usr/bin/env python
 # encoding: utf-8
 """
+.. module:: asset_ification.py
+
 Created by Benjamin M. Gross
 
 """
@@ -10,7 +12,6 @@ import pandas
 import numpy
 import os
 import pandas.io.data
-import scipy.optimize as sopt
 
 def run_classification():
     """
@@ -31,8 +32,43 @@ def run_classification():
 
     return None
             
+def crosstab_model_accuracy():
+    """
+    Calculate the model accuracy (returned as a confusion matrix) of 
+    asset classes that are already known, provided in the 
+    ``training_series``.
+
+    :ARGS:
+
+        store_path: :class:`string` to the HDFStore of asset 
+
+        training_series: :class:`series` where Index is the tickers 
+        and the values are the asset classes
+
+    :RETURNS:
+
+        :class:`pandas.DataFrame` of the confusion matrix
+    """
+    trained_list = pandas.Series.from_csv('../dat/trained_assets.csv')
+    store = pandas.HDFStore('../dat/trained_data.h5', 'r')
+    keys = map(lambda x: x.strip('/'),  store.keys())
+    d = {}
+    for key in keys
+        try:
+            series = store.get(key)['Adj Close']
+            #exclude that ticker for testing
+            not_key = trained_list.index != key
+            d[key] = find_nearest_neighbors(series, '../dat/trained_data.h5',
+                   trained_list[not_key])
+        except:
+            print "Didn't work for " + ticker
+        
+    store.close()
+
+    return pandas.DataFrame(d)
     
-def find_nearest_neighbors(price_series, store_path, training_series):
+    
+def find_nearest_neighbors(price_series, store, training_series):
     """
     Calculate the "nearest neighbors" on trained asset class data to 
     determine probabilities the series belongs to given asset classes
@@ -42,18 +78,22 @@ def find_nearest_neighbors(price_series, store_path, training_series):
         series: :class:`pandas.Series` of prices
    
 
-        store_path: :class:`string` leading to the store of trained  
-        asset class prices (each ticker should also appear in the 
-        ``.csv`` located at ``training_file_path``
+        store: :class:`string` of a store path or an actual store
+        of the trained  asset class prices (each ticker should also 
+        appear in the  ``.csv`` located at ``training_file_path``
 
         training_series: :class:`series` where Index is the tickers 
         and the values are the asset classes
 
     """
     ac_freq = training_series.value_counts()
-    #choice of k, 80% of minimum unique trained instances for now
-    k = int(round(0.8 * ac_freq.min() ))
-    store = pandas.HDFStore(store_path, 'r')
+    #choose k = d + 1, where d is the number of unique asset classes
+    
+    k = len(ac_freq) + 1
+    
+    #if a path is provided, open the store, otherwise it IS a store
+    if isinstance(store, string):
+        store = pandas.HDFStore(store, 'r')
 
     prob_d = {'r2_adj': [], 'asset_class': [] }
     for ticker in training_series.index:
