@@ -1,0 +1,339 @@
+Ticker,Description,Exact Class,Asset Class,Asset Subclass,,AC Module I/O
+AAXJ,iShares MSCI All Country Asia ex Japan Index Fund,Foreign Equity,Foreign Emerging Equity,Foreign Emerging Asia Equity,AAXJ,Intl Equity
+ACWI,iShares MSCI All Country World Index Fund,Global Equity,Global Equity,Global Equity,ACWI,US Equity
+ACWX,iShares MSCI ACWI ex US Index Fund,Foreign Equity,Global Equity,Global Foreign Equity,ACWX,Intl Equity
+AGG,iShares Core Total U.S. Bond Market ETF,US Fixed Income,U.S. Fixed Income,U.S. Total Bond Fixed Income,AGG,Fixed Income
+AMJ,Alerian MLP Index ETN,Alternative,Alternative,Alternative U.S. MLP Equity,AMJ,US Equity
+AMLP,Alerian MLP ETF,Alternative,Alternative,Alternative U.S. MLP Equity,AMLP,US Equity
+BAB,PowerShares Build America Bond Portfolio,US Fixed Income,U.S. Fixed Income,U.S. Municipal Bond Fixed Income,BAB,Fixed Income
+BBH,Market Vectors Biotech ETF,US Equity,U.S. Equity,U.S. Healthcare Sector Equity ,BBH,US Equity
+BIL,SPDR Barclays 1-3 Month T-Bill ETF,US Fixed Income,U.S. Fixed Income,U.S. Government Bond Fixed Income,BIL,US Equity
+BIV,Vanguard Intermediate-Term Bond ETF,US Fixed Income,U.S. Fixed Income,U.S. Total Bond Fixed Income,BIV,Fixed Income
+BKF,iShares MSCI BRIC Index Fund,Foreign Equity,Foreign Emerging Equity,Foreign Emerging BRIC Equity,BKF,Fixed Income
+BKLN,PowerShares Senior Loan Portfolio,US Fixed Income,U.S. Fixed Income,U.S. High Yield Bond Fixed Income,BKLN,Alternative
+BND,Vanguard Total Bond Market ETF,US Fixed Income,U.S. Fixed Income,U.S. Total Bond Fixed Income,BND,Fixed Income
+BOND,PIMCO Total Return Exchange-Traded Fund,US Fixed Income,U.S. Fixed Income,U.S. Total Bond Fixed Income,BOND,Alternative
+BRF,Market Vectors Brazil Small-Cap ETF,Foreign Equity,Foreign Emerging Equity,Foreign Emerigng Brazil Small Cap Equity,BRF,US Equity
+BSJF,BulletShares 2015 High Yield Corporate Bond ETF,US Fixed Income,U.S. Fixed Income,U.S. High Yield Bond Fixed Income,BSJF,US Equity
+BSV,Vanguard Short-Term Bond ETF,US Fixed Income,U.S. Fixed Income,U.S. Total Bond Fixed Income,BSV,Fixed Income
+BWX,SPDR Barclays Intl Treasury Bond,Foreign Fixed Income,Global Fixed Income,Global Government Bond Fixed Income ,BWX,Fixed Income
+BWZ,SPDR Short Term Intl Treasury Bond,Foreign Fixed Income,Foreign Fixed Income,,,
+CEMB,ishares Emerging Market Corporate Bond,Foreign Fixed Income,Foreign Fixed Income,,,
+CEW,WisdomTree Dreyfus Emerging Currency Fund,Alternative,Alternative,Alternative Foreign Emerging Currency,CEW,Alternative
+CHIQ,Global X China Consumer ETF,Foreign Equity,Foreign Emerging Equity,Foreign Emerging China Equity ,CHIQ,Fixed Income
+CVY,Gunggenheim Multi-Asset Income ETF,US Equity,U.S. Equity,U.S. Large Cap Value Equity,CVY,US Equity
+CWB,SPDR Barclays Capital Convertible Bond ETF,Alternative,U.S. Fixed Income,U.S. Convertible Bond Fixed Income,CWB,US Equity
+DBA,PowerShares DB Agriculture Fund,Alternative,Alternative,Alternative Commodity Agriculture ,DBA,Alternative
+DBB,PowerShares DB Base Metals Fund,Alternative,Alternative,Alternative Commodity Base Metals ,DBB,Fixed Income
+DBC,PowerShares DB Commodity Index Tracking Fund,Alternative,Alternative,Alternative Commodity ,DBC,Alternative
+DBE,PowerShares DB Energy Fund,Alternative,U.S. Equity,U.S. Energy Sector Equity ,DBE,Alternative
+DBJP,iShares MSCI Japan Hedged Equity Fund,Foreign Equity,Foreign Developed Equity,Foreign Developed Japan Leveraged Equity,DBJP,US Equity
+DBO,PowerShares DB Oil Fund,Alternative,Alternative,Alternative Commodity Oil ,DBO,Alternative
+DBV,PowerShares DB G10 Currency Harvest,Alternative,Alternative,Alternative Global Developed Currency,DBV,Alternative
+DEM,WisdomTree Emerging Markets Equity Income Fund,Foreign Equity,Foreign Emerging Equity,Foreign Emerging Equity,DEM,Alternative
+DFJ,WisdomTree Japan SmallCap Fund,Foreign Equity,Foreign Developed Equity,Foreign Developed Japan Small Cap Equity,DFJ,US Equity
+DGS,WisdomTree Emerging Market SmallCap Fund,Foreign Equity,Foreign Emerging Equity,Foreign Emerging Small Cap Equity,DGS,Intl Equity
+DGZ,PowerShares DB Gold Short ETN,Alternative,Alternative,Alternative Commodity Precious Metals ,DGZ,Alternative
+DIA,SPDR Dow Jones Industrial Average ETF,US Equity,U.S. Equity,U.S. Large Cap Value Equity,DIA,US Equity
+DJP,iPath Dow Jones-UBS Commodity Index TR ETN,Alternative,Alternative,Alternative Commodity ,DJP,Alternative
+DLN,WisdomTree LargeCap Dividend Fund,US Equity,U.S. Equity,U.S. Large Cap Value Equity,DLN,US Equity
+DOG,ProShares Short Dow30,US Equity,U.S. Equity,U.S. Inverse Equity,DOG,Alternative
+DVY,Dow Jones Select Dividend Index Fund,US Equity,U.S. Equity,U.S. Large Cap Value Equity,DVY,US Equity
+DWX,SPDR S&P International Dividend ETF,Foreign Equity,Foreign Developed Equity,Foreign Developed Large Cap Equity ,DWX,Intl Equity
+DXJ,WisdomTree Japan Hedged Equity Fund,Foreign Equity,Foreign Developed Equity,Foreign Developed Japan Leveraged Equity,DXJ,Intl Equity
+EBND,SPDR Emerging Market Local Bond,Foreign Fixed Income,Foreign Fixed Income,,,
+ECH,iShares MSCI Chile Index Fund,Foreign Equity,Foreign Emerging Equity,Foreign Emerging Chile Equity,ECH,US Equity
+ECON,EGShares Dow Jones Emerging Markets Consumer Titans Index Fund,Foreign Equity,Foreign Emerging Equity,Foreign Emerging Consumer Staples Sector Equity ,ECON,Alternative
+EDIV,SPDR S&P Emerging Markets Dividend ETF,Foreign Equity,Foreign Emerging Equity,Foreign Emerging Equity,EDIV,Alternative
+EEM,iShares MSCI Emerging Markets Index Fund,Foreign Equity,Foreign Emerging Equity,Foreign Emerging Equity,EEM,Alternative
+EEMV,iShares MSCI Emerging Markets Minimum Volatility Index Fund,Foreign Equity,Foreign Emerging Equity,Foreign Emerging Equity,EEMV,Alternative
+EFA,iShares MSCI EAFE Index Fund,Foreign Equity,Foreign Developed Equity,Foreign Developed Large Cap Equity ,EFA,Intl Equity
+EFAV,iShares MSCI EAFE Minimum Volatility Index Fund,Foreign Equity,Foreign Developed Equity,Foreign Developed Large Cap Equity ,EFAV,Intl Equity
+EFV,iShares MSCI Value Index Fund,Foreign Equity,Foreign Developed Equity,Foreign Developed Large Cap Equity ,EFV,Intl Equity
+EFZ,Short iShares MSCI EAFE,Alternative,U.S. Equity,U.S. Inverse Equity,EFZ,US Equity
+EIDO,iShares MSCI Indonesia Investable Market Index Fund,Foreign Equity,Foreign Emerging Equity,Foreign Emerging Indonesia Equity,EIDO,Alternative
+ELD,WisdomTree Emerging Markets Local Debt Fund,Foreign Fixed Income,Foreign Fixed Income,Foreign Emerging Bond Fixed Income ,ELD,Fixed Income
+EMB,JP Morgan Emerging Markets Bond Fund,Foreign Fixed Income,Foreign Fixed Income,Foreign Emerging Bond Fixed Income ,EMB,Fixed Income
+EMCB,WisdomTree Emerging Market Corporate Bond,Foreign Fixed Income,Foreign Fixed Income,,,
+EMLC,Market Vectors Emerging Markets Local Currency Bond ETF,Foreign Fixed Income,Foreign Fixed Income,Foreign Emerging Bond Fixed Income ,EMLC,Alternative
+EMLP,First Trust North American Energy Infrastructure Fund,US Equity,Alternative,Alternative U.S. MLP Equity,EMLP,US Equity
+EPHE,iShares MSCI Philippines Investable Market Index Fund,Foreign Equity,Foreign Emerging Equity,Foreign Emerging Philippine Equity,EPHE,Alternative
+EPI,WisdomTree India Earnings Fund,Foreign Equity,Foreign Emerging Equity,Foreign Emerging India Equity,EPI,Fixed Income
+EPOL,iShares MSCI Poland Investable Market Index Fund,Foreign Equity,Foreign Emerging Equity,Foreign Emerging Poland Equity,EPOL,Intl Equity
+EPP,iShares MSCI Pacific Ex-Japan Index Fund,Foreign Equity,Foreign Emerging Equity,Foreign Emerging Pacific ex-Japan Equity,EPP,Alternative
+EPU,iShares MSCI All Peru Capped Index Fund,Foreign Equity,Foreign Emerging Equity,Foreign Emerging Peru Equity,EPU,Alternative
+ERUS,iShares MSCI Russia Capped Index Fund,Foreign Equity,Foreign Emerging Equity,Foreign Emerging Russia Equity,ERUS,Alternative
+EUM,ProShares Short iShares MSCI Emerging Markets,Alternative,Foreign Emerging Equity,Foreign Emerging Inverse Equity,EUM,Alternative
+EWA,iShares MSCI Australia Index Fund,Foreign Equity,Foreign Developed Equity,Foreign Developed Australia Equity ,EWA,Alternative
+EWC,iShares MSCI Canada Index Fund,Foreign Equity,Foreign Developed Equity,Foreign Developed Canada Equity,EWC,Intl Equity
+EWD,iShares MSCI Sweden Index Fund,Foreign Equity,Foreign Developed Equity,Foreign Developed Sweden Equity,EWD,Intl Equity
+EWG,iShares MSCI Germany Index Fund,Foreign Equity,Foreign Developed Equity,Foreign Developed Germany Equity,EWG,Intl Equity
+EWH,iShares MSCI Hong Kong Index Fund,Foreign Equity,Foreign Developed Equity,Foreign Developed Hong Kong Equity,EWH,Alternative
+EWI,iShares MSCI Italy Index Fund,Foreign Equity,Foreign Developed Equity,Foreign Developed Italy Equity,EWI,Alternative
+EWJ,iShares MSCI Japan Index Fund,Foreign Equity,Foreign Developed Equity,Foreign Developed Japan Equity,EWJ,Intl Equity
+EWL,iShares MSCI Switzerland Index Fund,Foreign Equity,Foreign Developed Equity,Foreign Developed Switzerland Equity,EWL,US Equity
+EWM,iShares MSCI Malaysia Index Fund,Foreign Equity,Foreign Emerging Equity,Foreign Emerging Malaysia Equity,EWM,Alternative
+EWN,iShares MSCI Netherlands Index Fund,Foreign Equity,Foreign Developed Equity,Foreign Developed Nethrlands Equity ,EWN,Intl Equity
+EWP,iShares MSCI Spain Index Fund,Foreign Equity,Foreign Developed Equity,Foreign Developed Spain Equity ,EWP,Intl Equity
+EWQ,iShares MSCI France Index Fund,Foreign Equity,Foreign Developed Equity,Foreign Developed France Equity,EWQ,Intl Equity
+EWS,iShares MSCI Singapore Index Fund,Foreign Equity,Foreign Developed Equity,Foreign Developed Singapore Equity,EWS,Alternative
+EWT,iShares MSCI Taiwan Index Fund,Foreign Equity,Foreign Developed Equity,Foreign Developed Taiwan Equity,EWT,Intl Equity
+EWU,iShares MSCI United Kingdom Index Fund,Foreign Equity,Foreign Developed Equity,Foreign Developed United Kingdom Equity,EWU,US Equity
+EWW,iShares MSCI Mexico Index Fund,Foreign Equity,Foreign Emerging Equity,Foreign Emerging Mexico Equity,EWW,Alternative
+EWX,SPDR S&P Emerging Markets Small Cap ETF,Foreign Equity,Foreign Emerging Equity,Foreign Emerging Small Cap Equity,EWX,Intl Equity
+EWY,iShares MSCI South Korea Index Fund,Foreign Equity,Foreign Developed Equity,Foreign Developed South Korea Equity,EWY,Intl Equity
+EWZ,iShares MSCI Brazil Capped ETF,Foreign Equity,Foreign Emerging Equity,Foreign Emerging Brazil Equity,EWZ,Fixed Income
+EZA,iShares MSCI South Africa Index Fund,Foreign Equity,Foreign Emerging Equity,Foreign Emerging South Africa Equity,EZA,Alternative
+EZU,iShares MSCI EMU Index Fund,Foreign Equity,Foreign Developed Equity,Foreign Developed Europe Equity,EZU,Intl Equity
+FCG,First Trust ISE-Revere Natural Gas Index Fund,Alternative,Alternative,Alternative U.S. Materials Sector Natural Gas Equity ,FCG,Alternative
+FDL,First Trust Morningstar Dividend Leaders Index Fund,US Equity,U.S. Equity,U.S. Large Cap Value Equity,FDL,US Equity
+FDN,First Trust DJ Internet Index Fund,US Equity,U.S. Equity,U.S. Technology Sector Equity ,FDN,US Equity
+FEM,First Trust Emerging Markets AlphaDEX Fund,Foreign Equity,Foreign Emerging Equity,Foreign Emerging Equity,FEM,Intl Equity
+FEZ,SPDR Euro STOXX 50 ETF,Foreign Equity,Foreign Developed Equity,Foreign Developed Europe Equity ,FEZ,Intl Equity
+FM,iShares MSCI Frontier 100 Index Fund,Foreign Equity,Foreign Emerging Equity,Foreign Emerging Equity,FM,US Equity
+FRI,First Trust S&P REIT Index Fund,Alternative,Alternative,Alternative U.S. Real Estate Equity ,FRI,Alternative
+FVD,First Trust Value Line Dividend Index Fund,US Equity,U.S. Equity,U.S. Large Cap Value Equity,FVD,US Equity
+FXA,CurrencyShares Australian Dollar Trust,Alternative,Alternative,Alternative Foreign Developed Australian Currency,FXA,Alternative
+FXD,First Trust Consumer Discretionary AlphaDEX Fund,US Equity,U.S. Equity,U.S. Consumer Discretionary Sector Equity ,FXD,US Equity
+FXE,CurrencyShares Euro Currency Trust,Alternative,Alternative,Alternative Foreign Developed Europe Currency ,FXE,Alternative
+FXG,First Trust Consumer Staples AlphaDEX Fund,US Equity,U.S. Equity,U.S. Consumer Staples Sector Equity ,FXG,US Equity
+FXH,First Trust Health Care AlphaDEX,US Equity,U.S. Equity,U.S. Healthcare Sector Equity ,FXH,US Equity
+FXI,FTSE China 25 Index Fund,Foreign Equity,Foreign Emerging Equity,Foreign Emerging China Equity,FXI,Fixed Income
+FXO,First Trust Financials AlphaDEX Fund,US Equity,U.S. Equity,U.S. Financial Sector Equity,FXO,US Equity
+FXY,CurrencyShares Japanese Yen Trust,Alternative,Alternative,Alternative Foreign Developed Japan Currency ,FXY,US Equity
+GCC,GreenHaven Continuous Commodity Index Fund,Alternative,Alternative,Alternative Commodity ,GCC,Alternative
+GDX,Market Vectors TR Gold Miners,Global Equity,Alternative,Alternative Commodity Precious Metals ,GDX,US Equity
+GDXJ,Market Vectors Junior Gold Miners ETF,Global Equity,Alternative,Alternative Commodity Precious Metals ,GDXJ,US Equity
+GLD,SPDR Gold Trust,Alternative,Alternative,Alternative Commodity Precious Metals ,GLD,Alternative
+GNR,SPDR S&P Global Natural Resources ETF,Global Equity,Global Equity,Global Materials Sector Equity,GNR,Alternative
+GOVT,iShares Barclays U.S. Treasury Bond Fund,US Fixed Income,U.S. Fixed Income,U.S. Government Bond Fixed Income,GOVT,Fixed Income
+GREK,Global X FTSE Greece 20 ETF,Foreign Equity,Foreign Emerging Equity,Foreign Emerging Greece Equity,GREK,Intl Equity
+GSG,iShares GSCI Commodity-Indexed Trust Fund,Alternative,Alternative,Alternative Commodity ,GSG,Alternative
+GUNR,FlexShares Morningstar Global Upstream Natural Resources Index Fund ,Global Equity,Global Equity,Global Materials Sector Equity,GUNR,Alternative
+GWL,SPDR S&P World ex-US ETF,Foreign Equity,Global Equity,Global Foreign Equity,GWL,Intl Equity
+GWX,SPDR S&P International SmallCap ETF,Foreign Equity,Foreign Developed Equity,Foreign Developed Small & Mid Cap Equity,GWX,Intl Equity
+GXC,SPDR S&P China ETF,Foreign Equity,Foreign Emerging Equity,Foreign Emerging China Equity,GXC,Intl Equity
+GXG,Global X InterBolsa FTSE Colombia 20 ETF,Foreign Equity,Foreign Emerging Equity,Foreign Emerging Colombia Equity,GXG,Fixed Income
+HAO,Guggenheim China Small Cap ETF ,Foreign Equity,Foreign Emerging Equity,Foreign Emerging China Small Cap Equity,HAO,Alternative
+HDGE,Ranger Active Bear ETF,Alternative,U.S. Equity,U.S. Inverse Equity,HDGE,US Equity
+HDV,iShares High Dividend Equity Fund,US Equity,U.S. Equity,U.S. Large Cap Value Equity,HDV,US Equity
+HEDJ,WisdomTree Europe Hedged Equity Fund ,Foreign Equity,Foreign Developed Equity,Foreign Developed Europe Leveraged Equity,HEDJ,Intl Equity
+HYD,Market Vectors High Yield Municipal Index ETF,US Fixed Income,U.S. Fixed Income,U.S. Municipal Bond Fixed Income,HYD,Fixed Income
+HYEM,Market Vectors Emerging Markets High Yield Bond ETF,Foreign Fixed Income,Foreign Fixed Income,Foreign Emerging High Yield Bond Fixed Income ,HYEM,Alternative
+HYG,iBoxx $ High Yield Corporate Bond Fund,US Fixed Income,U.S. Fixed Income,U.S. High Yield Bond Fixed Income,HYG,Alternative
+HYS,PIMCO 0-5 Year High Yield Corporate Bond Index Fund,US Fixed Income,U.S. Fixed Income,U.S. High Yield Bond Fixed Income,HYS,US Equity
+IAU,COMEX Gold Trust,Alternative,Alternative,Alternative Commodity Precious Metals ,IAU,Alternative
+IBB,iShares Nasdaq Biotechnology,US Equity,U.S. Equity,U.S. Healthcare Sector Equity ,IBB,US Equity
+ICF,iShares Cohen & Steers Realty Major,Alternative,Alternative,Alternative U.S. Real Estate Equity ,ICF,Alternative
+IDV,iShares Dow Jones EPAC Select Dividend,Foreign Equity,Foreign Developed Equity,Foreign Developed Large Cap Equity ,IDV,Intl Equity
+IDX,Market Vectors Indonesia Index ETF,Foreign Equity,Foreign Emerging Equity,Foreign Emerging Indonesia Equity,IDX,Alternative
+IEF,Barclays 7-10 Year Treasury Bond Fund,US Fixed Income,U.S. Fixed Income,U.S. Government Bond Fixed Income,IEF,Fixed Income
+IEFA,Core iShares MSCI EAFE ETF,Foreign Equity,Foreign Developed Equity,Foreign Developed Large Cap Equity ,IEFA,Intl Equity
+IEI,iShares Barclays 3-7 Year Treasury Bond Fund,US Fixed Income,U.S. Fixed Income,U.S. Government Bond Fixed Income,IEI,Fixed Income
+IEMG,Core iShares MSCI Emerging Markets ETF,Foreign Equity,Foreign Emerging Equity,Foreign Emerging Equity,IEMG,Fixed Income
+IEO,iShares Dow Jones U.S. Oil & Gas Exploration & Production Index Fund,US Equity,U.S. Equity,U.S. Energy Sector Equity ,IEO,US Equity
+IEV,iShares S&P Europe 350 Index Fund,Foreign Equity,Foreign Developed Equity,Foreign Developed Europe Equity,IEV,Intl Equity
+IEZ,iShares Dow Jones U.S. Oil Equipment & Services Index Fund,US Equity,U.S. Equity,U.S. Energy Sector Equity ,IEZ,Intl Equity
+IFGL,iShares FTSE EPRA/NAREIT Global Real Estate ex-U.S. Index Fund,Alternative,Global Equity,Global Foreign Real Estate Equity,IFGL,Alternative
+IGE,iShares S&P North American Natural Resources Sector Index Fund,Global Equity,Global Equity,Global North American Materials Sector Equity,IGE,Intl Equity
+IGF,iShares S&P Global Infrastructure,Global Equity,Global Equity,Global Infrastruture Equity,IGF,US Equity
+IGN,iShares S&P North American Technology-Multimedia Networking Index Fund,US Equity,U.S. Equity,U.S. Technology Sector Equity ,IGN,Intl Equity
+IJH,iShares Core S&P Mid-Cap ETF,US Equity,U.S. Equity,U.S. Mid Cap Core Equity ,IJH,US Equity
+IJJ,iShares S&P MidCap 400 Value Index Fund,US Equity,U.S. Equity,U.S. Mid Cap Value Equity ,IJJ,US Equity
+IJK,iShares S&P MidCap 400 Growth Index Fund,US Equity,U.S. Equity,U.S. Mid Cap Growth Equity,IJK,US Equity
+IJR,iShares Core S&P Small-Cap ETF,US Equity,U.S. Equity,U.S. Small Cap Blend Equity,IJR,US Equity
+IJS,iShares S&P SmallCap 600 Value Index Fund,US Equity,U.S. Equity,U.S. Small Cap Value Equity,IJS,US Equity
+IJT,iShares S&P SmallCap 600 Growth Index Fund,US Equity,U.S. Equity,U.S. Small Cap Growth Equity ,IJT,US Equity
+ILF,iShares Latin America 40 Index Fund,Foreign Equity,Foreign Emerging Equity,Foreign Emerging Latin America Equity,ILF,US Equity
+INDA,iShares MSCI India Index Fund,Foreign Equity,Foreign Emerging Equity,Foreign Emerging India Equity,INDA,Alternative
+INDY,iShares S&P India Nifty Fifty Index Fund,Foreign Equity,Foreign Emerging Equity,Foreign Emerging India Equity,INDY,Fixed Income
+ITB,iShares Dow Jones U.S. Home Construction Index Fund,US Equity,Alternative,Alternative U.S. Homebuilding Equity ,ITB,US Equity
+ITM,Market Vectors-Intermediate Municipal Index ETF,US Fixed Income,U.S. Fixed Income,U.S. Municipal Bond Fixed Income,ITM,Fixed Income
+ITOT,iShares Core S&P Total U.S. Stock Market ETF,US Equity,U.S. Equity,U.S. All Cap Equity,ITOT,US Equity
+IVE,iShares S&P 500 Value Index Fund,US Equity,U.S. Equity,U.S. Large Cap Value Equity,IVE,US Equity
+IVV,iShares Core S&P 500 ETF,US Equity,U.S. Equity,U.S. Large Cap Blend Equity,IVV,US Equity
+IVW,iShares S&P 500 Growth Index Fund,US Equity,U.S. Equity,U.S. Large Cap Growth Equity,IVW,US Equity
+IWB,iShares Russell 1000 Index Fund,US Equity,U.S. Equity,U.S. Large Cap Blend Equity,IWB,US Equity
+IWD,iShares Russell 1000 Value,US Equity,U.S. Equity,U.S. Large Cap Value Equity,IWD,US Equity
+IWF,iShares Russell 1000 Growth,US Equity,U.S. Equity,U.S. Large Cap Growth Equity,IWF,US Equity
+IWM,Russell 2000 Index Fund,US Equity,U.S. Equity,U.S. Small Cap Blend Equity,IWM,US Equity
+IWN,iShares Russell 2000 Value Index Fund,US Equity,U.S. Equity,U.S. Small Cap Value Equity,IWN,US Equity
+IWO,iShares Russell 2000 Growth,US Equity,U.S. Equity,U.S. Small Cap Growth Equity ,IWO,US Equity
+IWP,iShares Russell Midcap Growth Index,US Equity,U.S. Equity,U.S. Mid Cap Growth Equity,IWP,US Equity
+IWR,iShares Russell Midcap Index Fund,US Equity,U.S. Equity,U.S. Mid Cap Blend Equity ,IWR,US Equity
+IWS,iShares Russell Midcap Value Index,US Equity,U.S. Equity,U.S. Mid Cap Value Equity ,IWS,US Equity
+IWV,iShares Russell 3000,US Equity,U.S. Equity,U.S. All Cap Equity,IWV,US Equity
+IXC,iShares S&P Global Energy Index Fund,Global Equity,Global Equity,Global Energy Equity,IXC,Intl Equity
+IYE,iShares Dow Jones U.S. Energy Sector Fund,US Equity,U.S. Equity,U.S. Energy Sector Equity ,IYE,US Equity
+IYF,iShares Dow Jones U.S. Financial Sector Index Fund,US Equity,U.S. Equity,U.S. Financial Sector Equity,IYF,US Equity
+IYJ,iShares Dow Jones U.S. Industrial Sector Index Fund,US Equity,U.S. Equity,U.S. Industrial Sector Equity ,IYJ,US Equity
+IYM,iShares Dow Jones U.S. Basic Materials Index,US Equity,U.S. Equity,U.S. Materials Sector Equity ,IYM,Intl Equity
+IYR,Dow Jones U.S. Real Estate Index Fund,Alternative,Alternative,Alternative U.S. Real Estate Equity ,IYR,Alternative
+IYT,iShares Dow Jones Transportation Average Index Fund,US Equity,U.S. Equity,U.S. Industrial Sector Equity,IYT,US Equity
+IYW,iShares Dow Jones U.S. Technology Index Fund,US Equity,U.S. Equity,U.S. Technology Sector Equity ,IYW,US Equity
+IYZ,iShares Dow Jones U.S. Telecommunications Index Fund,US Equity,U.S. Equity,U.S. Communications Sector Equity,IYZ,US Equity
+JNK,SPDR Barclays Capital High Yield Bond ETF,US Fixed Income,U.S. Fixed Income,U.S. High Yield Bond Fixed Income,JNK,Alternative
+KBE,SPDR S&P Bank ETF,US Equity,U.S. Equity,U.S. Financial Sector Equity,KBE,US Equity
+KBWB,PowerShares KBW Bank Portfolio,US Equity,U.S. Equity,U.S. Financial Sector Equity,KBWB,US Equity
+KIE,SPDR S&P Insurance ETF,US Equity,U.S. Equity,U.S. Financial Sector Equity,KIE,US Equity
+KOL,Market Vectors Coal ETF,Global Equity,Alternative,Alternative Commodity Coal,KOL,Fixed Income
+KRE,SPDR S&P Regional Banking ETF,US Equity,U.S. Equity,U.S. Financial Sector Equity,KRE,US Equity
+MBB,iShares Barclays MBS Bond Fund,US Fixed Income,U.S. Fixed Income,U.S. Mortgage Backed Security Fixed Income,MBB,Fixed Income
+MCHI,iShares MSCI China Index Fund,Foreign Equity,Foreign Emerging Equity,Foreign Emerging China Equity,MCHI,Intl Equity
+MDIV,First Trust Multi-Asset Diversified Income Index Fund,Multi-Class,U.S. Equity,U.S. Diversified Equity,MDIV,Intl Equity
+MDY,SPDR MidCap Trust Series I,US Equity,U.S. Equity,U.S. Mid Cap Blend Equity ,MDY,US Equity
+MINT,PIMCO Enhanced Short Maturity Strategy Fund,US Fixed Income,U.S. Fixed Income,U.S. Money Fixed Income,MINT,Alternative
+MLPI,E-TRACS Alerian MLP Infrastructure Index,Alternative,Alternative,Alternative U.S. MLP Equity,MLPI,US Equity
+MLPN,Credit Suisse Cushing 30 MLP Index ETN,Alternative,Alternative,Alternative U.S. MLP Equity,MLPN,US Equity
+MOO,Market Vectors-Agribusiness ETF,Global Equity,Global Equity,Global Materials Sector Equity ,MOO,Intl Equity
+MUB,iShares S&P National Municipal Bond Fund,US Fixed Income,U.S. Fixed Income,U.S. Municipal Bond Fixed Income,MUB,Fixed Income
+NKY,MAXIS Nikkei 225 Index ETF,Foreign Equity,Foreign Developed Equity,Foreign Developed Japan Equity,NKY,Intl Equity
+OEF,iShares S&P 100 Index Fund,US Equity,U.S. Equity,U.S. Large Cap Blend Equity,OEF,US Equity
+OIH,Market Vectors Oil Services ETF,US Equity,U.S. Equity,U.S. Materials Sector Oil Equity,OIH,Intl Equity
+OIL,iPath S&P GSCI Crude Oil Tot Ret Idx ETN,Alternative,Alternative,Alternative Commodity Oil ,OIL,Alternative
+PALL,ETFS Physical Palladium Shares,Alternative,Alternative,Alternative Commodity Precious Metals ,PALL,Intl Equity
+PBJ,PowerShares Dynamic Food & Beverage,US Equity,U.S. Equity,U.S. Consumer Staples Sector Equity ,PBJ,US Equity
+PBP,PowerShares S&P 500 BuyWrite Portfolio,US Equity,U.S. Equity,U.S. Long-Short Equity,PBP,US Equity
+PBS,PowerShares Dynamic Media,US Equity,U.S. Equity,U.S. Consumer Discretionary Sector Equity ,PBS,US Equity
+PBW,PowerShares WilderHill Clean Energy Portfolio,US Equity,U.S. Equity,U.S. Energy Sector Equity ,PBW,Fixed Income
+PCEF,PowerShares CEF Income Composite Portfolio,Alternative,U.S. Fixed Income,U.S. Total Bond Fixed Income,PCEF,Alternative
+PCY,PowerShares Emerging Markets Sovereign Debt Portfolio,Foreign Fixed Income,Foreign Fixed Income,Foreign Emerging Government Bond Fixed Income ,PCY,Fixed Income
+PDP,PowerShares DWA Technical Leaders Portfolio,US Equity,U.S. Equity,U.S. All Cap Equity,PDP,US Equity
+PEY,PowerShares High Yield Dividend Achievers,US Equity,U.S. Equity,U.S. All Cap Equity,PEY,US Equity
+PFF,iShares S&P US Preferred Stock Fund,Alternative,U.S. Equity,U.S. Preferred Stock Equity,PFF,Alternative
+PGF,PowerShares Financial Preferred Portfolio,Alternative,U.S. Equity,U.S. Preferred Stock Equity,PGF,Alternative
+PGX,PowerShares Preferred Portfolio,Alternative,U.S. Equity,U.S. Preferred Stock Equity,PGX,Alternative
+PHB,PowerShares Fundamental High Yield Corporate Bond Portfolio,US Fixed Income,U.S. Fixed Income,U.S. High Yield Bond Fixed Income,PHB,Alternative
+PHO,PowerShares Water Resource Portfolio,US Equity,Alternative,Alternative Water Commodity,PHO,US Equity
+PID,PowerShares Intl Dividend Achievers,Foreign Equity,Foreign Developed Equity,Foreign Developed Large Cap Equity ,PID,US Equity
+PIE,PowerShares DWA Emerging Market Technical Leaders Portfolio,Foreign Equity,Foreign Emerging Equity,Foreign Emerging Technology Sector Equity ,PIE,Alternative
+PIN,PowerShares India Portfolio,Foreign Equity,Foreign Emerging Equity,Foreign Emerging India Equity,PIN,Fixed Income
+PIZ,PowerShares DWA Developed Market Technical Leaders Portfolio,Foreign Equity,Foreign Developed Equity,Foreign Developed Large Cap Equity ,PIZ,Intl Equity
+PJP,PowerShares Dynamic Pharmaceuticals,US Equity,U.S. Equity,U.S. Healthcare Sector Equity ,PJP,US Equity
+PKW,PowerShares Buyback Achievers,US Equity,U.S. Equity,U.S. All Cap Equity,PKW,US Equity
+PPH,Market Vectors Pharmaceutical ETF,US Equity,U.S. Equity,U.S. Healthcare Sector Equity ,PPH,US Equity
+PRF,PowerShares FTSE RAFI US 1000 Portfolio,US Equity,U.S. Equity,U.S. Large Cap Value Equity,PRF,US Equity
+PSP,ProShares Listed Private Equity,Global Equity,U.S. Equity,U.S. Financial Sector Equity,PSP,Intl Equity
+PSQ,ProShares Short QQQ,Alternative,U.S. Equity,U.S. Inverse Equity,PSQ,Alternative
+PWV,PowerShares Dynamic LargeCap Value,US Equity,U.S. Equity,U.S. Large Cap Value Equity,PWV,US Equity
+PXH,PowerShares FTSE RAFI Emerging Markets Portfolio,Foreign Equity,Foreign Emerging Equity,Foreign Emerging Equity,PXH,Alternative
+PZA,PowerShares Insured National Municipal Bond Portfolio,US Fixed Income,U.S. Fixed Income,U.S. Municipal Bond Fixed Income,PZA,Fixed Income
+QQQ,QQQ,US Equity,U.S. Equity,U.S. Large Cap Growth Equity,QQQ,US Equity
+REM,FTSE NAREIT Mortgage REITs Index Fund,Alternative,Alternative,Alternative U.S. Real Estate Equity ,REM,Alternative
+RJA,ELEMENTS Rogers Intl Commodity Agric ETN,Alternative,Alternative,Alternative Commodity Agriculture ,RJA,Alternative
+RJI,ELEMENTS Rogers Intl Commodity ETN,Alternative,Alternative,Alternative Commodity ,RJI,Alternative
+RSP,Guggenheim S&P Equal Weight ETF,US Equity,U.S. Equity,U.S. Large Cap Blend Equity,RSP,US Equity
+RSX,Market Vectors Russia ETF,Foreign Equity,Foreign Emerging Equity,Foreign Emerging Russia Equity,RSX,Fixed Income
+RWM,ProShares Short Russell2000,Alternative,U.S. Equity,U.S. Small Cap Inverse Equity ,RWM,Alternative
+RWO,SPDR DJ Wilshire Global Real Estate ETF,Global Equity,Alternative,Alternative Global Real Estate Equity,RWO,Alternative
+RWR,SPDR DJ Wilshire REIT ETF,Alternative,Alternative,Alternative U.S. Real Estate Equity ,RWR,Alternative
+RWX,SPDR DJ Wilshire Intl Real Estate,Foreign Equity,Alternative,Alternative Global Real Estate Equity,RWX,Alternative
+SBB,ProShares Short SmallCap600,Alternative,U.S. Equity,U.S. Small Cap Inverse Equity,SBB,Alternative
+SCHA,Schwab U.S. Small-Cap ETF,US Equity,U.S. Equity,U.S. Small Cap Blend Equity,SCHA,US Equity
+SCHB,Schwab U.S. Broad Market ETF,US Equity,U.S. Equity,U.S. All Cap Equity,SCHB,US Equity
+SCHD,Schwab US Dividend Equity ETF,US Equity,U.S. Equity,U.S. All Cap Equity,SCHD,US Equity
+SCHE,Schwab Emerging Markets Equity ETF,Foreign Equity,Foreign Emerging Equity,Foreign Emerging Equity,SCHE,Alternative
+SCHF,Schwab International Equity ETF,Foreign Equity,Global Equity,Global Large Cap Equity ,SCHF,Intl Equity
+SCHG,Schwab U.S. Large-Cap Growth ETF,US Equity,U.S. Equity,U.S. Large Cap Growth Equity,SCHG,US Equity
+SCHH,Schwab U.S. REIT ETF,Alternative,Alternative,Alternative U.S. Real Estate Equity ,SCHH,Alternative
+SCHM,Schwab U.S. Mid-Cap ETF,US Equity,U.S. Equity,U.S. Mid Cap Blend Equity ,SCHM,US Equity
+SCHV,Schwab U.S. Large-Cap Value ETF,US Equity,U.S. Equity,U.S. Large Cap Value Equity,SCHV,US Equity
+SCHX,Schwab U.S. Large-Cap ETF,US Equity,U.S. Equity,U.S. Large Cap Blend Equity,SCHX,US Equity
+SCIF,Market Vectors India Small-Cap Index ETF,Foreign Equity,Foreign Emerging Equity,Foreign Emerging India Small Cap Equity,SCIF,Fixed Income
+SCZ,iShares MSCI EAFE Small Cap,Foreign Equity,Foreign Developed Equity,Foreign Developed Small & Mid Cap Equity,SCZ,Intl Equity
+SDIV,Global X SuperDividend ETF,Global Equity,Global Equity,Global Equity ,SDIV,Intl Equity
+SDOG,ALPS Sector Dividend Dogs ETF,US Equity,U.S. Equity,U.S. Large Cap Value Equity,SDOG,US Equity
+SDY,SPDR S&P Dividend ETF,US Equity,U.S. Equity,U.S. Large Cap Value Equity,SDY,US Equity
+SGOL,ETFS Physical Swiss Gold Shares,Alternative,Alternative,Alternative Commodity Precious Metals ,SGOL,Alternative
+SH,ProShares Short S&P500,Alternative,U.S. Equity,U.S. Large Cap Inverse Equity ,SH,US Equity
+SHM,SPDR Barclays Short Term Municipal Bond ETF,US Fixed Income,U.S. Fixed Income,U.S. Municipal Bond Fixed Income,SHM,Fixed Income
+SHV,Barclays Short Treasury Bond Fund,US Fixed Income,U.S. Fixed Income,U.S. Government Bond Fixed Income,SHV,Fixed Income
+SHY,Barclays 1-3 Year Treasury Bond Fund,US Fixed Income,U.S. Fixed Income,U.S. Government Bond Fixed Income,SHY,Fixed Income
+SIL,Global X Silver Miners ETF,Global Equity,Alternative,Alternative Commodity Precious Metals ,SIL,Alternative
+SIVR,ETFS Physical Silver Shares,Alternative,Alternative,Alternative Commodity Precious Metals ,SIVR,Alternative
+SJNK,SPDR Barclays Capital Short Term High Yield Bond ETF,US Fixed Income,U.S. Fixed Income,U.S. High Yield Bond Fixed Income,SJNK,Intl Equity
+SLV,iShares Silver Trust,Alternative,Alternative,Alternative Commodity Precious Metals ,SLV,Alternative
+SMH,Market Vectors Semiconductor ETF,US Equity,U.S. Equity,U.S. Technology Sector Equity ,SMH,US Equity
+SOXX,PHLX SOX Semiconductor Sector Index Fund,US Equity,U.S. Equity,U.S. Technology Sector Equity ,SOXX,US Equity
+SPHB,PowerShares S&P 500 High Beta Portfolio,US Equity,U.S. Equity,U.S. Large Cap Blend Equity,SPHB,Intl Equity
+SPLV,S&P 500 Low Volatility Portfolio,US Equity,U.S. Equity,U.S. Large Cap Blend Equity,SPLV,US Equity
+SPY,SPDR S&P 500,US Equity,U.S. Equity,U.S. Large Cap Blend Equity,SPY,US Equity
+STPZ,PIMCO 1-5 Year U.S. TIPS Index Fund,US Fixed Income,U.S. Fixed Income,U.S. Inflation-Protected Government Bond Fixed Income,STPZ,Fixed Income
+SVXY,ProShares Short VIX Short-Term Futures ETF,Alternative,Alternative,Alternative ST Volatility,SVXY,US Equity
+TAN,Guggenheim Solar ETF ,US Equity,U.S. Equity,U.S. Energy Sector Equity ,TAN,Fixed Income
+TBF,ProShares Short 20+ Year Treasury,Alternative,U.S. Fixed Income,U.S. Inverse Government Bond Fixed Income,TBF,Fixed Income
+TDTT,iBoxx 3-Year Target Duration TIPS Index Fund ,US Fixed Income,U.S. Fixed Income,U.S. Inflation-Protected Government Bond Fixed Income,TDTT,Fixed Income
+TFI,SPDR Barclays Municipal Bond,US Fixed Income,U.S. Fixed Income,U.S. Municipal Bond Fixed Income,TFI,Fixed Income
+THD,iShares MSCI Thailand Index Fund,Foreign Equity,Foreign Emerging Equity,Foreign Emerging Thailand Equity,THD,Alternative
+TIP,Barclays TIPS Bond Fund,US Fixed Income,U.S. Fixed Income,U.S. Inflation-Protected Government Bond Fixed Income,TIP,Fixed Income
+TLT,Barclays 20 Year Treasury Bond Fund,US Fixed Income,U.S. Fixed Income,U.S. Government Bond Fixed Income,TLT,Fixed Income
+TUR,iShares MSCI Turkey Investable Market Index Fund,Foreign Equity,Foreign Emerging Equity,Foreign Emerging Turkey Equity,TUR,Alternative
+UNG,USCF United States Natural Gas Fund LP,Alternative,Alternative,Alternative Commodity Natural Gas,UNG,Fixed Income
+USMV,iShares MSCI USA Minimum Volatility Index Fund,US Equity,U.S. Equity,U.S. All Cap Equity,USMV,US Equity
+USO,USCF United States Oil Fund,Alternative,Alternative,Alternative Commodity Oil ,USO,Alternative
+UUP,PowerShares DB USD Index Bullish,Alternative,Alternative,Alternative U.S. Currency ,UUP,Alternative
+VB,Vanguard Small-Cap ETF,US Equity,U.S. Equity,U.S. Small Cap Blend Equity,VB,US Equity
+VBK,Vanguard Small-Cap Growth ETF,US Equity,U.S. Equity,U.S. Small Cap Growth Equity ,VBK,US Equity
+VBR,Vanguard Small-Cap Value ETF,US Equity,U.S. Equity,U.S. Small Cap Value Equity,VBR,US Equity
+VDC,Vanguard Consumer Staples ETF,US Equity,U.S. Equity,U.S. Consumer Staples Sector Equity ,VDC,US Equity
+VEA,Vanguard Europe Pacific,Foreign Equity,Foreign Developed Equity,Foreign Developed Europe Equity,VEA,Intl Equity
+VEU,Vanguard FTSE All World Ex US ETF,Foreign Equity,Global Equity,Global Foreign Equity,VEU,Intl Equity
+VFH,Vanguard Financials ETF,US Equity,U.S. Equity,U.S. Financial Sector Equity,VFH,US Equity
+VGK,FTSE Europe ETF,Foreign Equity,Foreign Developed Equity,Foreign Developed Europe Equity,VGK,Intl Equity
+VGT,Vanguard Information Tech ETF,US Equity,U.S. Equity,U.S. Technology Sector Equity ,VGT,US Equity
+VHT,Vanguard Health Care ETF,US Equity,U.S. Equity,U.S. Healthcare Sector Equity ,VHT,US Equity
+VIG,Vanguard Dividend Appreciation ETF,US Equity,U.S. Equity,U.S. Large Cap Value Equity,VIG,US Equity
+VIIX,VelocityShares VIX Short-Term ETN,Alternative,Alternative,Alternative ST Volatility,VIIX,Alternative
+VIXY,ProShares VIX Short-Term Futures ETF,Alternative,Alternative,Alternative ST Volatility,VIXY,Alternative
+VNM,Market Vectors Vietnam ETF,Foreign Equity,Foreign Emerging Equity,Foreign Emerging Vietnam Equity,VNM,Fixed Income
+VNQ,Vanguard REIT ETF,Alternative,Alternative,Alternative U.S. Real Estate Equity ,VNQ,Alternative
+VNQI,Vanguard Global ex-U.S. Real Estate Index Fund,Foreign Equity,Alternative,Alternative Global Foreign Real Estate Equity ,VNQI,Alternative
+VO,Vanguard Mid-Cap ETF,US Equity,U.S. Equity,U.S. Mid Cap Blend Equity ,VO,US Equity
+VOE,Vanguard Mid-Cap Value ETF,US Equity,U.S. Equity,U.S. Mid Cap Value Equity ,VOE,US Equity
+VOO,Vanguard S&P 500 ETF,US Equity,U.S. Equity,U.S. Large Cap Blend Equity,VOO,US Equity
+VPL,Vanguard FTSE Pacific ETF,Foreign Equity,Foreign Emerging Equity,Foreign Emerging Asia Pacific Equity,VPL,Intl Equity
+VPU,Vanguard Utilities ETF,US Equity,U.S. Equity,U.S. Utilites Sector Equity ,VPU,US Equity
+VT,Vanguard Total World Stock Index ETF,Global Equity,Global Equity,Global Equity,VT,US Equity
+VTI,Vanguard Total Stock Market ETF,US Equity,U.S. Equity,U.S. All Cap Equity,VTI,US Equity
+VTIP,Vanguard Short-Term Inflation-Protected Securities Index Fund,US Fixed Income,U.S. Fixed Income,U.S. Inflation-Protected Bond Fixed Income,VTIP,Alternative
+VTV,VanguardValue ETF,US Equity,U.S. Equity,U.S. Large Cap Value Equity,VTV,US Equity
+VUG,Vanguard Growth ETF,US Equity,U.S. Equity,U.S. Large Cap Growth Equity,VUG,US Equity
+VV,Vanguard Large-Cap ETF,US Equity,U.S. Equity,U.S. Large Cap Blend Equity,VV,US Equity
+VWO,Vanguard Emerging Markets ETF,Foreign Equity,Foreign Emerging Equity,Foreign Emerging Equity,VWO,Alternative
+VXF,Vanguard Extended Market ETF,US Equity,U.S. Equity,U.S. Mid Cap Blend Equity ,VXF,US Equity
+VXUS,Vanguard Total International Stock ETF,Foreign Equity,Global Equity,Global Foreign Equity,VXUS,Intl Equity
+VXX,S&P 500 VIX Short-Term Futures ETN,Alternative,Alternative,Alternative ST Volatility,VXX,Alternative
+VXZ,iPath S&P 500 VIX Mid-Term Futures ETN,Alternative,Alternative,Alternative ST Volatility,VXZ,Alternative
+VYM,Vanguard High Dividend Yield ETF,US Equity,U.S. Equity,U.S. Large Cap Value Equity,VYM,US Equity
+WIP,SPDR DB International Government Inflation-Protected Bond ETF,Foreign Fixed Income,Global Fixed Income,Global Inflation-Protected Government Bond Fixed Income,WIP,Alternative
+XBI,SPDR S&P Biotech ETF,US Equity,U.S. Equity,U.S. Healthcare Sector Equity ,XBI,US Equity
+XES,SPDR S&P Oil & Gas Equip & Service,US Equity,U.S. Equity,U.S. Energy Sector Equity ,XES,Intl Equity
+XHB,SPDR Homebuilders ETF,US Equity,Alternative,Alternative U.S. Homebuilding Equity ,XHB,US Equity
+XIV,Daily Inverse VIX Short-Term ETN,Alternative,Alternative,Alternative ST Volatility,XIV,US Equity
+XLB,Materials Select Sector SPDR,US Equity,U.S. Equity,U.S. Materials Sector Equity ,XLB,US Equity
+XLE,Energy Select Sector SPDR,US Equity,U.S. Equity,U.S. Energy Sector Equity ,XLE,US Equity
+XLF,Financial Select Sector SPDR,US Equity,U.S. Equity,U.S. Financial Sector Equity,XLF,US Equity
+XLI,Industrial Select Sector SPDR,US Equity,U.S. Equity,U.S. Industrial Sector Equity ,XLI,US Equity
+XLK,Technology Select Sector SPDR,US Equity,U.S. Equity,U.S. Technology Sector Equity ,XLK,US Equity
+XLP,Consumer Staples Select Sector SPDR,US Equity,U.S. Equity,U.S. Consumer Staples Sector Equity ,XLP,US Equity
+XLU,Utilities Select Sector SPDR,US Equity,U.S. Equity,U.S. Utilites Sector Equity ,XLU,Alternative
+XLV,Health Care Select Sector SPDR,US Equity,U.S. Equity,U.S. Healthcare Sector Equity ,XLV,US Equity
+XLY,Consumer Discretionary Select Sector SPDR,US Equity,U.S. Equity,U.S. Consumer Discretionary Sector Equity ,XLY,US Equity
+XME,SPDR S&P Metals & Mining ETF,US Equity,Alternative,Alternative Commodity Precious Metals ,XME,Fixed Income
+XOP,SPDR S&P Oil & Gas Explor & Product,US Equity,U.S. Equity,U.S. Materials Sector Oil Equity,XOP,US Equity
+XRT,SPDR S&P Retail ETF,US Equity,U.S. Equity,U.S. Consumer Discretionary Sector Equity ,XRT,US Equity
+YMLP,Yorkville High Income MLP ETF,Alternative,Alternative,Alternative U.S. MLP Equity,YMLP,US Equity
+ZIV,VelocityShares Daily Inverse VIX Medium-Term ETN,Alternative,Alternative,Alternative ST Volatility,ZIV,US Equity
+AOR,ishares Growth Allocation,Multi-Class,Multi-Class,,AOR,
+AOM,ishares Moderate Allocation,Multi-Class,Multi-Class,,AOM,
+GAL,SPDR SSgA Global Allocation ETF,Multi-Class,Multi-Class,,GAL,
+IJNK,SPDR Barclays International High Yield Bond ETF,Foreign Fixed Income,Foreign Fixed Income,,IJNK,
+RLY,SPDR SSgA Multi-Asset Real Return ETF,Multi-Class,Multi-Class,,RLY,
+INKM,SPDR SSgA Income Allocation ETF,Multi-Class,Multi-Class,,INKM,
+TZV,Ishares S&P Target Date 2040 Fund,Multi-Class,Multi-Class,,,
+TZO,Ishares S&P Target Date 2035 Fund,Multi-Class,Multi-Class,,,
+AOA,ishares Aggressive Allocation,Multi-Class,Multi-Class,,,
+TZD,Ishares S&P Target Date 2010 Fund,Multi-Class,Multi-Class,,,
+TZE,Ishares S&P Target Date 2015 Fund,Multi-Class,Multi-Class,,,
+AOK,Ishares Conservative Allocation,Multi-Class,Multi-Class,,,
+GTAA,Cambria Global Tactical Allocation Fund,Multi-Class,Multi-Class,,,
