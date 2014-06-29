@@ -5,6 +5,16 @@
 
 Created by Benjamin M. Gross
 
+.. note:: General Convention for :mod:`asset_ification`
+
+When passing around
+HDFStore to and from functions, the store is left open if the function
+does not complete.  For this reason (and until I figure out a better
+fix) the general convention is that functions are passed
+:class:`pandas.Series` of training data (tickers, and asset classes)
+and :class:`str` of the paths that lead to stores, so if there is any
+error with the function, the HDFStore can be closed within the exception
+
 """
 
 import argparse
@@ -13,26 +23,63 @@ import numpy
 import os
 import pandas.io.data
 
-def run_classification():
+def run_classification(trained_series, store_path):
     """
     See the classifications as they are run
+
+    :ARGS:
+
+        trained_series: :class:`pandas.Series` of tickers for the
+        :class:`Index` and Asset Classes for ``.values``
+
+        store_path: :class:`str` pointing to the HDFStore of trained
+        data
     """
     etf_list = complete_etf_list()
-    trained_list = pandas.Series.from_csv('../dat/trained_assets.csv')
     notin_trained = numpy.setdiff1d(etf_list.index.tolist(), 
-                                    trained_list.index.tolist())
+                                    trained_series.index.tolist())
     #let 'er rip!
     for ticker in notin_trained:
         try:
             series = tickers_to_dict(ticker)['Adj Close']
-            print find_nearest_neighbors(series, '../dat/trained_data.h5',
-                                         trained_list)
+            print find_nearest_neighbors(series, store_path,
+                                         trained_series)
         except:
             print "Didn't work for " + ticker
 
     return None
-            
-def crosstab_model_accuracy():
+
+def model_accuracy_helper_fn(trained_series, store_path):
+    """
+    Helper function for both of the model accuracy functions
+
+    :ARGS:
+
+        trained_series: :class:`pandas.Series` of tickers for the
+        :class:`Index` and Asset Classes for ``.values``
+
+        store_path: :class:`str` pointing to the HDFStore of trained
+        data
+    """
+    store = pandas.HDFStore(store_path)
+    keys = map(lambda x: x.strip('/'),  store.keys())
+    d = {}
+    for i, key in enumerate(keys):
+        print ('working on ' + key + '\n' + str(i + 1) + 
+               ' of ' + str(len(keys)+ 1))
+        try:
+            series = store.get(key)['Adj Close']
+            #exclude that ticker for testing
+            not_key = trained_series.index != key
+            d[key] = find_nearest_neighbors(series, store,
+                   trained_series[not_key])
+        except:
+            print "Didn't work for " + key
+    if store.is_open:
+        store.close()
+    return pandas.DataFrame(d).tranpose()
+
+def model_accuracy_crosstab(trained_series, store_path):
     """
     Calculate the model accuracy (returned as a confusion matrix) of 
     asset classes that are already known, provided in the 
@@ -49,34 +96,38 @@ def crosstab_model_accuracy():
 
         :class:`pandas.DataFrame` of the confusion matrix
     """
-    trained_list = pandas.Series.from_csv('../dat/trained_assets.csv',
-                                          header = 0)
-    store = pandas.HDFStore('../dat/trained_data.h5', 'r')
-    keys = map(lambda x: x.strip('/'),  store.keys())
-    d = {}
-    for i, key in enumerate(keys):
-        print ('working on ' + key + '\n' + str(i + 1) + 
-               ' of ' + str(len(keys)+ 1))
-        try:
-            series = store.get(key)['Adj Close']
-            #exclude that ticker for testing
-            not_key = trained_list.index != key
-            d[key] = find_nearest_neighbors(series, store,
-                   trained_list[not_key])
-        except:
-            print "Didn't work for " + key
-        
-    store.close()
-    prob_df = pandas.DataFrame(d).transpose()
+    prob_df = model_accuracy_helper_fn(trained_series, store_path)
     algo_results = prob_df.apply(lambda x: x.argmax(), axis = 1)
-    return pandas.crosstab(algo_results, trained_list)
-    
+    return pandas.crosstab(algo_results, trained_series)
 
-def plot_confusion_matrix():
+def model_accuracy_prob_matrix(trained_series, store_path):
+    """
+    Return the trained tickers and their asset class probabilities
+
+    
+    :ARGS:
+
+        trained_series: :class:`pandas.Series` of tickers for the
+        :class:`Index` and Asset Classes for ``.values``
+
+        store_path: :class:`str` pointing to the HDFStore of trained
+        data
+    """
+    return model_accuracy_helper_fn(trained_series, store_path)
+
+def plot_confusion_matrix(trained_series, store_path):
     """
     Plot the confusion matrix
+    
+    :ARGS:
+
+        trained_series: :class:`pandas.Series` of tickers for the
+        :class:`Index` and Asset Classes for ``.values``
+
+        store_path: :class:`str` pointing to the HDFStore of trained
+        data
     """
-    cm = crosstab_model_accuracy()
+    cm = crosstab_model_accuracy(trained_series, store_path)
     cm_pct = cm.apply(lambda x: x/float(x.sum()), axis = 0)
     plt.imshow(cm_pct, interpolation = 'nearest')
     plt.xticks(numpy.arange(len(cm.index)), cm.index)
@@ -86,7 +137,7 @@ def plot_confusion_matrix():
     plt.show()
 
     
-def find_nearest_neighbors(price_series, store, training_series):
+def find_nearest_neighbors(price_series, store, trained_series):
     """
     Calculate the "nearest neighbors" on trained asset class data to 
     determine probabilities the series belongs to given asset classes
@@ -104,9 +155,8 @@ def find_nearest_neighbors(price_series, store, training_series):
         and the values are the asset classes
 
     """
-    ac_freq = training_series.value_counts()
+    ac_freq = trained_series.value_counts()
     #choose k = d + 1, where d is the number of unique asset classes
-    
     k = len(ac_freq) + 1
     
     #if a path is provided, open the store, otherwise it IS a store
@@ -114,14 +164,14 @@ def find_nearest_neighbors(price_series, store, training_series):
         store = pandas.HDFStore(store, 'r')
 
     prob_d = {'r2_adj': [], 'asset_class': [] }
-    for ticker in training_series.index:
+    for ticker in trained_series.index:
         try:
             comp_asset = store.get(ticker)['Adj Close']
             ind = clean_dates(comp_asset, price_series)
             prob_d['r2_adj'].append(adj_r2_uv(
                 comp_asset[ind].apply(numpy.log).diff().dropna(),
                 price_series[ind].apply(numpy.log).diff().dropna()))
-            prob_d['asset_class'].append(training_series[ticker])
+            prob_d['asset_class'].append(trained_series[ticker])
         except:
             print "Did not work for ticker " + ticker
 
@@ -197,6 +247,26 @@ def update_store_prices(path):
     store.close()
     return None
 
+def setup_trained_hdfstore(trained_data, store_path):
+    """
+    The ``HDFStore`` doesn't work properly when it's compiled by different
+    versions, so the appropriate thing to do is to setup the trained data
+    locally (and not store the ``.h5`` file on GitHub).
+
+    :ARGS:
+
+        trained_data: :class:`pandas.Series` with tickers in the index and
+        asset  classes for values -OR- :class:`str` of the path
+        to the trained ticker data (which is formatted thusly)
+
+        store_path: :class:`str` of where to create the ``HDFStore``
+    """
+    if isinstance(trained_data, str):
+        trained_data = pandas.Series(trained_data, header = 0)
+    
+    create_data_store(store_path, trained_data.index)
+    return None
+
 def create_data_store(path, ticker_list):
     """
     Creates the ETF store to run the training of the logistic 
@@ -220,6 +290,7 @@ def create_data_store(path, ticker_list):
     store.close()
 
     if success == 0: #none of it worked, delete the store
+        print "Creation Failed"
         os.remove(path)
     return None
 
@@ -291,7 +362,7 @@ def append_store_prices(ticker_list, path, start = '01/01/1990'):
     store.close()
     return None
 
-def complete_etf_list(path = None):
+def complete_etf_list(write_path = None):
     """
     www.price-data.com has pages with all of the etf tickers
     available on it.  This function acesses each of those pages,
@@ -300,7 +371,7 @@ def complete_etf_list(path = None):
 
     :ARGS:
     
-        path: :class:`string` of the path to save the :class:`DataFrame`
+        write_path: :class:`string` of the path to save the :class:`DataFrame`
         of tickers as a ``.csv``  If ``None`` is provided, only the 
         :class:`pandas.DataFrame` will be returned
     """
