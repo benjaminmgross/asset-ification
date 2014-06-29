@@ -44,7 +44,7 @@ def run_classification(trained_series, store_path):
     for ticker in notin_trained:
         try:
             series = tickers_to_dict(ticker)['Adj Close']
-            print find_nearest_neighbors(series, store_path,
+            print lnchg_nearest_neighbors(series, store_path,
                                          trained_series)
         except:
             print "Didn't work for " + ticker
@@ -75,7 +75,7 @@ def model_accuracy_helper_fn(trained_series, store_path):
             series = store.get(key)['Adj Close']
             #exclude that ticker for testing
             not_key = trained_series.index != key
-            d[key] = find_nearest_neighbors(series, store_path,
+            d[key] = lnchg_nearest_neighbors(series, store_path,
                    trained_series[not_key])
         except:
             print "Didn't work for " + key
@@ -141,7 +141,7 @@ def plot_confusion_matrix(trained_series, store_path):
     plt.show()
 
     
-def find_nearest_neighbors(price_series, store_path, trained_series):
+def lnchg_nearest_neighbors(price_series, store_path, trained_series):
     """
     Calculate the "nearest neighbors" on trained asset class data to 
     determine probabilities the series belongs to given asset classes
@@ -159,6 +159,21 @@ def find_nearest_neighbors(price_series, store_path, trained_series):
         and the values are the asset classes
 
     """
+    return nn_helper_fn(price_series, store_path, trained_series, 'ln_chg')
+
+def nrmdp_nearest_neighbor(price_series, store_path, trained_series):
+    
+    return nn_helper_fn(price_series, store_path, trained_series, 'nrmdp')
+
+def nn_helper_fn(price_series, store_path, trained_series, calc_meth):
+    """
+    Helper Function to allow for different calculation values for the 
+    nearest neighbor algorithm
+    
+    """
+    fun_d = {'ln_chg':lambda x: x.apply(numpy.log).diff().dropna(),
+             'nrmdp':lambda x: (x - x.mean())/x.std()}
+
     ac_freq = trained_series.value_counts()
     #choose k = d + 1, where d is the number of unique asset classes
     k = len(ac_freq) + 1
@@ -176,8 +191,7 @@ def find_nearest_neighbors(price_series, store_path, trained_series):
             y = price_series[ind]
 
             prob_d['r2_adj'].append(adj_r2_uv(
-                x.apply(numpy.log).diff().dropna(),
-                y.apply(numpy.log).diff().dropna()))
+                fun_d[calc_meth](x), fun_d[calc_meth](y)))
             prob_d['asset_class'].append(trained_series[ticker])
         except:
             print "Did not work for ticker " + ticker
@@ -186,7 +200,6 @@ def find_nearest_neighbors(price_series, store_path, trained_series):
     prob_df.sort(columns = ['r2_adj'], ascending = False, inplace = True)
     store.close()
     return prob_df['asset_class'][:k].value_counts()/float(k)
-
 
 def clean_dates(arr_a, arr_b):
     """
