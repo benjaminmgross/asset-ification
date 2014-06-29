@@ -18,10 +18,12 @@ error with the function, the HDFStore can be closed within the exception
 """
 
 import argparse
-import pandas
+import datetime
 import numpy
-import os
+import pandas
 import pandas.io.data
+import os
+
 
 def run_classification(trained_series, store_path):
     """
@@ -137,7 +139,7 @@ def plot_confusion_matrix(trained_series, store_path):
     plt.show()
 
     
-def find_nearest_neighbors(price_series, store, trained_series):
+def find_nearest_neighbors(price_series, store_path, trained_series):
     """
     Calculate the "nearest neighbors" on trained asset class data to 
     determine probabilities the series belongs to given asset classes
@@ -147,7 +149,7 @@ def find_nearest_neighbors(price_series, store, trained_series):
         series: :class:`pandas.Series` of prices
    
 
-        store: :class:`string` of a store path or an actual store
+        store_path: :class:`string` of a store path or an actual store
         of the trained  asset class prices (each ticker should also 
         appear in the  ``.csv`` located at ``training_file_path``
 
@@ -160,8 +162,8 @@ def find_nearest_neighbors(price_series, store, trained_series):
     k = len(ac_freq) + 1
     
     #if a path is provided, open the store, otherwise it IS a store
-    if isinstance(store, str):
-        store = pandas.HDFStore(store, 'r')
+
+    store = pandas.HDFStore(store_path, 'r')
 
     prob_d = {'r2_adj': [], 'asset_class': [] }
     for ticker in trained_series.index:
@@ -204,14 +206,14 @@ def clean_dates(arr_a, arr_b):
     else:
         return arr_a.index
 
-def update_store_prices(path):
+def update_store_prices(store_path):
     """
     Update to the most recent prices for all keys of an existing store, 
     located at path ``path``.
 
     :ARGS:
 
-        path: :class:`string` the location of the ``HDFStore`` file
+        store_path: :class:`string` the location of the ``HDFStore`` file
 
     :RETURNS:
 
@@ -224,7 +226,7 @@ def update_store_prices(path):
     
     today_str = strftime(datetime.datetime.today(), format = '%m/%d/%Y')
     try:
-        store = pandas.HDFStore(path = path, mode = 'r+')
+        store = pandas.HDFStore(path = store_path, mode = 'r+')
     except IOError:
         print  path + " is not a valid path to an HDFStore Object"
         return
@@ -267,10 +269,16 @@ def setup_trained_hdfstore(trained_data, store_path):
     create_data_store(store_path, trained_data.index)
     return None
 
-def create_data_store(path, ticker_list):
+def create_data_store(ticker_liststore_path):
     """
     Creates the ETF store to run the training of the logistic 
     classificaiton tree
+
+    :ARGS:
+    
+        ticker_list: iterable of tickers
+
+        store_path: :class:`str` of path to ``HDFStore``
     """
     #check to make sure the store doesn't already exist
     if os.path.isfile(path):
@@ -322,7 +330,7 @@ def first_valid_date(prices):
         return
 
 
-def append_store_prices(ticker_list, path, start = '01/01/1990'):
+def append_store_prices(ticker_list, store_path, start = '01/01/1990'):
     """
     Given an existing store located at ``path``, check to make sure
     the tickers in ``ticker_list`` are not already in the data
@@ -333,7 +341,7 @@ def append_store_prices(ticker_list, path, start = '01/01/1990'):
         ticker_list: :class:`list` of tickers to add to the
         :class:`pandas.HDStore`
 
-        path: :class:`string` of the path to the     
+        store_path: :class:`string` of the path to the     
         :class:`pandas.HDStore`
 
         start: :class:`string` of the date to begin the price data
@@ -344,7 +352,7 @@ def append_store_prices(ticker_list, path, start = '01/01/1990'):
          successes ands failures
     """
     try:
-        store = pandas.HDFStore(path = path,  mode = 'a')
+        store = pandas.HDFStore(path = store_path,  mode = 'a')
     except IOError:
         print  path + " is not a valid path to an HDFStore Object"
         return
