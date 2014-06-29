@@ -63,9 +63,11 @@ def model_accuracy_helper_fn(trained_series, store_path):
         store_path: :class:`str` pointing to the HDFStore of trained
         data
     """
-    store = pandas.HDFStore(store_path)
+    store = pandas.HDFStore(store_path, 'r')
     keys = map(lambda x: x.strip('/'),  store.keys())
     d = {}
+    import pdb
+    pdb.set_trace()
     for i, key in enumerate(keys):
         print ('working on ' + key + '\n' + str(i + 1) + 
                ' of ' + str(len(keys)+ 1))
@@ -73,13 +75,13 @@ def model_accuracy_helper_fn(trained_series, store_path):
             series = store.get(key)['Adj Close']
             #exclude that ticker for testing
             not_key = trained_series.index != key
-            d[key] = find_nearest_neighbors(series, store,
+            d[key] = find_nearest_neighbors(series, store_path,
                    trained_series[not_key])
         except:
             print "Didn't work for " + key
     if store.is_open:
         store.close()
-    return pandas.DataFrame(d).tranpose()
+    return pandas.DataFrame(d).transpose()
 
 def model_accuracy_crosstab(trained_series, store_path):
     """
@@ -170,15 +172,19 @@ def find_nearest_neighbors(price_series, store_path, trained_series):
         try:
             comp_asset = store.get(ticker)['Adj Close']
             ind = clean_dates(comp_asset, price_series)
+            x = comp_asset[ind]
+            y = price_series[ind]
+
             prob_d['r2_adj'].append(adj_r2_uv(
-                comp_asset[ind].apply(numpy.log).diff().dropna(),
-                price_series[ind].apply(numpy.log).diff().dropna()))
+                x.apply(numpy.log).diff().dropna(),
+                y.apply(numpy.log).diff().dropna()))
             prob_d['asset_class'].append(trained_series[ticker])
         except:
             print "Did not work for ticker " + ticker
 
     prob_df = pandas.DataFrame(prob_d)
     prob_df.sort(columns = ['r2_adj'], ascending = False, inplace = True)
+    store.close()
     return prob_df['asset_class'][:k].value_counts()/float(k)
 
 
@@ -258,18 +264,15 @@ def setup_trained_hdfstore(trained_data, store_path):
     :ARGS:
 
         trained_data: :class:`pandas.Series` with tickers in the index and
-        asset  classes for values -OR- :class:`str` of the path
-        to the trained ticker data (which is formatted thusly)
+        asset  classes for values 
 
         store_path: :class:`str` of where to create the ``HDFStore``
     """
-    if isinstance(trained_data, str):
-        trained_data = pandas.Series(trained_data, header = 0)
     
-    create_data_store(store_path, trained_data.index)
+    create_data_store(trained_data.index, store_path)
     return None
 
-def create_data_store(ticker_liststore_path):
+def create_data_store(ticker_list, store_path):
     """
     Creates the ETF store to run the training of the logistic 
     classificaiton tree
@@ -281,11 +284,11 @@ def create_data_store(ticker_liststore_path):
         store_path: :class:`str` of path to ``HDFStore``
     """
     #check to make sure the store doesn't already exist
-    if os.path.isfile(path):
-        print "File " + path + " already exists"
+    if os.path.isfile(store_path):
+        print "File " + store_path + " already exists"
         return
     
-    store = pandas.HDFStore(path, 'w')
+    store = pandas.HDFStore(store_path, 'w')
     success = 0
     for ticker in ticker_list:
         try:
