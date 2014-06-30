@@ -51,7 +51,7 @@ def run_classification(trained_series, store_path):
 
     return None
 
-def model_accuracy_helper_fn(trained_series, store_path):
+def model_accuracy_helper_fn(trained_series, store_path, calc_meth):
     """
     Helper function for both of the model accuracy functions
 
@@ -66,8 +66,6 @@ def model_accuracy_helper_fn(trained_series, store_path):
     store = pandas.HDFStore(store_path, 'r')
     keys = map(lambda x: x.strip('/'),  store.keys())
     d = {}
-    import pdb
-    pdb.set_trace()
     for i, key in enumerate(keys):
         print ('working on ' + key + '\n' + str(i + 1) + 
                ' of ' + str(len(keys)+ 1))
@@ -75,15 +73,15 @@ def model_accuracy_helper_fn(trained_series, store_path):
             series = store.get(key)['Adj Close']
             #exclude that ticker for testing
             not_key = trained_series.index != key
-            d[key] = lnchg_nearest_neighbors(series, store_path,
-                   trained_series[not_key])
+            d[key] = nn_helper_fn(series, store_path, 
+                trained_series[not_key], calc_meth)
         except:
             print "Didn't work for " + key
     if store.is_open:
         store.close()
     return pandas.DataFrame(d).transpose()
 
-def model_accuracy_crosstab(trained_series, store_path):
+def model_accuracy_crosstab(trained_series, store_path, calc_meth):
     """
     Calculate the model accuracy (returned as a confusion matrix) of 
     asset classes that are already known, provided in the 
@@ -100,11 +98,11 @@ def model_accuracy_crosstab(trained_series, store_path):
 
         :class:`pandas.DataFrame` of the confusion matrix
     """
-    prob_df = model_accuracy_helper_fn(trained_series, store_path)
+    prob_df = model_accuracy_helper_fn(trained_series, store_path, calc_meth)
     algo_results = prob_df.apply(lambda x: x.argmax(), axis = 1)
     return pandas.crosstab(algo_results, trained_series)
 
-def model_accuracy_prob_matrix(trained_series, store_path):
+def model_accuracy_prob_matrix(trained_series, store_path, calc_meth):
     """
     Return the trained tickers and their asset class probabilities
 
@@ -117,9 +115,9 @@ def model_accuracy_prob_matrix(trained_series, store_path):
         store_path: :class:`str` pointing to the HDFStore of trained
         data
     """
-    return model_accuracy_helper_fn(trained_series, store_path)
+    return model_accuracy_helper_fn(trained_series, store_path, calc_meth)
 
-def plot_confusion_matrix(trained_series, store_path):
+def plot_confusion_matrix(trained_series, store_path, calc_meth):
     """
     Plot the confusion matrix
     
@@ -131,7 +129,7 @@ def plot_confusion_matrix(trained_series, store_path):
         store_path: :class:`str` pointing to the HDFStore of trained
         data
     """
-    cm = crosstab_model_accuracy(trained_series, store_path)
+    cm = crosstab_model_accuracy(trained_series, store_path, calc_meth)
     cm_pct = cm.apply(lambda x: x/float(x.sum()), axis = 0)
     plt.imshow(cm_pct, interpolation = 'nearest')
     plt.xticks(numpy.arange(len(cm.index)), cm.index)
@@ -172,7 +170,8 @@ def nn_helper_fn(price_series, store_path, trained_series, calc_meth):
     
     """
     fun_d = {'ln_chg':lambda x: x.apply(numpy.log).diff().dropna(),
-             'nrmdp':lambda x: (x - x.mean())/x.std()}
+             'nrmdp':lambda x: (x - x.mean())/x.std(),
+             'na': lambda x: x,}
 
     ac_freq = trained_series.value_counts()
     #choose k = d + 1, where d is the number of unique asset classes
@@ -199,7 +198,15 @@ def nn_helper_fn(price_series, store_path, trained_series, calc_meth):
     prob_df = pandas.DataFrame(prob_d)
     prob_df.sort(columns = ['r2_adj'], ascending = False, inplace = True)
     store.close()
-    return prob_df['asset_class'][:k].value_counts()/float(k)
+    
+    #apply the weighting scheme
+    df = prob_df.iloc[:k, :]
+    wts = numpy.exp(numpy.exp(df['r2_adj']))
+    df['weight'] = wts/wts.sum()
+    return df.groupby('asset_class').sum()['weight']
+    
+    
+#    return prob_df['asset_class'][:k].value_counts()/float(k)
 
 def clean_dates(arr_a, arr_b):
     """

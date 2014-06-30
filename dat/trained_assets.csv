@@ -85,7 +85,7 @@ EWY,Foreign Equity
 EWZ,Foreign Equity
 EZA,Foreign Equity
 EZU,Foreign Equity
-FCG,Alternative
+FCG,US Equity
 FDL,US Equity
 FDN,US Equity
 FEM,Foreign Equity
@@ -134,8 +134,8 @@ IEMG,Foreign Equity
 IEO,US Equity
 IEV,Foreign Equity
 IEZ,US Equity
-IFGL,Alternative
-IGE,Global Equity
+IFGL,Foreign Equity
+IGE,US Equity
 IGF,Global Equity
 IGN,US Equity
 IJH,US Equity

@@ -85,7 +85,7 @@ EWY,iShares MSCI South Korea Index Fund,Foreign Equity,Foreign Developed Equity,
 EWZ,iShares MSCI Brazil Capped ETF,Foreign Equity,Foreign Emerging Equity,Foreign Emerging Brazil Equity,EWZ,Fixed Income
 EZA,iShares MSCI South Africa Index Fund,Foreign Equity,Foreign Emerging Equity,Foreign Emerging South Africa Equity,EZA,Alternative
 EZU,iShares MSCI EMU Index Fund,Foreign Equity,Foreign Developed Equity,Foreign Developed Europe Equity,EZU,Intl Equity
-FCG,First Trust ISE-Revere Natural Gas Index Fund,Alternative,Alternative,Alternative U.S. Materials Sector Natural Gas Equity ,FCG,Alternative
+FCG,First Trust ISE-Revere Natural Gas Index Fund,US Equity,Alternative,Alternative U.S. Materials Sector Natural Gas Equity ,FCG,Alternative
 FDL,First Trust Morningstar Dividend Leaders Index Fund,US Equity,U.S. Equity,U.S. Large Cap Value Equity,FDL,US Equity
 FDN,First Trust DJ Internet Index Fund,US Equity,U.S. Equity,U.S. Technology Sector Equity ,FDN,US Equity
 FEM,First Trust Emerging Markets AlphaDEX Fund,Foreign Equity,Foreign Emerging Equity,Foreign Emerging Equity,FEM,Intl Equity
@@ -134,8 +134,8 @@ IEMG,Core iShares MSCI Emerging Markets ETF,Foreign Equity,Foreign Emerging Equi
 IEO,iShares Dow Jones U.S. Oil & Gas Exploration & Production Index Fund,US Equity,U.S. Equity,U.S. Energy Sector Equity ,IEO,US Equity
 IEV,iShares S&P Europe 350 Index Fund,Foreign Equity,Foreign Developed Equity,Foreign Developed Europe Equity,IEV,Intl Equity
 IEZ,iShares Dow Jones U.S. Oil Equipment & Services Index Fund,US Equity,U.S. Equity,U.S. Energy Sector Equity ,IEZ,Intl Equity
-IFGL,iShares FTSE EPRA/NAREIT Global Real Estate ex-U.S. Index Fund,Alternative,Global Equity,Global Foreign Real Estate Equity,IFGL,Alternative
-IGE,iShares S&P North American Natural Resources Sector Index Fund,Global Equity,Global Equity,Global North American Materials Sector Equity,IGE,Intl Equity
+IFGL,iShares FTSE EPRA/NAREIT Global Real Estate ex-U.S. Index Fund,Foreign Equity,Global Equity,Global Foreign Real Estate Equity,IFGL,Alternative
+IGE,iShares S&P North American Natural Resources Sector Index Fund,US Equity,Global Equity,Global North American Materials Sector Equity,IGE,Intl Equity
 IGF,iShares S&P Global Infrastructure,Global Equity,Global Equity,Global Infrastruture Equity,IGF,US Equity
 IGN,iShares S&P North American Technology-Multimedia Networking Index Fund,US Equity,U.S. Equity,U.S. Technology Sector Equity ,IGN,Intl Equity
 IJH,iShares Core S&P Mid-Cap ETF,US Equity,U.S. Equity,U.S. Mid Cap Core Equity ,IJH,US Equity
@@ -219,7 +219,7 @@ PWV,PowerShares Dynamic LargeCap Value,US Equity,U.S. Equity,U.S. Large Cap Valu
 PXH,PowerShares FTSE RAFI Emerging Markets Portfolio,Foreign Equity,Foreign Emerging Equity,Foreign Emerging Equity,PXH,Alternative
 PZA,PowerShares Insured National Municipal Bond Portfolio,US Fixed Income,U.S. Fixed Income,U.S. Municipal Bond Fixed Income,PZA,Fixed Income
 QQQ,QQQ,US Equity,U.S. Equity,U.S. Large Cap Growth Equity,QQQ,US Equity
-REM,FTSE NAREIT Mortgage REITs Index Fund,Alternative,Alternative,Alternative U.S. Real Estate Equity ,REM,Alternative
+REM,FTSE NAREIT Mortgage REITs Index Fund,Alternative,Alternative,Alternative Mortgage REIT,REM,Alternative
 RJA,ELEMENTS Rogers Intl Commodity Agric ETN,Alternative,Alternative,Alternative Commodity Agriculture ,RJA,Alternative
 RJI,ELEMENTS Rogers Intl Commodity ETN,Alternative,Alternative,Alternative Commodity ,RJI,Alternative
 RSP,Guggenheim S&P Equal Weight ETF,US Equity,U.S. Equity,U.S. Large Cap Blend Equity,RSP,US Equity
