@@ -1,0 +1,521 @@
+
+
+<!DOCTYPE html>
+<!--[if IE 8]><html class="no-js lt-ie9" lang="en" > <![endif]-->
+<!--[if gt IE 8]><!--> <html class="no-js" lang="en" > <!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  
+  <title>asset-ification &mdash; asset-ification 0.0.1 documentation</title>
+  
+
+  
+  
+
+  
+  <link href='https://fonts.googleapis.com/css?family=Lato:400,700|Roboto+Slab:400,700|Inconsolata:400,700' rel='stylesheet' type='text/css'>
+
+  
+  
+    
+
+  
+
+  
+  
+    <link rel="stylesheet" href="_static/css/theme.css" type="text/css" />
+  
+
+  
+    <link rel="top" title="asset-ification 0.0.1 documentation" href="index.html"/>
+        <link rel="prev" title="README.md" href="readme.html"/> 
+
+  
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/modernizr/2.6.2/modernizr.min.js"></script>
+
+</head>
+
+<body class="wy-body-for-nav" role="document">
+
+  <div class="wy-grid-for-nav">
+
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-nav-search">
+        <a href="index.html" class="fa fa-home"> asset-ification</a>
+        <div role="search">
+  <form id ="rtd-search-form" class="wy-form" action="search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+      </div>
+
+      <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+        
+        
+            <ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="readme.html">README.md</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="readme.html#introduction">Introduction</a></li>
+<li class="toctree-l2"><a class="reference internal" href="readme.html#installation">Installation</a></li>
+<li class="toctree-l2"><a class="reference internal" href="readme.html#up-and-running">Up and Running</a></li>
+<li class="toctree-l2"><a class="reference internal" href="readme.html#to-do">To Do</a></li>
+</ul>
+</li>
+<li class="toctree-l1 current"><a class="current reference internal" href="">asset-ification</a></li>
+</ul>
+
+        
+      </div>
+      &nbsp;
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" role="navigation" aria-label="top navigation">
+        <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+        <a href="index.html">asset-ification</a>
+      </nav>
+
+
+      
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="breadcrumbs navigation">
+  <ul class="wy-breadcrumbs">
+    <li><a href="index.html">Docs</a> &raquo;</li>
+      
+    <li>asset-ification</li>
+      <li class="wy-breadcrumbs-aside">
+        
+          <a href="_sources/my_file.txt" rel="nofollow"> View page source</a>
+        
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main">
+            
+  <div class="section" id="module-asset_ification.asset_ification">
+<span id="asset-ification"></span><h1>asset-ification<a class="headerlink" href="#module-asset_ification.asset_ification" title="Permalink to this headline">¶</a></h1>
+<span class="target" id="module-asset_ification.py"></span><p>Created by Benjamin M. Gross</p>
+<div class="admonition note">
+<p class="first admonition-title">Note</p>
+<p class="last">General Convention for <tt class="xref py py-mod docutils literal"><span class="pre">asset_ification</span></tt></p>
+</div>
+<p>When passing around
+HDFStore to and from functions, the store is left open if the function
+does not complete.  For this reason (and until I figure out a better
+fix) the general convention is that functions are passed
+<tt class="xref py py-class docutils literal"><span class="pre">pandas.Series</span></tt> of training data (tickers, and asset classes)
+and <tt class="xref py py-class docutils literal"><span class="pre">str</span></tt> of the paths that lead to stores, so if there is any
+error with the function, the HDFStore can be closed within the exception</p>
+<dl class="function">
+<dt id="asset_ification.asset_ification.adj_r2_mv">
+<tt class="descclassname">asset_ification.asset_ification.</tt><tt class="descname">adj_r2_mv</tt><big>(</big><em>x</em>, <em>y</em><big>)</big><a class="reference internal" href="_modules/asset_ification/asset_ification.html#adj_r2_mv"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#asset_ification.asset_ification.adj_r2_mv" title="Permalink to this definition">¶</a></dt>
+<dd><p>Returns the adjusted R-Squared for multivariate regression</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="asset_ification.asset_ification.adj_r2_uv">
+<tt class="descclassname">asset_ification.asset_ification.</tt><tt class="descname">adj_r2_uv</tt><big>(</big><em>x</em>, <em>y</em><big>)</big><a class="reference internal" href="_modules/asset_ification/asset_ification.html#adj_r2_uv"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#asset_ification.asset_ification.adj_r2_uv" title="Permalink to this definition">¶</a></dt>
+<dd><p>Returns the adjusted R-Squared for multivariate regression</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="asset_ification.asset_ification.append_store_prices">
+<tt class="descclassname">asset_ification.asset_ification.</tt><tt class="descname">append_store_prices</tt><big>(</big><em>ticker_list</em>, <em>store_path</em>, <em>start='01/01/1990'</em><big>)</big><a class="reference internal" href="_modules/asset_ification/asset_ification.html#append_store_prices"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#asset_ification.asset_ification.append_store_prices" title="Permalink to this definition">¶</a></dt>
+<dd><p>Given an existing store located at <tt class="docutils literal"><span class="pre">path</span></tt>, check to make sure
+the tickers in <tt class="docutils literal"><span class="pre">ticker_list</span></tt> are not already in the data
+set, and then insert the tickers into the store.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">ARGS:</th><td class="field-body"><p class="first">ticker_list: <tt class="xref py py-class docutils literal"><span class="pre">list</span></tt> of tickers to add to the
+<tt class="xref py py-class docutils literal"><span class="pre">pandas.HDStore</span></tt></p>
+<p>store_path: <tt class="xref py py-class docutils literal"><span class="pre">string</span></tt> of the path to the     
+<tt class="xref py py-class docutils literal"><span class="pre">pandas.HDStore</span></tt></p>
+<p>start: <tt class="xref py py-class docutils literal"><span class="pre">string</span></tt> of the date to begin the price data</p>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">RETURNS:</th><td class="field-body"><dl class="first last docutils">
+<dt><tt class="xref py py-class docutils literal"><span class="pre">NoneType</span></tt> but appends the store and comments the</dt>
+<dd><p class="first last">successes ands failures</p>
+</dd>
+</dl>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="function">
+<dt id="asset_ification.asset_ification.clean_dates">
+<tt class="descclassname">asset_ification.asset_ification.</tt><tt class="descname">clean_dates</tt><big>(</big><em>arr_a</em>, <em>arr_b</em><big>)</big><a class="reference internal" href="_modules/asset_ification/asset_ification.html#clean_dates"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#asset_ification.asset_ification.clean_dates" title="Permalink to this definition">¶</a></dt>
+<dd><p>Return the intersection of two <tt class="xref py py-class docutils literal"><span class="pre">pandas</span></tt> objects, either a
+<tt class="xref py py-class docutils literal"><span class="pre">pandas.Series</span></tt> or a <tt class="xref py py-class docutils literal"><span class="pre">pandas.DataFrame</span></tt></p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">ARGS:</th><td class="field-body">arr_a: <tt class="xref py py-class docutils literal"><span class="pre">pandas.DataFrame</span></tt> or <tt class="xref py py-class docutils literal"><span class="pre">pandas.Series</span></tt>
+arr_b: <tt class="xref py py-class docutils literal"><span class="pre">pandas.DataFrame</span></tt> or <tt class="xref py py-class docutils literal"><span class="pre">pandas.Series</span></tt></td>
+</tr>
+<tr class="field-even field"><th class="field-name">RETURNS:</th><td class="field-body"><tt class="xref py py-class docutils literal"><span class="pre">pandas.DatetimeIndex</span></tt> of the intersection of the two 
+<tt class="xref py py-class docutils literal"><span class="pre">pandas</span></tt> objects</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="function">
+<dt id="asset_ification.asset_ification.compare_knn_svm">
+<tt class="descclassname">asset_ification.asset_ification.</tt><tt class="descname">compare_knn_svm</tt><big>(</big><em>ticker_list</em>, <em>store_path</em><big>)</big><a class="reference internal" href="_modules/asset_ification/asset_ification.html#compare_knn_svm"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#asset_ification.asset_ification.compare_knn_svm" title="Permalink to this definition">¶</a></dt>
+<dd><p>Yes, I&#8217;m officially losing my mind, but who isn&#8217;t.  I mean, why
+<strong>shouldn&#8217;t</strong> I compare the out of sample performance of a 338 
+dimensional svm with my knn algorithm... makes total sense, fuck off</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="asset_ification.asset_ification.complete_etf_list">
+<tt class="descclassname">asset_ification.asset_ification.</tt><tt class="descname">complete_etf_list</tt><big>(</big><em>write_path=None</em><big>)</big><a class="reference internal" href="_modules/asset_ification/asset_ification.html#complete_etf_list"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#asset_ification.asset_ification.complete_etf_list" title="Permalink to this definition">¶</a></dt>
+<dd><p>www.price-data.com has pages with all of the etf tickers
+available on it.  This function acesses each of those pages,
+stores the values to <tt class="xref py py-class docutils literal"><span class="pre">pandas.DataFrame</span></tt> and saves to
+file</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">ARGS:</th><td class="field-body">write_path: <tt class="xref py py-class docutils literal"><span class="pre">string</span></tt> of the path to save the <tt class="xref py py-class docutils literal"><span class="pre">DataFrame</span></tt>
+of tickers as a <tt class="docutils literal"><span class="pre">.csv</span></tt>  If <tt class="docutils literal"><span class="pre">None</span></tt> is provided, only the 
+<tt class="xref py py-class docutils literal"><span class="pre">pandas.DataFrame</span></tt> will be returned</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="function">
+<dt id="asset_ification.asset_ification.create_data_store">
+<tt class="descclassname">asset_ification.asset_ification.</tt><tt class="descname">create_data_store</tt><big>(</big><em>ticker_list</em>, <em>store_path</em><big>)</big><a class="reference internal" href="_modules/asset_ification/asset_ification.html#create_data_store"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#asset_ification.asset_ification.create_data_store" title="Permalink to this definition">¶</a></dt>
+<dd><p>Creates the ETF store to run the training of the logistic 
+classificaiton tree</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">ARGS:</th><td class="field-body"><p class="first">ticker_list: iterable of tickers</p>
+<p class="last">store_path: <tt class="xref py py-class docutils literal"><span class="pre">str</span></tt> of path to <tt class="docutils literal"><span class="pre">HDFStore</span></tt></p>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="function">
+<dt id="asset_ification.asset_ification.first_valid_date">
+<tt class="descclassname">asset_ification.asset_ification.</tt><tt class="descname">first_valid_date</tt><big>(</big><em>prices</em><big>)</big><a class="reference internal" href="_modules/asset_ification/asset_ification.html#first_valid_date"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#asset_ification.asset_ification.first_valid_date" title="Permalink to this definition">¶</a></dt>
+<dd><p>Helper function to determine the first valid date from a set of 
+different prices Can take either a <a class="reference external" href="http://docs.python.org/library/stdtypes.html#dict" title="(in Python v2.7)"><tt class="xref py py-class docutils literal"><span class="pre">dict</span></tt></a> of 
+<tt class="xref py py-class docutils literal"><span class="pre">pandas.DataFrame`s</span> <span class="pre">where</span> <span class="pre">each</span> <span class="pre">key</span> <span class="pre">is</span> <span class="pre">a</span> <span class="pre">ticker's</span> <span class="pre">'Open',</span> 
+<span class="pre">'High',</span> <span class="pre">'Low',</span> <span class="pre">'Close',</span> <span class="pre">'Adj</span> <span class="pre">Close'</span> <span class="pre">or</span> <span class="pre">a</span> <span class="pre">single</span> 
+<span class="pre">:class:`pandas.DataFrame</span></tt> where each column is a different ticker</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">ARGS:</th><td class="field-body">prices: either <tt class="xref py py-class docutils literal"><span class="pre">dictionary</span></tt> or <tt class="xref py py-class docutils literal"><span class="pre">pandas.DataFrame</span></tt></td>
+</tr>
+<tr class="field-even field"><th class="field-name">RETURNS:</th><td class="field-body"><tt class="xref py py-class docutils literal"><span class="pre">pandas.Timestamp</span></tt></td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="function">
+<dt id="asset_ification.asset_ification.lnchg_nearest_neighbors">
+<tt class="descclassname">asset_ification.asset_ification.</tt><tt class="descname">lnchg_nearest_neighbors</tt><big>(</big><em>price_series</em>, <em>store_path</em>, <em>trained_series</em><big>)</big><a class="reference internal" href="_modules/asset_ification/asset_ification.html#lnchg_nearest_neighbors"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#asset_ification.asset_ification.lnchg_nearest_neighbors" title="Permalink to this definition">¶</a></dt>
+<dd><p>Calculate the &#8220;nearest neighbors&#8221; on trained asset class data to 
+determine probabilities the series belongs to given asset classes</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">ARGS:</th><td class="field-body"><p class="first">series: <tt class="xref py py-class docutils literal"><span class="pre">pandas.Series</span></tt> of prices</p>
+<p>store_path: <tt class="xref py py-class docutils literal"><span class="pre">string</span></tt> of a store path or an actual store
+of the trained  asset class prices (each ticker should also 
+appear in the  <tt class="docutils literal"><span class="pre">.csv</span></tt> located at <tt class="docutils literal"><span class="pre">training_file_path</span></tt></p>
+<p class="last">training_series: <tt class="xref py py-class docutils literal"><span class="pre">series</span></tt> where Index is the tickers 
+and the values are the asset classes</p>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="function">
+<dt id="asset_ification.asset_ification.model_accuracy_crosstab">
+<tt class="descclassname">asset_ification.asset_ification.</tt><tt class="descname">model_accuracy_crosstab</tt><big>(</big><em>trained_series</em>, <em>store_path</em>, <em>calc_meth</em><big>)</big><a class="reference internal" href="_modules/asset_ification/asset_ification.html#model_accuracy_crosstab"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#asset_ification.asset_ification.model_accuracy_crosstab" title="Permalink to this definition">¶</a></dt>
+<dd><p>Calculate the model accuracy (returned as a confusion matrix) of 
+asset classes that are already known, provided in the 
+<tt class="docutils literal"><span class="pre">training_series</span></tt>.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">ARGS:</th><td class="field-body"><p class="first">store_path: <tt class="xref py py-class docutils literal"><span class="pre">string</span></tt> to the HDFStore of asset</p>
+<p>training_series: <tt class="xref py py-class docutils literal"><span class="pre">series</span></tt> where Index is the tickers 
+and the values are the asset classes</p>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">RETURNS:</th><td class="field-body"><p class="first last"><tt class="xref py py-class docutils literal"><span class="pre">pandas.DataFrame</span></tt> of the confusion matrix</p>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="function">
+<dt id="asset_ification.asset_ification.model_accuracy_helper_fn">
+<tt class="descclassname">asset_ification.asset_ification.</tt><tt class="descname">model_accuracy_helper_fn</tt><big>(</big><em>trained_series</em>, <em>store_path</em>, <em>calc_meth</em><big>)</big><a class="reference internal" href="_modules/asset_ification/asset_ification.html#model_accuracy_helper_fn"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#asset_ification.asset_ification.model_accuracy_helper_fn" title="Permalink to this definition">¶</a></dt>
+<dd><p>Helper function for both of the model accuracy functions</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">ARGS:</th><td class="field-body"><p class="first">trained_series: <tt class="xref py py-class docutils literal"><span class="pre">pandas.Series</span></tt> of tickers for the
+<tt class="xref py py-class docutils literal"><span class="pre">Index</span></tt> and Asset Classes for <tt class="docutils literal"><span class="pre">.values</span></tt></p>
+<p class="last">store_path: <tt class="xref py py-class docutils literal"><span class="pre">str</span></tt> pointing to the HDFStore of trained
+data</p>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="function">
+<dt id="asset_ification.asset_ification.model_accuracy_prob_matrix">
+<tt class="descclassname">asset_ification.asset_ification.</tt><tt class="descname">model_accuracy_prob_matrix</tt><big>(</big><em>trained_series</em>, <em>store_path</em>, <em>calc_meth</em><big>)</big><a class="reference internal" href="_modules/asset_ification/asset_ification.html#model_accuracy_prob_matrix"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#asset_ification.asset_ification.model_accuracy_prob_matrix" title="Permalink to this definition">¶</a></dt>
+<dd><p>Return the trained tickers and their asset class probabilities</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">ARGS:</th><td class="field-body"><p class="first">trained_series: <tt class="xref py py-class docutils literal"><span class="pre">pandas.Series</span></tt> of tickers for the
+<tt class="xref py py-class docutils literal"><span class="pre">Index</span></tt> and Asset Classes for <tt class="docutils literal"><span class="pre">.values</span></tt></p>
+<p class="last">store_path: <tt class="xref py py-class docutils literal"><span class="pre">str</span></tt> pointing to the HDFStore of trained
+data</p>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="function">
+<dt id="asset_ification.asset_ification.nn_helper_fn">
+<tt class="descclassname">asset_ification.asset_ification.</tt><tt class="descname">nn_helper_fn</tt><big>(</big><em>price_series</em>, <em>store_path</em>, <em>trained_series</em>, <em>calc_meth</em><big>)</big><a class="reference internal" href="_modules/asset_ification/asset_ification.html#nn_helper_fn"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#asset_ification.asset_ification.nn_helper_fn" title="Permalink to this definition">¶</a></dt>
+<dd><p>Helper Function to allow for different calculation values for the 
+nearest neighbor algorithm</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="asset_ification.asset_ification.plot_confusion_matrix">
+<tt class="descclassname">asset_ification.asset_ification.</tt><tt class="descname">plot_confusion_matrix</tt><big>(</big><em>trained_series</em>, <em>store_path</em>, <em>calc_meth</em><big>)</big><a class="reference internal" href="_modules/asset_ification/asset_ification.html#plot_confusion_matrix"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#asset_ification.asset_ification.plot_confusion_matrix" title="Permalink to this definition">¶</a></dt>
+<dd><p>Plot the confusion matrix</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">ARGS:</th><td class="field-body"><p class="first">trained_series: <tt class="xref py py-class docutils literal"><span class="pre">pandas.Series</span></tt> of tickers for the
+<tt class="xref py py-class docutils literal"><span class="pre">Index</span></tt> and Asset Classes for <tt class="docutils literal"><span class="pre">.values</span></tt></p>
+<p class="last">store_path: <tt class="xref py py-class docutils literal"><span class="pre">str</span></tt> pointing to the HDFStore of trained
+data</p>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="function">
+<dt id="asset_ification.asset_ification.r2_mv">
+<tt class="descclassname">asset_ification.asset_ification.</tt><tt class="descname">r2_mv</tt><big>(</big><em>x</em>, <em>y</em><big>)</big><a class="reference internal" href="_modules/asset_ification/asset_ification.html#r2_mv"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#asset_ification.asset_ification.r2_mv" title="Permalink to this definition">¶</a></dt>
+<dd><p>Multivariate r-squared</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="asset_ification.asset_ification.r2_uv">
+<tt class="descclassname">asset_ification.asset_ification.</tt><tt class="descname">r2_uv</tt><big>(</big><em>x</em>, <em>y</em><big>)</big><a class="reference internal" href="_modules/asset_ification/asset_ification.html#r2_uv"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#asset_ification.asset_ification.r2_uv" title="Permalink to this definition">¶</a></dt>
+<dd><p>Returns the R-Squared or <a class="reference external" href="http://en.wikipedia.org/wiki/Coefficient_of_determination">Coefficient of Determination</a> 
+for a univariate regression (does not adjust for more independent 
+variables</p>
+<div class="admonition seealso">
+<p class="first admonition-title">See also</p>
+<p class="last"><tt class="xref py py-meth docutils literal"><span class="pre">r_squared_adjusted()</span></tt></p>
+</div>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">ARGS:</th><td class="field-body"><p class="first">series: :class`pandas.Series` of prices</p>
+<p>benchmark: :class`pandas.Series` of prices to regress 
+<tt class="docutils literal"><span class="pre">series</span></tt> against</p>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">RETURNS:</th><td class="field-body"><p class="first last">float: of the coefficient of variation</p>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="function">
+<dt id="asset_ification.asset_ification.run_classification">
+<tt class="descclassname">asset_ification.asset_ification.</tt><tt class="descname">run_classification</tt><big>(</big><em>trained_series</em>, <em>store_path</em><big>)</big><a class="reference internal" href="_modules/asset_ification/asset_ification.html#run_classification"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#asset_ification.asset_ification.run_classification" title="Permalink to this definition">¶</a></dt>
+<dd><p>See the classifications as they are run</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">ARGS:</th><td class="field-body"><p class="first">trained_series: <tt class="xref py py-class docutils literal"><span class="pre">pandas.Series</span></tt> of tickers for the
+<tt class="xref py py-class docutils literal"><span class="pre">Index</span></tt> and Asset Classes for <tt class="docutils literal"><span class="pre">.values</span></tt></p>
+<p class="last">store_path: <tt class="xref py py-class docutils literal"><span class="pre">str</span></tt> pointing to the HDFStore of trained
+data</p>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="function">
+<dt id="asset_ification.asset_ification.setup_trained_hdfstore">
+<tt class="descclassname">asset_ification.asset_ification.</tt><tt class="descname">setup_trained_hdfstore</tt><big>(</big><em>trained_data</em>, <em>store_path</em><big>)</big><a class="reference internal" href="_modules/asset_ification/asset_ification.html#setup_trained_hdfstore"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#asset_ification.asset_ification.setup_trained_hdfstore" title="Permalink to this definition">¶</a></dt>
+<dd><p>The <tt class="docutils literal"><span class="pre">HDFStore</span></tt> doesn&#8217;t work properly when it&#8217;s compiled by different
+versions, so the appropriate thing to do is to setup the trained data
+locally (and not store the <tt class="docutils literal"><span class="pre">.h5</span></tt> file on GitHub).</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">ARGS:</th><td class="field-body"><p class="first">trained_data: <tt class="xref py py-class docutils literal"><span class="pre">pandas.Series</span></tt> with tickers in the index and
+asset  classes for values</p>
+<p class="last">store_path: <tt class="xref py py-class docutils literal"><span class="pre">str</span></tt> of where to create the <tt class="docutils literal"><span class="pre">HDFStore</span></tt></p>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="function">
+<dt id="asset_ification.asset_ification.tickers_to_dict">
+<tt class="descclassname">asset_ification.asset_ification.</tt><tt class="descname">tickers_to_dict</tt><big>(</big><em>ticker_list</em>, <em>api='yahoo'</em>, <em>start='01/01/1990'</em><big>)</big><a class="reference internal" href="_modules/asset_ification/asset_ification.html#tickers_to_dict"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#asset_ification.asset_ification.tickers_to_dict" title="Permalink to this definition">¶</a></dt>
+<dd><p>Utility function to return ticker data where the input is either a 
+ticker, or a list of tickers.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">ARGS:</th><td class="field-body"><p class="first">ticker_list: <tt class="xref py py-class docutils literal"><span class="pre">list</span></tt> in the case of multiple tickers or 
+<tt class="xref py py-class docutils literal"><span class="pre">str</span></tt> in the case of one ticker</p>
+<p>api: <tt class="xref py py-class docutils literal"><span class="pre">string</span></tt> identifying which api to call the data 
+from.  Either &#8216;yahoo&#8217; or &#8216;google&#8217;</p>
+<p>start: <tt class="xref py py-class docutils literal"><span class="pre">string</span></tt> of the desired start date</p>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">RETURNS:</th><td class="field-body"><p class="first last"><tt class="xref py py-class docutils literal"><span class="pre">dictionary</span></tt> of (ticker, price_df) mappings or a
+<tt class="xref py py-class docutils literal"><span class="pre">pandas.DataFrame</span></tt> when the <tt class="docutils literal"><span class="pre">ticker_list</span></tt> is 
+<tt class="xref py py-class docutils literal"><span class="pre">str</span></tt></p>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="function">
+<dt id="asset_ification.asset_ification.update_store_prices">
+<tt class="descclassname">asset_ification.asset_ification.</tt><tt class="descname">update_store_prices</tt><big>(</big><em>store_path</em><big>)</big><a class="reference internal" href="_modules/asset_ification/asset_ification.html#update_store_prices"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#asset_ification.asset_ification.update_store_prices" title="Permalink to this definition">¶</a></dt>
+<dd><p>Update to the most recent prices for all keys of an existing store, 
+located at path <tt class="docutils literal"><span class="pre">path</span></tt>.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">ARGS:</th><td class="field-body">store_path: <tt class="xref py py-class docutils literal"><span class="pre">string</span></tt> the location of the <tt class="docutils literal"><span class="pre">HDFStore</span></tt> file</td>
+</tr>
+<tr class="field-even field"><th class="field-name">RETURNS:</th><td class="field-body"><tt class="xref py py-class docutils literal"><span class="pre">NoneType</span></tt> but updates the <tt class="docutils literal"><span class="pre">HDF5</span></tt> file, and prints to 
+screen which values would not update</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+</div>
+
+
+          </div>
+          <footer>
+  
+    <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
+      
+      
+        <a href="readme.html" class="btn btn-neutral" title="README.md"><span class="fa fa-arrow-circle-left"></span> Previous</a>
+      
+    </div>
+  
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>
+        &copy; Copyright 2014, Benjamin M. Gross.
+    </p>
+  </div>
+
+  <a href="https://github.com/snide/sphinx_rtd_theme">Sphinx theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>
+</footer>
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+  
+
+
+  
+
+    <script type="text/javascript">
+        var DOCUMENTATION_OPTIONS = {
+            URL_ROOT:'./',
+            VERSION:'0.0.1',
+            COLLAPSE_INDEX:false,
+            FILE_SUFFIX:'.html',
+            HAS_SOURCE:  true
+        };
+    </script>
+      <script type="text/javascript" src="_static/jquery.js"></script>
+      <script type="text/javascript" src="_static/underscore.js"></script>
+      <script type="text/javascript" src="_static/doctools.js"></script>
+      <script type="text/javascript" src="http://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+
+  
+
+  
+  
+    <script type="text/javascript" src="_static/js/theme.js"></script>
+  
+
+  
+  
+  <script type="text/javascript">
+      jQuery(function () {
+          SphinxRtdTheme.StickyNav.enable();
+      });
+  </script>
+   
+
+</body>
+</html>

@@ -1,0 +1,769 @@
+
+
+<!DOCTYPE html>
+<!--[if IE 8]><html class="no-js lt-ie9" lang="en" > <![endif]-->
+<!--[if gt IE 8]><!--> <html class="no-js" lang="en" > <!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  
+  <title>asset_ification.asset_ification &mdash; asset-ification 0.0.1 documentation</title>
+  
+
+  
+  
+
+  
+  <link href='https://fonts.googleapis.com/css?family=Lato:400,700|Roboto+Slab:400,700|Inconsolata:400,700' rel='stylesheet' type='text/css'>
+
+  
+  
+    
+
+  
+
+  
+  
+    <link rel="stylesheet" href="../../_static/css/theme.css" type="text/css" />
+  
+
+  
+    <link rel="top" title="asset-ification 0.0.1 documentation" href="../../index.html"/>
+        <link rel="up" title="Module code" href="../index.html"/> 
+
+  
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/modernizr/2.6.2/modernizr.min.js"></script>
+
+</head>
+
+<body class="wy-body-for-nav" role="document">
+
+  <div class="wy-grid-for-nav">
+
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-nav-search">
+        <a href="../../index.html" class="fa fa-home"> asset-ification</a>
+        <div role="search">
+  <form id ="rtd-search-form" class="wy-form" action="../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+      </div>
+
+      <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+        
+        
+            <ul>
+<li class="toctree-l1"><a class="reference internal" href="../../readme.html">README.md</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="../../readme.html#introduction">Introduction</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../readme.html#installation">Installation</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../readme.html#up-and-running">Up and Running</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../readme.html#to-do">To Do</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../../my_file.html">asset-ification</a></li>
+</ul>
+
+        
+      </div>
+      &nbsp;
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" role="navigation" aria-label="top navigation">
+        <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+        <a href="../../index.html">asset-ification</a>
+      </nav>
+
+
+      
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="breadcrumbs navigation">
+  <ul class="wy-breadcrumbs">
+    <li><a href="../../index.html">Docs</a> &raquo;</li>
+      
+          <li><a href="../index.html">Module code</a> &raquo;</li>
+      
+    <li>asset_ification.asset_ification</li>
+      <li class="wy-breadcrumbs-aside">
+        
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main">
+            
+  <h1>Source code for asset_ification.asset_ification</h1><div class="highlight"><pre>
+<span class="c">#!/usr/bin/env python</span>
+<span class="c"># encoding: utf-8</span>
+<span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">.. module:: asset_ification.py</span>
+
+<span class="sd">Created by Benjamin M. Gross</span>
+
+<span class="sd">.. note:: General Convention for :mod:`asset_ification`</span>
+
+<span class="sd">When passing around</span>
+<span class="sd">HDFStore to and from functions, the store is left open if the function</span>
+<span class="sd">does not complete.  For this reason (and until I figure out a better</span>
+<span class="sd">fix) the general convention is that functions are passed</span>
+<span class="sd">:class:`pandas.Series` of training data (tickers, and asset classes)</span>
+<span class="sd">and :class:`str` of the paths that lead to stores, so if there is any</span>
+<span class="sd">error with the function, the HDFStore can be closed within the exception</span>
+
+<span class="sd">&quot;&quot;&quot;</span>
+
+<span class="kn">import</span> <span class="nn">argparse</span>
+<span class="kn">import</span> <span class="nn">datetime</span>
+<span class="kn">import</span> <span class="nn">numpy</span>
+<span class="kn">import</span> <span class="nn">pandas</span>
+<span class="kn">import</span> <span class="nn">pandas.io.data</span>
+<span class="kn">import</span> <span class="nn">os</span>
+<span class="kn">from</span> <span class="nn">sklearn.svm</span> <span class="kn">import</span> <span class="n">LinearSVC</span>
+
+
+<div class="viewcode-block" id="compare_knn_svm"><a class="viewcode-back" href="../../my_file.html#asset_ification.asset_ification.compare_knn_svm">[docs]</a><span class="k">def</span> <span class="nf">compare_knn_svm</span><span class="p">(</span><span class="n">ticker_list</span><span class="p">,</span> <span class="n">store_path</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Yes, I&#39;m officially losing my mind, but who isn&#39;t.  I mean, why</span>
+<span class="sd">    **shouldn&#39;t** I compare the out of sample performance of a 338 </span>
+<span class="sd">    dimensional svm with my knn algorithm... makes total sense, fuck off</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="c">#create categorical variables and load the data</span>
+    <span class="n">rsq_df</span> <span class="o">=</span> <span class="n">pandas</span><span class="o">.</span><span class="n">DataFrame</span><span class="o">.</span><span class="n">from_csv</span><span class="p">(</span><span class="s">&#39;../dat/rsq_matrix.csv&#39;</span><span class="p">)</span>
+    <span class="n">trained_series</span> <span class="o">=</span> <span class="n">pandas</span><span class="o">.</span><span class="n">Series</span><span class="o">.</span><span class="n">from_csv</span><span class="p">(</span><span class="s">&#39;../dat/trained_assets.csv&#39;</span><span class="p">,</span> <span class="n">header</span> <span class="o">=</span> <span class="mi">0</span><span class="p">)</span>
+    <span class="n">acs</span> <span class="o">=</span> <span class="n">rsq_df</span><span class="o">.</span><span class="n">index</span><span class="o">.</span><span class="n">to_series</span><span class="p">()</span><span class="o">.</span><span class="n">value_counts</span><span class="p">()</span>
+    <span class="n">ac_map</span> <span class="o">=</span> <span class="n">pandas</span><span class="o">.</span><span class="n">Series</span><span class="p">(</span> <span class="n">numpy</span><span class="o">.</span><span class="n">arange</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">acs</span><span class="p">)),</span> <span class="n">index</span> <span class="o">=</span> <span class="n">acs</span><span class="o">.</span><span class="n">index</span><span class="p">)</span>
+    <span class="n">y</span> <span class="o">=</span> <span class="n">numpy</span><span class="o">.</span><span class="n">array</span><span class="p">(</span> <span class="nb">map</span><span class="p">(</span><span class="k">lambda</span> <span class="n">x</span><span class="p">:</span> <span class="n">ac_map</span><span class="p">[</span><span class="nb">str</span><span class="p">(</span><span class="n">x</span><span class="p">)],</span> <span class="n">rsq_df</span><span class="o">.</span><span class="n">index</span><span class="p">))</span>
+    <span class="n">clf</span> <span class="o">=</span> <span class="n">LinearSVC</span><span class="p">()</span>
+    <span class="n">clf</span><span class="o">.</span><span class="n">fit</span><span class="p">(</span><span class="n">X</span> <span class="o">=</span> <span class="n">rsq_df</span><span class="o">.</span><span class="n">values</span><span class="p">,</span> <span class="n">y</span> <span class="o">=</span> <span class="n">y</span><span class="p">)</span>
+    <span class="n">store</span> <span class="o">=</span> <span class="n">pandas</span><span class="o">.</span><span class="n">HDFStore</span><span class="p">(</span><span class="n">store_path</span><span class="p">,</span> <span class="s">&#39;r&#39;</span><span class="p">)</span>
+
+    <span class="k">for</span> <span class="n">ticker</span> <span class="ow">in</span> <span class="n">ticker_list</span><span class="p">:</span>
+
+        <span class="k">print</span> <span class="s">&quot;Working on &quot;</span> <span class="o">+</span> <span class="n">ticker</span> <span class="o">+</span> <span class="s">&quot; &quot;</span>  <span class="o">+</span> <span class="n">trained_series</span><span class="p">[</span><span class="n">ticker</span><span class="p">]</span>
+        <span class="n">series</span> <span class="o">=</span> <span class="n">store</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">ticker</span><span class="p">)[</span><span class="s">&#39;Adj Close&#39;</span><span class="p">]</span>
+        <span class="k">print</span> <span class="s">&quot;Estimate from Nearest Neighbor&quot;</span> <span class="o">+</span> <span class="s">&#39;</span><span class="se">\n</span><span class="s">&#39;</span>
+        <span class="k">print</span> <span class="n">lnchg_nearest_neighbors</span><span class="p">(</span><span class="n">series</span><span class="p">,</span> <span class="n">store_path</span><span class="p">,</span> <span class="n">trained_series</span><span class="p">)</span>
+        <span class="n">rsq_d</span> <span class="o">=</span> <span class="p">{}</span>
+        <span class="k">for</span> <span class="n">dim</span> <span class="ow">in</span> <span class="n">rsq_df</span><span class="o">.</span><span class="n">columns</span><span class="p">:</span>
+            <span class="n">x2</span> <span class="o">=</span> <span class="n">store</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">dim</span><span class="p">)[</span><span class="s">&#39;Adj Close&#39;</span><span class="p">]</span>
+            <span class="n">ind</span> <span class="o">=</span> <span class="n">clean_dates</span><span class="p">(</span><span class="n">series</span><span class="p">,</span> <span class="n">x2</span><span class="p">)</span>
+            <span class="n">rsq_d</span><span class="p">[</span><span class="n">dim</span><span class="p">]</span> <span class="o">=</span> <span class="n">adj_r2_uv</span><span class="p">(</span><span class="n">x</span> <span class="o">=</span> <span class="n">x2</span><span class="p">[</span><span class="n">ind</span><span class="p">]</span><span class="o">.</span><span class="n">apply</span><span class="p">(</span><span class="n">numpy</span><span class="o">.</span><span class="n">log</span><span class="p">)</span><span class="o">.</span><span class="n">diff</span><span class="p">()</span><span class="o">.</span><span class="n">dropna</span><span class="p">(),</span>
+                                   <span class="n">y</span> <span class="o">=</span> <span class="n">series</span><span class="p">[</span><span class="n">ind</span><span class="p">]</span><span class="o">.</span><span class="n">apply</span><span class="p">(</span><span class="n">numpy</span><span class="o">.</span><span class="n">log</span><span class="p">)</span><span class="o">.</span><span class="n">diff</span><span class="p">()</span><span class="o">.</span><span class="n">dropna</span><span class="p">())</span>
+
+
+        <span class="k">print</span> <span class="s">&quot;Estimate from SVM&quot;</span> <span class="o">+</span> <span class="s">&#39;</span><span class="se">\n</span><span class="s">&#39;</span>
+        <span class="n">new_est</span> <span class="o">=</span> <span class="n">pandas</span><span class="o">.</span><span class="n">Series</span><span class="p">(</span><span class="n">rsq_d</span><span class="p">)</span>
+        <span class="k">print</span> <span class="n">ac_map</span><span class="p">[</span><span class="n">ac_map</span> <span class="o">==</span> <span class="n">clf</span><span class="o">.</span><span class="n">predict</span><span class="p">(</span><span class="n">new_est</span><span class="p">)[</span><span class="mi">0</span><span class="p">]]</span><span class="o">.</span><span class="n">index</span>
+
+    <span class="k">if</span> <span class="n">store</span><span class="o">.</span><span class="n">is_open</span><span class="p">:</span>
+        <span class="n">store</span><span class="o">.</span><span class="n">close</span><span class="p">()</span>
+    <span class="k">return</span> <span class="bp">None</span>
+</div>
+<div class="viewcode-block" id="run_classification"><a class="viewcode-back" href="../../my_file.html#asset_ification.asset_ification.run_classification">[docs]</a><span class="k">def</span> <span class="nf">run_classification</span><span class="p">(</span><span class="n">trained_series</span><span class="p">,</span> <span class="n">store_path</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    See the classifications as they are run</span>
+
+<span class="sd">    :ARGS:</span>
+
+<span class="sd">        trained_series: :class:`pandas.Series` of tickers for the</span>
+<span class="sd">        :class:`Index` and Asset Classes for ``.values``</span>
+
+<span class="sd">        store_path: :class:`str` pointing to the HDFStore of trained</span>
+<span class="sd">        data</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">etf_list</span> <span class="o">=</span> <span class="n">complete_etf_list</span><span class="p">()</span>
+    <span class="n">notin_trained</span> <span class="o">=</span> <span class="n">numpy</span><span class="o">.</span><span class="n">setdiff1d</span><span class="p">(</span><span class="n">etf_list</span><span class="o">.</span><span class="n">index</span><span class="o">.</span><span class="n">tolist</span><span class="p">(),</span> 
+                                    <span class="n">trained_series</span><span class="o">.</span><span class="n">index</span><span class="o">.</span><span class="n">tolist</span><span class="p">())</span>
+    <span class="c">#let &#39;er rip!</span>
+    <span class="k">for</span> <span class="n">ticker</span> <span class="ow">in</span> <span class="n">notin_trained</span><span class="p">:</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="n">series</span> <span class="o">=</span> <span class="n">tickers_to_dict</span><span class="p">(</span><span class="n">ticker</span><span class="p">)[</span><span class="s">&#39;Adj Close&#39;</span><span class="p">]</span>
+            <span class="k">print</span> <span class="n">lnchg_nearest_neighbors</span><span class="p">(</span><span class="n">series</span><span class="p">,</span> <span class="n">store_path</span><span class="p">,</span>
+                                         <span class="n">trained_series</span><span class="p">)</span>
+        <span class="k">except</span><span class="p">:</span>
+            <span class="k">print</span> <span class="s">&quot;Didn&#39;t work for &quot;</span> <span class="o">+</span> <span class="n">ticker</span>
+
+    <span class="k">return</span> <span class="bp">None</span>
+</div>
+<div class="viewcode-block" id="model_accuracy_helper_fn"><a class="viewcode-back" href="../../my_file.html#asset_ification.asset_ification.model_accuracy_helper_fn">[docs]</a><span class="k">def</span> <span class="nf">model_accuracy_helper_fn</span><span class="p">(</span><span class="n">trained_series</span><span class="p">,</span> <span class="n">store_path</span><span class="p">,</span> <span class="n">calc_meth</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Helper function for both of the model accuracy functions</span>
+
+<span class="sd">    :ARGS:</span>
+
+<span class="sd">        trained_series: :class:`pandas.Series` of tickers for the</span>
+<span class="sd">        :class:`Index` and Asset Classes for ``.values``</span>
+
+<span class="sd">        store_path: :class:`str` pointing to the HDFStore of trained</span>
+<span class="sd">        data</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">store</span> <span class="o">=</span> <span class="n">pandas</span><span class="o">.</span><span class="n">HDFStore</span><span class="p">(</span><span class="n">store_path</span><span class="p">,</span> <span class="s">&#39;r&#39;</span><span class="p">)</span>
+    <span class="n">keys</span> <span class="o">=</span> <span class="nb">map</span><span class="p">(</span><span class="k">lambda</span> <span class="n">x</span><span class="p">:</span> <span class="n">x</span><span class="o">.</span><span class="n">strip</span><span class="p">(</span><span class="s">&#39;/&#39;</span><span class="p">),</span>  <span class="n">store</span><span class="o">.</span><span class="n">keys</span><span class="p">())</span>
+    <span class="n">d</span> <span class="o">=</span> <span class="p">{}</span>
+    <span class="k">for</span> <span class="n">i</span><span class="p">,</span> <span class="n">key</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">keys</span><span class="p">):</span>
+        <span class="k">print</span> <span class="p">(</span><span class="s">&#39;working on &#39;</span> <span class="o">+</span> <span class="n">key</span> <span class="o">+</span> <span class="s">&#39;</span><span class="se">\n</span><span class="s">&#39;</span> <span class="o">+</span> <span class="nb">str</span><span class="p">(</span><span class="n">i</span> <span class="o">+</span> <span class="mi">1</span><span class="p">)</span> <span class="o">+</span> 
+               <span class="s">&#39; of &#39;</span> <span class="o">+</span> <span class="nb">str</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">keys</span><span class="p">)</span><span class="o">+</span> <span class="mi">1</span><span class="p">))</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="n">series</span> <span class="o">=</span> <span class="n">store</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">key</span><span class="p">)[</span><span class="s">&#39;Adj Close&#39;</span><span class="p">]</span>
+            <span class="c">#exclude that ticker for testing</span>
+            <span class="n">not_key</span> <span class="o">=</span> <span class="n">trained_series</span><span class="o">.</span><span class="n">index</span> <span class="o">!=</span> <span class="n">key</span>
+            <span class="n">d</span><span class="p">[</span><span class="n">key</span><span class="p">]</span> <span class="o">=</span> <span class="n">nn_helper_fn</span><span class="p">(</span><span class="n">series</span><span class="p">,</span> <span class="n">store_path</span><span class="p">,</span> 
+                <span class="n">trained_series</span><span class="p">[</span><span class="n">not_key</span><span class="p">],</span> <span class="n">calc_meth</span><span class="p">)</span>
+        <span class="k">except</span><span class="p">:</span>
+            <span class="k">print</span> <span class="s">&quot;Didn&#39;t work for &quot;</span> <span class="o">+</span> <span class="n">key</span>
+    <span class="k">if</span> <span class="n">store</span><span class="o">.</span><span class="n">is_open</span><span class="p">:</span>
+        <span class="n">store</span><span class="o">.</span><span class="n">close</span><span class="p">()</span>
+    <span class="k">return</span> <span class="n">pandas</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">(</span><span class="n">d</span><span class="p">)</span><span class="o">.</span><span class="n">transpose</span><span class="p">()</span>
+</div>
+<div class="viewcode-block" id="model_accuracy_crosstab"><a class="viewcode-back" href="../../my_file.html#asset_ification.asset_ification.model_accuracy_crosstab">[docs]</a><span class="k">def</span> <span class="nf">model_accuracy_crosstab</span><span class="p">(</span><span class="n">trained_series</span><span class="p">,</span> <span class="n">store_path</span><span class="p">,</span> <span class="n">calc_meth</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Calculate the model accuracy (returned as a confusion matrix) of </span>
+<span class="sd">    asset classes that are already known, provided in the </span>
+<span class="sd">    ``training_series``.</span>
+
+<span class="sd">    :ARGS:</span>
+
+<span class="sd">        store_path: :class:`string` to the HDFStore of asset </span>
+
+<span class="sd">        training_series: :class:`series` where Index is the tickers </span>
+<span class="sd">        and the values are the asset classes</span>
+
+<span class="sd">    :RETURNS:</span>
+
+<span class="sd">        :class:`pandas.DataFrame` of the confusion matrix</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">prob_df</span> <span class="o">=</span> <span class="n">model_accuracy_helper_fn</span><span class="p">(</span><span class="n">trained_series</span><span class="p">,</span> <span class="n">store_path</span><span class="p">,</span> <span class="n">calc_meth</span><span class="p">)</span>
+    <span class="n">algo_results</span> <span class="o">=</span> <span class="n">prob_df</span><span class="o">.</span><span class="n">apply</span><span class="p">(</span><span class="k">lambda</span> <span class="n">x</span><span class="p">:</span> <span class="n">x</span><span class="o">.</span><span class="n">argmax</span><span class="p">(),</span> <span class="n">axis</span> <span class="o">=</span> <span class="mi">1</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">pandas</span><span class="o">.</span><span class="n">crosstab</span><span class="p">(</span><span class="n">algo_results</span><span class="p">,</span> <span class="n">trained_series</span><span class="p">)</span>
+</div>
+<div class="viewcode-block" id="model_accuracy_prob_matrix"><a class="viewcode-back" href="../../my_file.html#asset_ification.asset_ification.model_accuracy_prob_matrix">[docs]</a><span class="k">def</span> <span class="nf">model_accuracy_prob_matrix</span><span class="p">(</span><span class="n">trained_series</span><span class="p">,</span> <span class="n">store_path</span><span class="p">,</span> <span class="n">calc_meth</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Return the trained tickers and their asset class probabilities</span>
+
+<span class="sd">    </span>
+<span class="sd">    :ARGS:</span>
+
+<span class="sd">        trained_series: :class:`pandas.Series` of tickers for the</span>
+<span class="sd">        :class:`Index` and Asset Classes for ``.values``</span>
+
+<span class="sd">        store_path: :class:`str` pointing to the HDFStore of trained</span>
+<span class="sd">        data</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">return</span> <span class="n">model_accuracy_helper_fn</span><span class="p">(</span><span class="n">trained_series</span><span class="p">,</span> <span class="n">store_path</span><span class="p">,</span> <span class="n">calc_meth</span><span class="p">)</span>
+</div>
+<div class="viewcode-block" id="plot_confusion_matrix"><a class="viewcode-back" href="../../my_file.html#asset_ification.asset_ification.plot_confusion_matrix">[docs]</a><span class="k">def</span> <span class="nf">plot_confusion_matrix</span><span class="p">(</span><span class="n">trained_series</span><span class="p">,</span> <span class="n">store_path</span><span class="p">,</span> <span class="n">calc_meth</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Plot the confusion matrix</span>
+<span class="sd">    </span>
+<span class="sd">    :ARGS:</span>
+
+<span class="sd">        trained_series: :class:`pandas.Series` of tickers for the</span>
+<span class="sd">        :class:`Index` and Asset Classes for ``.values``</span>
+
+<span class="sd">        store_path: :class:`str` pointing to the HDFStore of trained</span>
+<span class="sd">        data</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">cm</span> <span class="o">=</span> <span class="n">crosstab_model_accuracy</span><span class="p">(</span><span class="n">trained_series</span><span class="p">,</span> <span class="n">store_path</span><span class="p">,</span> <span class="n">calc_meth</span><span class="p">)</span>
+    <span class="n">cm_pct</span> <span class="o">=</span> <span class="n">cm</span><span class="o">.</span><span class="n">apply</span><span class="p">(</span><span class="k">lambda</span> <span class="n">x</span><span class="p">:</span> <span class="n">x</span><span class="o">/</span><span class="nb">float</span><span class="p">(</span><span class="n">x</span><span class="o">.</span><span class="n">sum</span><span class="p">()),</span> <span class="n">axis</span> <span class="o">=</span> <span class="mi">0</span><span class="p">)</span>
+    <span class="n">plt</span><span class="o">.</span><span class="n">imshow</span><span class="p">(</span><span class="n">cm_pct</span><span class="p">,</span> <span class="n">interpolation</span> <span class="o">=</span> <span class="s">&#39;nearest&#39;</span><span class="p">)</span>
+    <span class="n">plt</span><span class="o">.</span><span class="n">xticks</span><span class="p">(</span><span class="n">numpy</span><span class="o">.</span><span class="n">arange</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">cm</span><span class="o">.</span><span class="n">index</span><span class="p">)),</span> <span class="n">cm</span><span class="o">.</span><span class="n">index</span><span class="p">)</span>
+    <span class="n">plt</span><span class="o">.</span><span class="n">yticks</span><span class="p">(</span><span class="n">numpy</span><span class="o">.</span><span class="n">arange</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">cm</span><span class="o">.</span><span class="n">index</span><span class="p">)),</span> <span class="n">cm</span><span class="o">.</span><span class="n">index</span><span class="p">)</span>
+    <span class="n">plt</span><span class="o">.</span><span class="n">colorbar</span><span class="p">()</span>
+    <span class="n">plt</span><span class="o">.</span><span class="n">title</span><span class="p">(</span><span class="s">&quot;Confusion Matrix for KNN Asset Classes&quot;</span><span class="p">,</span> <span class="n">fontsize</span> <span class="o">=</span> <span class="mi">16</span><span class="p">)</span>
+    <span class="n">plt</span><span class="o">.</span><span class="n">show</span><span class="p">()</span>
+
+    </div>
+<div class="viewcode-block" id="lnchg_nearest_neighbors"><a class="viewcode-back" href="../../my_file.html#asset_ification.asset_ification.lnchg_nearest_neighbors">[docs]</a><span class="k">def</span> <span class="nf">lnchg_nearest_neighbors</span><span class="p">(</span><span class="n">price_series</span><span class="p">,</span> <span class="n">store_path</span><span class="p">,</span> <span class="n">trained_series</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Calculate the &quot;nearest neighbors&quot; on trained asset class data to </span>
+<span class="sd">    determine probabilities the series belongs to given asset classes</span>
+<span class="sd">    </span>
+<span class="sd">    :ARGS:</span>
+
+<span class="sd">        series: :class:`pandas.Series` of prices</span>
+<span class="sd">   </span>
+
+<span class="sd">        store_path: :class:`string` of a store path or an actual store</span>
+<span class="sd">        of the trained  asset class prices (each ticker should also </span>
+<span class="sd">        appear in the  ``.csv`` located at ``training_file_path``</span>
+
+<span class="sd">        training_series: :class:`series` where Index is the tickers </span>
+<span class="sd">        and the values are the asset classes</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">return</span> <span class="n">nn_helper_fn</span><span class="p">(</span><span class="n">price_series</span><span class="p">,</span> <span class="n">store_path</span><span class="p">,</span> <span class="n">trained_series</span><span class="p">,</span> <span class="s">&#39;ln_chg&#39;</span><span class="p">)</span>
+</div>
+<span class="k">def</span> <span class="nf">nrmdp_nearest_neighbor</span><span class="p">(</span><span class="n">price_series</span><span class="p">,</span> <span class="n">store_path</span><span class="p">,</span> <span class="n">trained_series</span><span class="p">):</span>
+    
+    <span class="k">return</span> <span class="n">nn_helper_fn</span><span class="p">(</span><span class="n">price_series</span><span class="p">,</span> <span class="n">store_path</span><span class="p">,</span> <span class="n">trained_series</span><span class="p">,</span> <span class="s">&#39;nrmdp&#39;</span><span class="p">)</span>
+
+<div class="viewcode-block" id="nn_helper_fn"><a class="viewcode-back" href="../../my_file.html#asset_ification.asset_ification.nn_helper_fn">[docs]</a><span class="k">def</span> <span class="nf">nn_helper_fn</span><span class="p">(</span><span class="n">price_series</span><span class="p">,</span> <span class="n">store_path</span><span class="p">,</span> <span class="n">trained_series</span><span class="p">,</span> <span class="n">calc_meth</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Helper Function to allow for different calculation values for the </span>
+<span class="sd">    nearest neighbor algorithm</span>
+<span class="sd">    </span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">fun_d</span> <span class="o">=</span> <span class="p">{</span><span class="s">&#39;ln_chg&#39;</span><span class="p">:</span><span class="k">lambda</span> <span class="n">x</span><span class="p">:</span> <span class="n">x</span><span class="o">.</span><span class="n">apply</span><span class="p">(</span><span class="n">numpy</span><span class="o">.</span><span class="n">log</span><span class="p">)</span><span class="o">.</span><span class="n">diff</span><span class="p">()</span><span class="o">.</span><span class="n">dropna</span><span class="p">(),</span>
+             <span class="s">&#39;nrmdp&#39;</span><span class="p">:</span><span class="k">lambda</span> <span class="n">x</span><span class="p">:</span> <span class="p">(</span><span class="n">x</span> <span class="o">-</span> <span class="n">x</span><span class="o">.</span><span class="n">mean</span><span class="p">())</span><span class="o">/</span><span class="n">x</span><span class="o">.</span><span class="n">std</span><span class="p">(),</span>
+             <span class="s">&#39;na&#39;</span><span class="p">:</span> <span class="k">lambda</span> <span class="n">x</span><span class="p">:</span> <span class="n">x</span><span class="p">,}</span>
+
+    <span class="n">ac_freq</span> <span class="o">=</span> <span class="n">trained_series</span><span class="o">.</span><span class="n">value_counts</span><span class="p">()</span>
+    <span class="c">#choose k = d + 1, where d is the number of unique asset classes</span>
+    <span class="n">k</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">ac_freq</span><span class="p">)</span> <span class="o">+</span> <span class="mi">1</span>
+    
+    <span class="c">#if a path is provided, open the store, otherwise it IS a store</span>
+
+    <span class="n">store</span> <span class="o">=</span> <span class="n">pandas</span><span class="o">.</span><span class="n">HDFStore</span><span class="p">(</span><span class="n">store_path</span><span class="p">,</span> <span class="s">&#39;r&#39;</span><span class="p">)</span>
+
+    <span class="n">prob_d</span> <span class="o">=</span> <span class="p">{</span><span class="s">&#39;r2_adj&#39;</span><span class="p">:</span> <span class="p">[],</span> <span class="s">&#39;asset_class&#39;</span><span class="p">:</span> <span class="p">[]</span> <span class="p">}</span>
+    <span class="k">for</span> <span class="n">ticker</span> <span class="ow">in</span> <span class="n">trained_series</span><span class="o">.</span><span class="n">index</span><span class="p">:</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="n">comp_asset</span> <span class="o">=</span> <span class="n">store</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">ticker</span><span class="p">)[</span><span class="s">&#39;Adj Close&#39;</span><span class="p">]</span>
+            <span class="n">ind</span> <span class="o">=</span> <span class="n">clean_dates</span><span class="p">(</span><span class="n">comp_asset</span><span class="p">,</span> <span class="n">price_series</span><span class="p">)</span>
+            <span class="n">x</span> <span class="o">=</span> <span class="n">comp_asset</span><span class="p">[</span><span class="n">ind</span><span class="p">]</span>
+            <span class="n">y</span> <span class="o">=</span> <span class="n">price_series</span><span class="p">[</span><span class="n">ind</span><span class="p">]</span>
+
+            <span class="n">prob_d</span><span class="p">[</span><span class="s">&#39;r2_adj&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">adj_r2_uv</span><span class="p">(</span>
+                <span class="n">fun_d</span><span class="p">[</span><span class="n">calc_meth</span><span class="p">](</span><span class="n">x</span><span class="p">),</span> <span class="n">fun_d</span><span class="p">[</span><span class="n">calc_meth</span><span class="p">](</span><span class="n">y</span><span class="p">)))</span>
+            <span class="n">prob_d</span><span class="p">[</span><span class="s">&#39;asset_class&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">trained_series</span><span class="p">[</span><span class="n">ticker</span><span class="p">])</span>
+        <span class="k">except</span><span class="p">:</span>
+            <span class="k">print</span> <span class="s">&quot;Did not work for ticker &quot;</span> <span class="o">+</span> <span class="n">ticker</span>
+
+    <span class="n">prob_df</span> <span class="o">=</span> <span class="n">pandas</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">(</span><span class="n">prob_d</span><span class="p">)</span>
+    <span class="n">prob_df</span><span class="o">.</span><span class="n">sort</span><span class="p">(</span><span class="n">columns</span> <span class="o">=</span> <span class="p">[</span><span class="s">&#39;r2_adj&#39;</span><span class="p">],</span> <span class="n">ascending</span> <span class="o">=</span> <span class="bp">False</span><span class="p">,</span> <span class="n">inplace</span> <span class="o">=</span> <span class="bp">True</span><span class="p">)</span>
+    <span class="n">store</span><span class="o">.</span><span class="n">close</span><span class="p">()</span>
+    
+    <span class="c">#apply the weighting scheme</span>
+    <span class="n">df</span> <span class="o">=</span> <span class="n">prob_df</span><span class="o">.</span><span class="n">iloc</span><span class="p">[:</span><span class="n">k</span><span class="p">,</span> <span class="p">:]</span>
+    <span class="n">wts</span> <span class="o">=</span> <span class="n">numpy</span><span class="o">.</span><span class="n">exp</span><span class="p">(</span><span class="n">df</span><span class="p">[</span><span class="s">&#39;r2_adj&#39;</span><span class="p">])</span>
+    <span class="n">df</span><span class="p">[</span><span class="s">&#39;weight&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">wts</span><span class="o">/</span><span class="n">wts</span><span class="o">.</span><span class="n">sum</span><span class="p">()</span>
+    <span class="k">return</span> <span class="n">df</span><span class="o">.</span><span class="n">groupby</span><span class="p">(</span><span class="s">&#39;asset_class&#39;</span><span class="p">)</span><span class="o">.</span><span class="n">sum</span><span class="p">()[</span><span class="s">&#39;weight&#39;</span><span class="p">]</span>
+    
+    
+<span class="c">#    return prob_df[&#39;asset_class&#39;][:k].value_counts()/float(k)</span>
+</div>
+<div class="viewcode-block" id="clean_dates"><a class="viewcode-back" href="../../my_file.html#asset_ification.asset_ification.clean_dates">[docs]</a><span class="k">def</span> <span class="nf">clean_dates</span><span class="p">(</span><span class="n">arr_a</span><span class="p">,</span> <span class="n">arr_b</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Return the intersection of two :class:`pandas` objects, either a</span>
+<span class="sd">    :class:`pandas.Series` or a :class:`pandas.DataFrame`</span>
+
+<span class="sd">    :ARGS:</span>
+
+<span class="sd">        arr_a: :class:`pandas.DataFrame` or :class:`pandas.Series`</span>
+<span class="sd">        arr_b: :class:`pandas.DataFrame` or :class:`pandas.Series`</span>
+
+<span class="sd">    :RETURNS:</span>
+
+<span class="sd">        :class:`pandas.DatetimeIndex` of the intersection of the two </span>
+<span class="sd">        :class:`pandas` objects</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">arr_a</span> <span class="o">=</span> <span class="n">arr_a</span><span class="o">.</span><span class="n">sort_index</span><span class="p">()</span>
+    <span class="n">arr_a</span><span class="o">.</span><span class="n">dropna</span><span class="p">(</span><span class="n">inplace</span> <span class="o">=</span> <span class="bp">True</span><span class="p">)</span>
+    <span class="n">arr_b</span> <span class="o">=</span> <span class="n">arr_b</span><span class="o">.</span><span class="n">sort_index</span><span class="p">()</span>
+    <span class="n">arr_b</span><span class="o">.</span><span class="n">dropna</span><span class="p">(</span><span class="n">inplace</span> <span class="o">=</span> <span class="bp">True</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">arr_a</span><span class="o">.</span><span class="n">index</span><span class="o">.</span><span class="n">equals</span><span class="p">(</span><span class="n">arr_b</span><span class="o">.</span><span class="n">index</span><span class="p">)</span> <span class="o">==</span> <span class="bp">False</span><span class="p">:</span>
+        <span class="k">return</span> <span class="n">arr_a</span><span class="o">.</span><span class="n">index</span> <span class="o">&amp;</span> <span class="n">arr_b</span><span class="o">.</span><span class="n">index</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="k">return</span> <span class="n">arr_a</span><span class="o">.</span><span class="n">index</span>
+</div>
+<div class="viewcode-block" id="update_store_prices"><a class="viewcode-back" href="../../my_file.html#asset_ification.asset_ification.update_store_prices">[docs]</a><span class="k">def</span> <span class="nf">update_store_prices</span><span class="p">(</span><span class="n">store_path</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Update to the most recent prices for all keys of an existing store, </span>
+<span class="sd">    located at path ``path``.</span>
+
+<span class="sd">    :ARGS:</span>
+
+<span class="sd">        store_path: :class:`string` the location of the ``HDFStore`` file</span>
+
+<span class="sd">    :RETURNS:</span>
+
+<span class="sd">        :class:`NoneType` but updates the ``HDF5`` file, and prints to </span>
+<span class="sd">        screen which values would not update</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">reader</span> <span class="o">=</span> <span class="n">pandas</span><span class="o">.</span><span class="n">io</span><span class="o">.</span><span class="n">data</span><span class="o">.</span><span class="n">DataReader</span>
+    <span class="n">strftime</span> <span class="o">=</span> <span class="n">datetime</span><span class="o">.</span><span class="n">datetime</span><span class="o">.</span><span class="n">strftime</span>
+    
+    <span class="n">today_str</span> <span class="o">=</span> <span class="n">strftime</span><span class="p">(</span><span class="n">datetime</span><span class="o">.</span><span class="n">datetime</span><span class="o">.</span><span class="n">today</span><span class="p">(),</span> <span class="n">format</span> <span class="o">=</span> <span class="s">&#39;%m/</span><span class="si">%d</span><span class="s">/%Y&#39;</span><span class="p">)</span>
+    <span class="k">try</span><span class="p">:</span>
+        <span class="n">store</span> <span class="o">=</span> <span class="n">pandas</span><span class="o">.</span><span class="n">HDFStore</span><span class="p">(</span><span class="n">path</span> <span class="o">=</span> <span class="n">store_path</span><span class="p">,</span> <span class="n">mode</span> <span class="o">=</span> <span class="s">&#39;r+&#39;</span><span class="p">)</span>
+    <span class="k">except</span> <span class="ne">IOError</span><span class="p">:</span>
+        <span class="k">print</span>  <span class="n">path</span> <span class="o">+</span> <span class="s">&quot; is not a valid path to an HDFStore Object&quot;</span>
+        <span class="k">return</span>
+
+    <span class="k">for</span> <span class="n">key</span> <span class="ow">in</span> <span class="n">store</span><span class="o">.</span><span class="n">keys</span><span class="p">():</span>
+        <span class="n">stored_data</span> <span class="o">=</span> <span class="n">store</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">key</span><span class="p">)</span>
+        <span class="n">last_stored_date</span> <span class="o">=</span> <span class="n">stored_data</span><span class="o">.</span><span class="n">dropna</span><span class="p">()</span><span class="o">.</span><span class="n">index</span><span class="o">.</span><span class="n">max</span><span class="p">()</span>
+        <span class="n">today</span> <span class="o">=</span> <span class="n">datetime</span><span class="o">.</span><span class="n">datetime</span><span class="o">.</span><span class="n">date</span><span class="p">(</span><span class="n">datetime</span><span class="o">.</span><span class="n">datetime</span><span class="o">.</span><span class="n">today</span><span class="p">())</span>
+        <span class="k">if</span> <span class="n">last_stored_date</span> <span class="o">&lt;</span> <span class="n">pandas</span><span class="o">.</span><span class="n">Timestamp</span><span class="p">(</span><span class="n">today</span><span class="p">):</span>
+            <span class="k">try</span><span class="p">:</span>
+                <span class="n">tmp</span> <span class="o">=</span> <span class="n">reader</span><span class="p">(</span><span class="n">key</span><span class="o">.</span><span class="n">strip</span><span class="p">(</span><span class="s">&#39;/&#39;</span><span class="p">),</span> <span class="s">&#39;yahoo&#39;</span><span class="p">,</span> <span class="n">start</span> <span class="o">=</span> <span class="n">strftime</span><span class="p">(</span>
+                    <span class="n">last_stored_date</span><span class="p">,</span> <span class="n">format</span> <span class="o">=</span> <span class="s">&#39;%m/</span><span class="si">%d</span><span class="s">/%Y&#39;</span><span class="p">))</span>
+
+                <span class="c">#need to drop duplicates because there&#39;s 1 row of </span>
+                <span class="c">#overlap</span>
+                <span class="n">tmp</span> <span class="o">=</span> <span class="n">stored_data</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">tmp</span><span class="p">)</span>
+                <span class="n">tmp</span><span class="p">[</span><span class="s">&quot;index&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">tmp</span><span class="o">.</span><span class="n">index</span>
+                <span class="n">tmp</span><span class="o">.</span><span class="n">drop_duplicates</span><span class="p">(</span><span class="n">cols</span> <span class="o">=</span> <span class="s">&quot;index&quot;</span><span class="p">,</span> <span class="n">inplace</span> <span class="o">=</span> <span class="bp">True</span><span class="p">)</span>
+                <span class="n">tmp</span> <span class="o">=</span> <span class="n">tmp</span><span class="p">[</span><span class="n">tmp</span><span class="o">.</span><span class="n">columns</span><span class="p">[</span><span class="n">tmp</span><span class="o">.</span><span class="n">columns</span> <span class="o">!=</span> <span class="s">&quot;index&quot;</span><span class="p">]]</span>
+                <span class="n">store</span><span class="o">.</span><span class="n">put</span><span class="p">(</span><span class="n">key</span><span class="p">,</span> <span class="n">tmp</span><span class="p">)</span>
+            <span class="k">except</span> <span class="ne">IOError</span><span class="p">:</span>
+                <span class="k">print</span> <span class="s">&quot;could not update &quot;</span> <span class="o">+</span> <span class="n">key</span>
+
+    <span class="n">store</span><span class="o">.</span><span class="n">close</span><span class="p">()</span>
+    <span class="k">return</span> <span class="bp">None</span>
+</div>
+<div class="viewcode-block" id="setup_trained_hdfstore"><a class="viewcode-back" href="../../my_file.html#asset_ification.asset_ification.setup_trained_hdfstore">[docs]</a><span class="k">def</span> <span class="nf">setup_trained_hdfstore</span><span class="p">(</span><span class="n">trained_data</span><span class="p">,</span> <span class="n">store_path</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    The ``HDFStore`` doesn&#39;t work properly when it&#39;s compiled by different</span>
+<span class="sd">    versions, so the appropriate thing to do is to setup the trained data</span>
+<span class="sd">    locally (and not store the ``.h5`` file on GitHub).</span>
+
+<span class="sd">    :ARGS:</span>
+
+<span class="sd">        trained_data: :class:`pandas.Series` with tickers in the index and</span>
+<span class="sd">        asset  classes for values </span>
+
+<span class="sd">        store_path: :class:`str` of where to create the ``HDFStore``</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    
+    <span class="n">create_data_store</span><span class="p">(</span><span class="n">trained_data</span><span class="o">.</span><span class="n">index</span><span class="p">,</span> <span class="n">store_path</span><span class="p">)</span>
+    <span class="k">return</span> <span class="bp">None</span>
+</div>
+<div class="viewcode-block" id="create_data_store"><a class="viewcode-back" href="../../my_file.html#asset_ification.asset_ification.create_data_store">[docs]</a><span class="k">def</span> <span class="nf">create_data_store</span><span class="p">(</span><span class="n">ticker_list</span><span class="p">,</span> <span class="n">store_path</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Creates the ETF store to run the training of the logistic </span>
+<span class="sd">    classificaiton tree</span>
+
+<span class="sd">    :ARGS:</span>
+<span class="sd">    </span>
+<span class="sd">        ticker_list: iterable of tickers</span>
+
+<span class="sd">        store_path: :class:`str` of path to ``HDFStore``</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="c">#check to make sure the store doesn&#39;t already exist</span>
+    <span class="k">if</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">isfile</span><span class="p">(</span><span class="n">store_path</span><span class="p">):</span>
+        <span class="k">print</span> <span class="s">&quot;File &quot;</span> <span class="o">+</span> <span class="n">store_path</span> <span class="o">+</span> <span class="s">&quot; already exists&quot;</span>
+        <span class="k">return</span>
+    
+    <span class="n">store</span> <span class="o">=</span> <span class="n">pandas</span><span class="o">.</span><span class="n">HDFStore</span><span class="p">(</span><span class="n">store_path</span><span class="p">,</span> <span class="s">&#39;w&#39;</span><span class="p">)</span>
+    <span class="n">success</span> <span class="o">=</span> <span class="mi">0</span>
+    <span class="k">for</span> <span class="n">ticker</span> <span class="ow">in</span> <span class="n">ticker_list</span><span class="p">:</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="n">tmp</span> <span class="o">=</span> <span class="n">tickers_to_dict</span><span class="p">(</span><span class="n">ticker</span><span class="p">,</span> <span class="s">&#39;yahoo&#39;</span><span class="p">,</span> <span class="n">start</span> <span class="o">=</span> <span class="s">&#39;01/01/2000&#39;</span><span class="p">)</span>
+            <span class="n">store</span><span class="o">.</span><span class="n">put</span><span class="p">(</span><span class="n">ticker</span><span class="p">,</span> <span class="n">tmp</span><span class="p">)</span>
+            <span class="k">print</span> <span class="n">ticker</span> <span class="o">+</span> <span class="s">&quot; added to store&quot;</span>
+            <span class="n">success</span> <span class="o">+=</span> <span class="mi">1</span>
+        <span class="k">except</span><span class="p">:</span>
+            <span class="k">print</span> <span class="s">&quot;unable to add &quot;</span> <span class="o">+</span> <span class="n">ticker</span> <span class="o">+</span> <span class="s">&quot; to store&quot;</span>
+    <span class="n">store</span><span class="o">.</span><span class="n">close</span><span class="p">()</span>
+
+    <span class="k">if</span> <span class="n">success</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span> <span class="c">#none of it worked, delete the store</span>
+        <span class="k">print</span> <span class="s">&quot;Creation Failed&quot;</span>
+        <span class="n">os</span><span class="o">.</span><span class="n">remove</span><span class="p">(</span><span class="n">path</span><span class="p">)</span>
+    <span class="k">return</span> <span class="bp">None</span>
+</div>
+<div class="viewcode-block" id="first_valid_date"><a class="viewcode-back" href="../../my_file.html#asset_ification.asset_ification.first_valid_date">[docs]</a><span class="k">def</span> <span class="nf">first_valid_date</span><span class="p">(</span><span class="n">prices</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Helper function to determine the first valid date from a set of </span>
+<span class="sd">    different prices Can take either a :class:`dict` of </span>
+<span class="sd">    :class:`pandas.DataFrame`s where each key is a ticker&#39;s &#39;Open&#39;, </span>
+<span class="sd">    &#39;High&#39;, &#39;Low&#39;, &#39;Close&#39;, &#39;Adj Close&#39; or a single </span>
+<span class="sd">    :class:`pandas.DataFrame` where each column is a different ticker</span>
+
+<span class="sd">    :ARGS:</span>
+
+<span class="sd">        prices: either :class:`dictionary` or :class:`pandas.DataFrame`</span>
+
+<span class="sd">    :RETURNS:</span>
+
+<span class="sd">        :class:`pandas.Timestamp` </span>
+<span class="sd">   &quot;&quot;&quot;</span>
+    <span class="n">iter_dict</span> <span class="o">=</span> <span class="p">{</span> <span class="n">pandas</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">:</span> <span class="k">lambda</span> <span class="n">x</span><span class="p">:</span> <span class="n">x</span><span class="o">.</span><span class="n">columns</span><span class="p">,</span>
+                  <span class="nb">dict</span><span class="p">:</span> <span class="k">lambda</span> <span class="n">x</span><span class="p">:</span> <span class="n">x</span><span class="o">.</span><span class="n">keys</span><span class="p">()</span> <span class="p">}</span> 
+
+    <span class="k">try</span><span class="p">:</span>
+        <span class="n">each_first</span> <span class="o">=</span> <span class="nb">map</span><span class="p">(</span><span class="k">lambda</span> <span class="n">x</span><span class="p">:</span> <span class="n">prices</span><span class="p">[</span><span class="n">x</span><span class="p">]</span><span class="o">.</span><span class="n">dropna</span><span class="p">()</span><span class="o">.</span><span class="n">index</span><span class="o">.</span><span class="n">min</span><span class="p">(),</span>
+                         <span class="n">iter_dict</span><span class="p">[</span> <span class="nb">type</span><span class="p">(</span><span class="n">prices</span><span class="p">)</span> <span class="p">](</span><span class="n">prices</span><span class="p">)</span> <span class="p">)</span>
+        <span class="k">return</span> <span class="nb">max</span><span class="p">(</span><span class="n">each_first</span><span class="p">)</span>
+    <span class="k">except</span> <span class="ne">KeyError</span><span class="p">:</span>
+        <span class="k">print</span> <span class="s">&quot;prices must be a DataFrame or dictionary&quot;</span>
+        <span class="k">return</span>
+
+</div>
+<div class="viewcode-block" id="append_store_prices"><a class="viewcode-back" href="../../my_file.html#asset_ification.asset_ification.append_store_prices">[docs]</a><span class="k">def</span> <span class="nf">append_store_prices</span><span class="p">(</span><span class="n">ticker_list</span><span class="p">,</span> <span class="n">store_path</span><span class="p">,</span> <span class="n">start</span> <span class="o">=</span> <span class="s">&#39;01/01/1990&#39;</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Given an existing store located at ``path``, check to make sure</span>
+<span class="sd">    the tickers in ``ticker_list`` are not already in the data</span>
+<span class="sd">    set, and then insert the tickers into the store.</span>
+
+<span class="sd">    :ARGS:</span>
+
+<span class="sd">        ticker_list: :class:`list` of tickers to add to the</span>
+<span class="sd">        :class:`pandas.HDStore`</span>
+
+<span class="sd">        store_path: :class:`string` of the path to the     </span>
+<span class="sd">        :class:`pandas.HDStore`</span>
+
+<span class="sd">        start: :class:`string` of the date to begin the price data</span>
+
+<span class="sd">    :RETURNS:</span>
+
+<span class="sd">        :class:`NoneType` but appends the store and comments the</span>
+<span class="sd">         successes ands failures</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">try</span><span class="p">:</span>
+        <span class="n">store</span> <span class="o">=</span> <span class="n">pandas</span><span class="o">.</span><span class="n">HDFStore</span><span class="p">(</span><span class="n">path</span> <span class="o">=</span> <span class="n">store_path</span><span class="p">,</span>  <span class="n">mode</span> <span class="o">=</span> <span class="s">&#39;a&#39;</span><span class="p">)</span>
+    <span class="k">except</span> <span class="ne">IOError</span><span class="p">:</span>
+        <span class="k">print</span>  <span class="n">path</span> <span class="o">+</span> <span class="s">&quot; is not a valid path to an HDFStore Object&quot;</span>
+        <span class="k">return</span>
+    <span class="n">store_keys</span> <span class="o">=</span> <span class="nb">map</span><span class="p">(</span><span class="k">lambda</span> <span class="n">x</span><span class="p">:</span> <span class="n">x</span><span class="o">.</span><span class="n">strip</span><span class="p">(</span><span class="s">&#39;/&#39;</span><span class="p">),</span> <span class="n">store</span><span class="o">.</span><span class="n">keys</span><span class="p">())</span>
+    <span class="n">not_in_store</span> <span class="o">=</span> <span class="n">numpy</span><span class="o">.</span><span class="n">setdiff1d</span><span class="p">(</span><span class="n">ticker_list</span><span class="p">,</span> <span class="n">store_keys</span> <span class="p">)</span>
+    <span class="n">new_prices</span> <span class="o">=</span> <span class="n">tickers_to_dict</span><span class="p">(</span><span class="n">not_in_store</span><span class="p">,</span> <span class="n">start</span> <span class="o">=</span> <span class="n">start</span><span class="p">)</span>
+
+    <span class="c">#attempt to add the new values to the store</span>
+    <span class="k">for</span> <span class="n">val</span> <span class="ow">in</span> <span class="n">new_prices</span><span class="o">.</span><span class="n">keys</span><span class="p">():</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="n">store</span><span class="o">.</span><span class="n">put</span><span class="p">(</span><span class="n">val</span><span class="p">,</span> <span class="n">new_prices</span><span class="p">[</span><span class="n">val</span><span class="p">])</span>
+            <span class="k">print</span> <span class="n">val</span> <span class="o">+</span> <span class="s">&quot; has been stored&quot;</span>
+        <span class="k">except</span><span class="p">:</span>
+            <span class="k">print</span> <span class="n">val</span> <span class="o">+</span> <span class="s">&quot; couldn&#39;t store&quot;</span>
+    <span class="n">store</span><span class="o">.</span><span class="n">close</span><span class="p">()</span>
+    <span class="k">return</span> <span class="bp">None</span>
+</div>
+<div class="viewcode-block" id="complete_etf_list"><a class="viewcode-back" href="../../my_file.html#asset_ification.asset_ification.complete_etf_list">[docs]</a><span class="k">def</span> <span class="nf">complete_etf_list</span><span class="p">(</span><span class="n">write_path</span> <span class="o">=</span> <span class="bp">None</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    www.price-data.com has pages with all of the etf tickers</span>
+<span class="sd">    available on it.  This function acesses each of those pages,</span>
+<span class="sd">    stores the values to :class:`pandas.DataFrame` and saves to</span>
+<span class="sd">    file</span>
+
+<span class="sd">    :ARGS:</span>
+<span class="sd">    </span>
+<span class="sd">        write_path: :class:`string` of the path to save the :class:`DataFrame`</span>
+<span class="sd">        of tickers as a ``.csv``  If ``None`` is provided, only the </span>
+<span class="sd">        :class:`pandas.DataFrame` will be returned</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="c">#the first three url&#39;s from price-data, the rest can be generated</span>
+    <span class="n">p_a</span> <span class="o">=</span> <span class="p">(</span><span class="s">&quot;http://www.price-data.com/&quot;</span>
+        <span class="s">&quot;listing-of-exchange-traded-funds/&quot;</span><span class="p">)</span>
+    <span class="n">p_b</span> <span class="o">=</span> <span class="p">(</span><span class="s">&quot;http://www.price-data.com/listing-of-exchange-traded-funds/&quot;</span>
+        <span class="s">&quot;listing-of-exchange-traded-funds-starting-with-b/&quot;</span><span class="p">)</span>
+    <span class="n">p_c</span> <span class="o">=</span> <span class="p">(</span><span class="s">&quot;http://www.price-data.com/listing-of-exchange-traded-funds/&quot;</span>
+        <span class="s">&quot;list-of-exchange-traded-funds-starting-with-c/&quot;</span><span class="p">)</span>
+    <span class="n">p_k</span> <span class="o">=</span> <span class="p">(</span><span class="s">&quot;http://www.price-data.com/listing-of-exchange-traded-funds/&quot;</span>
+        <span class="s">&quot;list-of-exchanged-traded-funds-starting-with-k/&quot;</span><span class="p">)</span>
+
+    <span class="n">base_url</span> <span class="o">=</span> <span class="p">(</span><span class="s">&quot;http://www.price-data.com/listing-of-exchange-traded-funds/&quot;</span>
+        <span class="s">&quot;list-of-exchange-traded-funds-starting-with-&quot;</span><span class="p">)</span>
+    <span class="n">letters</span> <span class="o">=</span> <span class="s">&#39;defghijlmnopqrstuvwxyz&#39;</span>
+    <span class="n">url_dict</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">(</span><span class="nb">map</span><span class="p">(</span><span class="k">lambda</span> <span class="n">x</span><span class="p">,</span> <span class="n">y</span><span class="p">:</span> <span class="p">[</span><span class="n">x</span><span class="p">,</span> <span class="n">y</span><span class="p">],</span> <span class="n">letters</span><span class="p">,</span>
+        <span class="nb">map</span><span class="p">(</span><span class="k">lambda</span> <span class="n">s</span><span class="p">:</span> <span class="n">base_url</span> <span class="o">+</span> <span class="n">s</span><span class="p">,</span> <span class="n">letters</span><span class="p">)))</span>
+
+    <span class="c">#the wonky ones</span>
+    <span class="n">url_dict</span><span class="p">[</span><span class="s">&#39;a&#39;</span><span class="p">],</span> <span class="n">url_dict</span><span class="p">[</span><span class="s">&#39;b&#39;</span><span class="p">],</span> <span class="n">url_dict</span><span class="p">[</span><span class="s">&#39;c&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">p_a</span><span class="p">,</span> <span class="n">p_b</span><span class="p">,</span> <span class="n">p_c</span>
+    <span class="n">url_dict</span><span class="p">[</span><span class="s">&#39;k&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">p_k</span>
+
+    <span class="c">#pull down the tables into a list</span>
+
+    <span class="n">d</span> <span class="o">=</span><span class="p">[]</span>
+    <span class="k">for</span> <span class="n">letter</span> <span class="ow">in</span> <span class="n">url_dict</span><span class="o">.</span><span class="n">keys</span><span class="p">():</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="n">d</span><span class="o">.</span><span class="n">extend</span><span class="p">(</span><span class="n">pandas</span><span class="o">.</span><span class="n">read_html</span><span class="p">(</span><span class="n">url_dict</span><span class="p">[</span><span class="n">letter</span><span class="p">],</span> <span class="n">index_col</span> <span class="o">=</span> <span class="mi">0</span><span class="p">,</span> 
+                                       <span class="n">infer_types</span> <span class="o">=</span> <span class="bp">False</span><span class="p">))</span>
+            <span class="k">print</span> <span class="s">&quot;succeeded for letter &quot;</span> <span class="o">+</span> <span class="n">letter</span>
+        <span class="k">except</span><span class="p">:</span>
+            <span class="k">print</span> <span class="s">&quot;Did not succeed for letter &quot;</span> <span class="o">+</span> <span class="n">letter</span>
+
+    <span class="n">agg_df</span> <span class="o">=</span> <span class="n">pandas</span><span class="o">.</span><span class="n">concat</span><span class="p">(</span><span class="n">d</span><span class="p">,</span> <span class="n">axis</span> <span class="o">=</span> <span class="mi">0</span><span class="p">)</span>
+    <span class="n">agg_df</span><span class="o">.</span><span class="n">columns</span> <span class="o">=</span> <span class="p">[</span><span class="s">&#39;Description&#39;</span><span class="p">]</span>
+    <span class="n">agg_df</span><span class="o">.</span><span class="n">index</span><span class="o">.</span><span class="n">name</span> <span class="o">=</span> <span class="s">&#39;Ticker&#39;</span>
+    <span class="k">if</span> <span class="n">path</span> <span class="o">!=</span> <span class="bp">None</span><span class="p">:</span>
+        <span class="n">agg_df</span><span class="o">.</span><span class="n">to_csv</span><span class="p">(</span><span class="n">path</span><span class="p">,</span> <span class="n">encoding</span> <span class="o">=</span> <span class="s">&#39;utf-8&#39;</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">agg_df</span>
+</div>
+<div class="viewcode-block" id="adj_r2_uv"><a class="viewcode-back" href="../../my_file.html#asset_ification.asset_ification.adj_r2_uv">[docs]</a><span class="k">def</span> <span class="nf">adj_r2_uv</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">y</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Returns the adjusted R-Squared for multivariate regression</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">n</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">y</span><span class="p">)</span>
+    <span class="n">p</span> <span class="o">=</span> <span class="mi">1</span>
+    <span class="k">return</span> <span class="mi">1</span> <span class="o">-</span> <span class="p">(</span><span class="mi">1</span> <span class="o">-</span> <span class="n">r2_uv</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">y</span><span class="p">))</span><span class="o">*</span><span class="p">(</span><span class="n">n</span> <span class="o">-</span> <span class="mi">1</span><span class="p">)</span><span class="o">/</span><span class="p">(</span><span class="n">n</span> <span class="o">-</span> <span class="n">p</span> <span class="o">-</span> <span class="mi">1</span><span class="p">)</span>    
+</div>
+<div class="viewcode-block" id="r2_uv"><a class="viewcode-back" href="../../my_file.html#asset_ification.asset_ification.r2_uv">[docs]</a><span class="k">def</span> <span class="nf">r2_uv</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">y</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Returns the R-Squared or `Coefficient of Determination</span>
+<span class="sd">    &lt;http://en.wikipedia.org/wiki/Coefficient_of_determination&gt;`_ </span>
+<span class="sd">    for a univariate regression (does not adjust for more independent </span>
+<span class="sd">    variables</span>
+<span class="sd">    </span>
+<span class="sd">    .. seealso:: :meth:`r_squared_adjusted`</span>
+
+<span class="sd">    :ARGS:</span>
+
+<span class="sd">        series: :class`pandas.Series` of prices</span>
+
+<span class="sd">        benchmark: :class`pandas.Series` of prices to regress </span>
+<span class="sd">        ``series`` against</span>
+
+<span class="sd">    :RETURNS:</span>
+
+<span class="sd">        float: of the coefficient of variation</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">def</span> <span class="nf">_r2_uv</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">y</span><span class="p">):</span>   
+        <span class="n">X</span> <span class="o">=</span> <span class="n">pandas</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">({</span><span class="s">&#39;ones&#39;</span><span class="p">:</span><span class="n">numpy</span><span class="o">.</span><span class="n">ones</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">x</span><span class="p">)),</span> <span class="s">&#39;xs&#39;</span><span class="p">:</span><span class="n">x</span><span class="p">})</span>
+        <span class="n">beta</span> <span class="o">=</span> <span class="n">numpy</span><span class="o">.</span><span class="n">linalg</span><span class="o">.</span><span class="n">inv</span><span class="p">(</span><span class="n">X</span><span class="o">.</span><span class="n">transpose</span><span class="p">()</span><span class="o">.</span><span class="n">dot</span><span class="p">(</span><span class="n">X</span><span class="p">))</span><span class="o">.</span><span class="n">dot</span><span class="p">(</span>
+            <span class="n">X</span><span class="o">.</span><span class="n">transpose</span><span class="p">()</span><span class="o">.</span><span class="n">dot</span><span class="p">(</span><span class="n">y</span><span class="p">)</span> <span class="p">)</span>
+        <span class="n">y_est</span> <span class="o">=</span> <span class="n">beta</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">+</span> <span class="n">beta</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="o">*</span><span class="n">x</span>
+        <span class="n">ss_res</span> <span class="o">=</span> <span class="p">((</span><span class="n">y_est</span> <span class="o">-</span> <span class="n">y</span><span class="p">)</span><span class="o">**</span><span class="mi">2</span><span class="p">)</span><span class="o">.</span><span class="n">sum</span><span class="p">()</span>
+        <span class="n">ss_tot</span> <span class="o">=</span> <span class="p">((</span><span class="n">y</span> <span class="o">-</span> <span class="n">y</span><span class="o">.</span><span class="n">mean</span><span class="p">())</span><span class="o">**</span><span class="mi">2</span><span class="p">)</span><span class="o">.</span><span class="n">sum</span><span class="p">()</span>
+        <span class="k">return</span> <span class="mi">1</span> <span class="o">-</span> <span class="n">ss_res</span><span class="o">/</span><span class="n">ss_tot</span>
+
+    <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">pandas</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">):</span>
+        <span class="k">return</span> <span class="n">x</span><span class="o">.</span><span class="n">apply</span><span class="p">(</span><span class="k">lambda</span> <span class="n">x</span><span class="p">:</span> <span class="n">_r2_uv</span><span class="p">(</span><span class="n">y</span><span class="p">,</span> <span class="n">x</span><span class="p">))</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="k">return</span> <span class="n">_r2_uv</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">y</span><span class="p">)</span>
+</div>
+<div class="viewcode-block" id="r2_mv"><a class="viewcode-back" href="../../my_file.html#asset_ification.asset_ification.r2_mv">[docs]</a><span class="k">def</span> <span class="nf">r2_mv</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">y</span><span class="p">):</span>   
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Multivariate r-squared</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">ones</span> <span class="o">=</span> <span class="n">pandas</span><span class="o">.</span><span class="n">Series</span><span class="p">(</span><span class="n">numpy</span><span class="o">.</span><span class="n">ones</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">y</span><span class="p">)),</span> <span class="n">name</span> <span class="o">=</span> <span class="s">&#39;ones&#39;</span><span class="p">)</span>
+    <span class="n">d</span> <span class="o">=</span> <span class="n">x</span><span class="o">.</span><span class="n">to_dict</span><span class="p">()</span>
+    <span class="n">d</span><span class="p">[</span><span class="s">&#39;ones&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">ones</span>
+    <span class="n">cols</span> <span class="o">=</span> <span class="p">[</span><span class="s">&#39;ones&#39;</span><span class="p">]</span>
+    <span class="n">cols</span><span class="o">.</span><span class="n">extend</span><span class="p">(</span><span class="n">x</span><span class="o">.</span><span class="n">columns</span><span class="p">)</span>
+    <span class="n">X</span> <span class="o">=</span> <span class="n">pandas</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">(</span><span class="n">d</span><span class="p">,</span> <span class="n">columns</span> <span class="o">=</span> <span class="n">cols</span><span class="p">)</span>
+    <span class="n">beta</span> <span class="o">=</span> <span class="n">numpy</span><span class="o">.</span><span class="n">linalg</span><span class="o">.</span><span class="n">inv</span><span class="p">(</span><span class="n">X</span><span class="o">.</span><span class="n">transpose</span><span class="p">()</span><span class="o">.</span><span class="n">dot</span><span class="p">(</span><span class="n">X</span><span class="p">))</span><span class="o">.</span><span class="n">dot</span><span class="p">(</span>
+        <span class="n">X</span><span class="o">.</span><span class="n">transpose</span><span class="p">()</span><span class="o">.</span><span class="n">dot</span><span class="p">(</span><span class="n">y</span><span class="p">)</span> <span class="p">)</span>
+    <span class="n">y_est</span> <span class="o">=</span> <span class="n">beta</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">+</span> <span class="n">x</span><span class="o">.</span><span class="n">dot</span><span class="p">(</span><span class="n">beta</span><span class="p">[</span><span class="mi">1</span><span class="p">:])</span>
+    <span class="n">ss_res</span> <span class="o">=</span> <span class="p">((</span><span class="n">y_est</span> <span class="o">-</span> <span class="n">y</span><span class="p">)</span><span class="o">**</span><span class="mi">2</span><span class="p">)</span><span class="o">.</span><span class="n">sum</span><span class="p">()</span>
+    <span class="n">ss_tot</span> <span class="o">=</span> <span class="p">((</span><span class="n">y</span> <span class="o">-</span> <span class="n">y</span><span class="o">.</span><span class="n">mean</span><span class="p">())</span><span class="o">**</span><span class="mi">2</span><span class="p">)</span><span class="o">.</span><span class="n">sum</span><span class="p">()</span>
+    <span class="k">return</span> <span class="mi">1</span> <span class="o">-</span> <span class="n">ss_res</span><span class="o">/</span><span class="n">ss_tot</span>
+    </div>
+<div class="viewcode-block" id="adj_r2_mv"><a class="viewcode-back" href="../../my_file.html#asset_ification.asset_ification.adj_r2_mv">[docs]</a><span class="k">def</span> <span class="nf">adj_r2_mv</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">y</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Returns the adjusted R-Squared for multivariate regression</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">n</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">y</span><span class="p">)</span>
+    <span class="n">p</span> <span class="o">=</span> <span class="n">x</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span>
+    <span class="k">return</span> <span class="mi">1</span> <span class="o">-</span> <span class="p">(</span><span class="mi">1</span> <span class="o">-</span> <span class="n">r2_mv</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">y</span><span class="p">))</span><span class="o">*</span><span class="p">(</span><span class="n">n</span> <span class="o">-</span> <span class="mi">1</span><span class="p">)</span><span class="o">/</span><span class="p">(</span><span class="n">n</span> <span class="o">-</span> <span class="n">p</span> <span class="o">-</span> <span class="mi">1</span><span class="p">)</span>
+</div>
+<div class="viewcode-block" id="tickers_to_dict"><a class="viewcode-back" href="../../my_file.html#asset_ification.asset_ification.tickers_to_dict">[docs]</a><span class="k">def</span> <span class="nf">tickers_to_dict</span><span class="p">(</span><span class="n">ticker_list</span><span class="p">,</span> <span class="n">api</span> <span class="o">=</span> <span class="s">&#39;yahoo&#39;</span><span class="p">,</span> <span class="n">start</span> <span class="o">=</span> <span class="s">&#39;01/01/1990&#39;</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Utility function to return ticker data where the input is either a </span>
+<span class="sd">    ticker, or a list of tickers.</span>
+
+<span class="sd">    :ARGS:</span>
+
+<span class="sd">        ticker_list: :class:`list` in the case of multiple tickers or </span>
+<span class="sd">        :class:`str` in the case of one ticker</span>
+
+<span class="sd">        api: :class:`string` identifying which api to call the data </span>
+<span class="sd">        from.  Either &#39;yahoo&#39; or &#39;google&#39;</span>
+
+<span class="sd">        start: :class:`string` of the desired start date</span>
+<span class="sd">                </span>
+<span class="sd">    :RETURNS:</span>
+
+<span class="sd">        :class:`dictionary` of (ticker, price_df) mappings or a</span>
+<span class="sd">        :class:`pandas.DataFrame` when the ``ticker_list`` is </span>
+<span class="sd">        :class:`str`</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">def</span> <span class="nf">__get_data</span><span class="p">(</span><span class="n">ticker</span><span class="p">,</span> <span class="n">api</span><span class="p">,</span> <span class="n">start</span><span class="p">):</span>
+        <span class="n">reader</span> <span class="o">=</span> <span class="n">pandas</span><span class="o">.</span><span class="n">io</span><span class="o">.</span><span class="n">data</span><span class="o">.</span><span class="n">DataReader</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="n">data</span> <span class="o">=</span> <span class="n">reader</span><span class="p">(</span><span class="n">ticker</span><span class="p">,</span> <span class="n">api</span><span class="p">,</span> <span class="n">start</span> <span class="o">=</span> <span class="n">start</span><span class="p">)</span>
+            <span class="k">print</span> <span class="s">&quot;worked for &quot;</span> <span class="o">+</span> <span class="n">ticker</span>
+            <span class="k">return</span> <span class="n">data</span>
+        <span class="k">except</span><span class="p">:</span>
+            <span class="k">print</span> <span class="s">&quot;failed for &quot;</span> <span class="o">+</span> <span class="n">ticker</span>
+            <span class="k">return</span>
+    <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">ticker_list</span><span class="p">,</span> <span class="p">(</span><span class="nb">str</span><span class="p">,</span> <span class="nb">unicode</span><span class="p">)):</span>
+        <span class="k">return</span> <span class="n">__get_data</span><span class="p">(</span><span class="n">ticker_list</span><span class="p">,</span> <span class="n">api</span> <span class="o">=</span> <span class="n">api</span><span class="p">,</span> <span class="n">start</span> <span class="o">=</span> <span class="n">start</span><span class="p">)</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="n">d</span> <span class="o">=</span> <span class="p">{}</span>
+        <span class="k">for</span> <span class="n">ticker</span> <span class="ow">in</span> <span class="n">ticker_list</span><span class="p">:</span>
+            <span class="n">d</span><span class="p">[</span><span class="n">ticker</span><span class="p">]</span> <span class="o">=</span> <span class="n">__get_data</span><span class="p">(</span><span class="n">ticker</span><span class="p">,</span> <span class="n">api</span> <span class="o">=</span> <span class="n">api</span><span class="p">,</span> <span class="n">start</span> <span class="o">=</span> <span class="n">start</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">d</span>
+    
+    </div>
+<span class="k">if</span> <span class="n">__name__</span> <span class="o">==</span> <span class="s">&#39;__main__&#39;</span><span class="p">:</span>
+	
+	<span class="n">usage</span> <span class="o">=</span> <span class="n">sys</span><span class="o">.</span><span class="n">argv</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">+</span> <span class="s">&quot;usage instructions&quot;</span>
+	<span class="n">description</span> <span class="o">=</span> <span class="s">&quot;describe the function&quot;</span>
+	<span class="n">parser</span> <span class="o">=</span> <span class="n">argparse</span><span class="o">.</span><span class="n">ArgumentParser</span><span class="p">(</span><span class="n">description</span> <span class="o">=</span> <span class="n">description</span><span class="p">,</span> <span class="n">usage</span> <span class="o">=</span> <span class="n">usage</span><span class="p">)</span>
+	<span class="n">parser</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span><span class="s">&#39;name_1&#39;</span><span class="p">,</span> <span class="n">nargs</span> <span class="o">=</span> <span class="mi">1</span><span class="p">,</span> <span class="nb">type</span> <span class="o">=</span> <span class="nb">str</span><span class="p">,</span> <span class="n">help</span> <span class="o">=</span> <span class="s">&#39;describe input 1&#39;</span><span class="p">)</span>
+	<span class="n">parser</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span><span class="s">&#39;name_2&#39;</span><span class="p">,</span> <span class="n">nargs</span> <span class="o">=</span> <span class="s">&#39;+&#39;</span><span class="p">,</span> <span class="nb">type</span> <span class="o">=</span> <span class="nb">int</span><span class="p">,</span> <span class="n">help</span> <span class="o">=</span> <span class="s">&quot;describe input 2&quot;</span><span class="p">)</span>
+
+	<span class="n">args</span> <span class="o">=</span> <span class="n">parser</span><span class="o">.</span><span class="n">parse_args</span><span class="p">()</span>
+	
+	<span class="n">script_function</span><span class="p">(</span><span class="n">input_1</span> <span class="o">=</span> <span class="n">args</span><span class="o">.</span><span class="n">name_1</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">input_2</span> <span class="o">=</span> <span class="n">args</span><span class="o">.</span><span class="n">name_2</span><span class="p">)</span>
+</pre></div>
+
+          </div>
+          <footer>
+  
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>
+        &copy; Copyright 2014, Benjamin M. Gross.
+    </p>
+  </div>
+
+  <a href="https://github.com/snide/sphinx_rtd_theme">Sphinx theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>
+</footer>
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+  
+
+
+  
+
+    <script type="text/javascript">
+        var DOCUMENTATION_OPTIONS = {
+            URL_ROOT:'../../',
+            VERSION:'0.0.1',
+            COLLAPSE_INDEX:false,
+            FILE_SUFFIX:'.html',
+            HAS_SOURCE:  true
+        };
+    </script>
+      <script type="text/javascript" src="../../_static/jquery.js"></script>
+      <script type="text/javascript" src="../../_static/underscore.js"></script>
+      <script type="text/javascript" src="../../_static/doctools.js"></script>
+      <script type="text/javascript" src="http://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+
+  
+
+  
+  
+    <script type="text/javascript" src="../../_static/js/theme.js"></script>
+  
+
+  
+  
+  <script type="text/javascript">
+      jQuery(function () {
+          SphinxRtdTheme.StickyNav.enable();
+      });
+  </script>
+   
+
+</body>
+</html>
