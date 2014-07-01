@@ -23,7 +23,47 @@ import numpy
 import pandas
 import pandas.io.data
 import os
+from sklearn.svm import LinearSVC
 
+
+def compare_knn_svm(ticker_list, store_path):
+    """
+    Yes, I'm officially losing my mind, but who isn't.  I mean, why
+    **shouldn't** I compare the out of sample performance of a 338 
+    dimensional svm with my knn algorithm... makes total sense, fuck off
+    """
+
+    #create categorical variables and load the data
+    rsq_df = pandas.DataFrame.from_csv('../dat/rsq_matrix.csv')
+    trained_series = pandas.Series.from_csv('../dat/trained_assets.csv', header = 0)
+    acs = rsq_df.index.to_series().value_counts()
+    ac_map = pandas.Series( numpy.arange(len(acs)), index = acs.index)
+    y = numpy.array( map(lambda x: ac_map[str(x)], rsq_df.index))
+    clf = LinearSVC()
+    clf.fit(X = rsq_df.values, y = y)
+    store = pandas.HDFStore(store_path, 'r')
+
+    for ticker in ticker_list:
+
+        print "Working on " + ticker + " "  + trained_series[ticker]
+        series = store.get(ticker)['Adj Close']
+        print "Estimate from Nearest Neighbor" + '\n'
+        print lnchg_nearest_neighbors(series, store_path, trained_series)
+        rsq_d = {}
+        for dim in rsq_df.columns:
+            x2 = store.get(dim)['Adj Close']
+            ind = clean_dates(series, x2)
+            rsq_d[dim] = adj_r2_uv(x = x2[ind].apply(numpy.log).diff().dropna(),
+                                   y = series[ind].apply(numpy.log).diff().dropna())
+
+
+        print "Estimate from SVM" + '\n'
+        new_est = pandas.Series(rsq_d)
+        print ac_map[ac_map == clf.predict(new_est)[0]].index
+
+    if store.is_open:
+        store.close()
+    return None
 
 def run_classification(trained_series, store_path):
     """
@@ -201,7 +241,7 @@ def nn_helper_fn(price_series, store_path, trained_series, calc_meth):
     
     #apply the weighting scheme
     df = prob_df.iloc[:k, :]
-    wts = numpy.exp(numpy.exp(df['r2_adj']))
+    wts = numpy.exp(df['r2_adj'])
     df['weight'] = wts/wts.sum()
     return df.groupby('asset_class').sum()['weight']
     
