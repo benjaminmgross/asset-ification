@@ -308,7 +308,11 @@ def update_store_prices(store_path):
 
                 #need to drop duplicates because there's 1 row of 
                 #overlap
-                store.put(key, stored_data.append(tmp).drop_duplicates())
+                tmp = stored_data.append(tmp)
+                tmp["index"] = tmp.index
+                tmp.drop_duplicates(cols = "index", inplace = True)
+                tmp = tmp[tmp.columns[tmp.columns != "index"]]
+                store.put(key, tmp)
             except IOError:
                 print "could not update " + key
 
