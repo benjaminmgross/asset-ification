@@ -289,12 +289,11 @@ def update_store_prices(store_path):
     """
     reader = pandas.io.data.DataReader
     strftime = datetime.datetime.strftime
-    
     today_str = strftime(datetime.datetime.today(), format = '%m/%d/%Y')
     try:
         store = pandas.HDFStore(path = store_path, mode = 'r+')
     except IOError:
-        print  path + " is not a valid path to an HDFStore Object"
+        print  store_path + " is not a valid path to an HDFStore Object"
         return
 
     for key in store.keys():
