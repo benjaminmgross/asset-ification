@@ -87,8 +87,33 @@ def construct_training_set(trained_assets, store_path):
     ret_df['ac_asint'] = ac_df.loc[tmp.index, 'ac_asint']
     return ret_df
 
-def predict_ac_max_r2(train_xs, train_ys, test_xs, test_ys,
-                      trained_series, n_neighbors, cat_map):
+def data_to_in_out_sample(data, train_prop):
+    """
+    Split the data into training and testing data, wwhere training
+    data = train_prop of the total length of data
+
+    :ARGS:
+
+        data: :class:`pandas.DataFrame` of the training data
+
+        train_prop :class:`float` of the proportion of the data to be
+        be used for training
+
+    :RETURNS:
+
+        train_xs, train_ys, test_xs, test_ys ... 
+    """
+    train_ind = numpy.random.choice(data.index, int(train_prop * len(data)))
+    test_ind = data.index[~data.index.isin(train_ind)]
+    train_xs = data.loc[train_ind, :].copy()
+    train_ys = train_xs['ac_asint']
+    train_xs = train_xs.drop(labels = ['ac_asint'], axis = 1)
+    test_xs = data.loc[test_ind, :].copy()
+    test_ys = test_xs['ac_asint']
+    test_xs = test_xs.drop(labels = ['ac_asint'], axis = 1)
+    return train_xs, train_ys, test_xs, test_ys
+   
+def pred_max_inverse_weighted_r2(data, trained_series):
     """
     Training data is a m x n matrix with 'training_tickers' as columns
     and rows of r-squared for different tickers and asset_class is a
@@ -96,36 +121,29 @@ def predict_ac_max_r2(train_xs, train_ys, test_xs, test_ys,
 
     :ARGS:
 
-        training_data: :class:`pandas.DataFrame` of the training data
-        of r-squared values
-
-        results: :class:`pandas.Series` of the actual results
-
-        train_size: :class:`int` of the size of the training_set vs.
-        testing_set
-
-        n_neighbors: :class:`int` the number of neighbors to include
-        to classify the training_data
+        data: :class:`pandas.DataFrame` of the r-squared values
 
         trained_series: :class:`pandas.Series` of the columns
         and their respective asset classes
-
-        cat_map: :class:`dictionary` of the category, key mappings
-        of the category / integer of the asset class
 
     :RETURNS:
 
         :class:`pandas.Series` of the tickers that have been estimated
         and the class they were assigned
     """
-    inv_sum = train_xs.div(1 - train_xs)
-    wt_df = inv_sum.apply(lambda x: x.div(inv.sum(axis = 1)))
-    trained_series = trained_series[train_xs.columns]
+    inv_sum = data.div(1 - data)
+    wt_df = inv_sum.apply(lambda x: x.div(inv_sum.sum(axis = 1)))
+    trained_series = trained_series[data.columns]
     key_map = trained_series.to_dict()
     cum_wt = wt_df.rename(columns = key_map)
     ac_score = cum_wt.groupby(by = cum_wt.columns, axis = 1).sum()
     max_score = ac_score.max(axis = 1)
     bool_df = ac_score.apply(lambda x: x == max_score)
+    pred_xs = {}
+    for i, row in enumerate(bool_df.index):
+        pred_xs[row] = bool_df.columns[bool_df.iloc[i, :]][0]
+    return pandas.Series(pred_xs)
+        
 
 
 def compare_knn_svm(ticker_list, store_path):
