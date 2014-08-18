@@ -24,40 +24,110 @@ import pandas
 import pandas.io.data
 import os
 from sklearn.svm import LinearSVC
+import fish
 
-def my_silly_fun(my_arg):
-    return "I changed it"
+def construct_training_set(trained_assets, store_path):
+    """
+    Take in a :class:`pandas.Series` of assets with respective asset
+    class and construct a `.csv` that can be used to test different
+    machine learning techniques
 
-def check_for_keys(ticker_list, store_path):
+    :ARGS:
+
+        trained_assets: :class:`pandas.Series` of the trained asset
+        classes
+
+        store_path: :class:`string` of the location of the HDFStore
+        where the asset prices are located
+
+    :RETURNS:
+
+        :class:`pandas.DataFrame` of the r-squared values for each
+        of the "core assets"
     """
-    Determine which, if any of the :class:`list` `ticker_list` are
-    inside of the store.  If all tickers are located in the store
-    returns 1, otherwise returns 0 (provides a "check" to see if
-    other functions can be run)
-    """
+
     try:
-        store = pandas.HDFStore(path = store_path, mode = 'r+')
+        store = pandas.HDFStore(store_path, 'r')
     except IOError:
-        print  store_path + " is not a valid path to an HDFStore Object"
+        print store_path + " is not a valid path to HDFStore"
         return
 
-    if isinstance(ticker_list, pandas.Index):
-        #pandas.Index is not sortable, so much tolist() it
-        ticker_list = ticker_list.tolist()
-
-    store_keys = map(lambda x: x.strip('/'), store.keys())
-    not_in_store = numpy.setdiff1d(ticker_list, store_keys)
-    store.close()
-
-    #if len(not_in_store) == 0, all tickers are present
-    if not len(not_in_store):
-        print "All tickers in store"
-        return 1
-    else:
-        for ticker in not_in_store:
-            print "store does not contain " + ticker
-        return 0
+    keys = pandas.Index(map(lambda x: x.strip('/'), store.keys() ))
     
+    #in-sample tickers
+    col_tickers = numpy.random.choice(keys, int(len(keys)/3.))
+
+    compl_ins = keys[~keys.isin(col_tickers)]
+
+    #create the asset clas mappings
+    ac_asint = pandas.Categorical.from_array(trained_assets)
+    cat_dict = dict( zip(ac_asint, ac_asint.labels) )
+    ac_df = pandas.DataFrame({'asset_class': trained_assets,
+                           'ac_asint': ac_asint.labels},
+                           index = trained_assets.index)
+    
+    #ticker_dict =  dict( (tick, []) for tick in col_tickers)
+    p_fish = fish.ProgressFish(total = len(compl_ins))
+    agg_d = {}
+    os_d = {}
+    for i, col in enumerate(col_tickers):
+        p_fish.animate(amount = i)
+        d = {}
+        for ticker in compl_ins:
+            xs = store.get(col)['Adj Close']
+            ys = store.get(ticker)['Adj Close']
+            ind = xs.index & ys.index
+            rsq = pandas.ols(x = xs[ind].apply(numpy.log).diff(),
+                           y = ys[ind].apply(numpy.log).diff()).r2_adj
+            d[ticker] = rsq
+        agg_d[col] = pandas.Series(d)
+
+    store.close()
+    ret_df = pandas.DataFrame(agg_d)
+    ret_df['ac_asint'] = ac_df.loc[tmp.index, 'ac_asint']
+    return ret_df
+
+def predict_ac_max_r2(train_xs, train_ys, test_xs, test_ys,
+                      trained_series, n_neighbors, cat_map):
+    """
+    Training data is a m x n matrix with 'training_tickers' as columns
+    and rows of r-squared for different tickers and asset_class is a
+    n x 1 result of the asset class
+
+    :ARGS:
+
+        training_data: :class:`pandas.DataFrame` of the training data
+        of r-squared values
+
+        results: :class:`pandas.Series` of the actual results
+
+        train_size: :class:`int` of the size of the training_set vs.
+        testing_set
+
+        n_neighbors: :class:`int` the number of neighbors to include
+        to classify the training_data
+
+        trained_series: :class:`pandas.Series` of the columns
+        and their respective asset classes
+
+        cat_map: :class:`dictionary` of the category, key mappings
+        of the category / integer of the asset class
+
+    :RETURNS:
+
+        :class:`pandas.Series` of the tickers that have been estimated
+        and the class they were assigned
+    """
+    inv_sum = train_xs.div(1 - train_xs)
+    wt_df = inv_sum.apply(lambda x: x.div(inv.sum(axis = 1)))
+    trained_series = trained_series[train_xs.columns]
+    key_map = trained_series.to_dict()
+    cum_wt = wt_df.rename(columns = key_map)
+    ac_score = cum_wt.groupby(by = cum_wt.columns, axis = 1).sum()
+    max_score = ac_score.max(axis = 1)
+    bool_df = ac_score.apply(lambda x: x == max_score)
+
+
 def compare_knn_svm(ticker_list, store_path):
     """
     Yes, I'm officially losing my mind, but who isn't.  I mean, why

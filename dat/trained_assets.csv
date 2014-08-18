@@ -1,339 +1,1 @@
-Ticker,Exact Class
-AAXJ,Foreign Equity
-ACWI,Global Equity
-ACWX,Foreign Equity
-AGG,US Fixed Income
-AMJ,Alternative
-AMLP,Alternative
-BAB,US Fixed Income
-BBH,US Equity
-BIL,US Fixed Income
-BIV,US Fixed Income
-BKF,Foreign Equity
-BKLN,US Fixed Income
-BND,US Fixed Income
-BOND,US Fixed Income
-BRF,Foreign Equity
-BSJF,US Fixed Income
-BSV,US Fixed Income
-BWX,Foreign Fixed Income
-BWZ,Foreign Fixed Income
-CEMB,Foreign Fixed Income
-CEW,Alternative
-CHIQ,Foreign Equity
-CVY,US Equity
-CWB,Alternative
-DBA,Alternative
-DBB,Alternative
-DBC,Alternative
-DBE,Alternative
-DBJP,Foreign Equity
-DBO,Alternative
-DBV,Alternative
-DEM,Foreign Equity
-DFJ,Foreign Equity
-DGS,Foreign Equity
-DGZ,Alternative
-DIA,US Equity
-DJP,Alternative
-DLN,US Equity
-DOG,US Equity
-DVY,US Equity
-DWX,Foreign Equity
-DXJ,Foreign Equity
-EBND,Foreign Fixed Income
-ECH,Foreign Equity
-ECON,Foreign Equity
-EDIV,Foreign Equity
-EEM,Foreign Equity
-EEMV,Foreign Equity
-EFA,Foreign Equity
-EFAV,Foreign Equity
-EFV,Foreign Equity
-EFZ,Alternative
-EIDO,Foreign Equity
-ELD,Foreign Fixed Income
-EMB,Foreign Fixed Income
-EMCB,Foreign Fixed Income
-EMLC,Foreign Fixed Income
-EMLP,US Equity
-EPHE,Foreign Equity
-EPI,Foreign Equity
-EPOL,Foreign Equity
-EPP,Foreign Equity
-EPU,Foreign Equity
-ERUS,Foreign Equity
-EUM,Alternative
-EWA,Foreign Equity
-EWC,Foreign Equity
-EWD,Foreign Equity
-EWG,Foreign Equity
-EWH,Foreign Equity
-EWI,Foreign Equity
-EWJ,Foreign Equity
-EWL,Foreign Equity
-EWM,Foreign Equity
-EWN,Foreign Equity
-EWP,Foreign Equity
-EWQ,Foreign Equity
-EWS,Foreign Equity
-EWT,Foreign Equity
-EWU,Foreign Equity
-EWW,Foreign Equity
-EWX,Foreign Equity
-EWY,Foreign Equity
-EWZ,Foreign Equity
-EZA,Foreign Equity
-EZU,Foreign Equity
-FCG,US Equity
-FDL,US Equity
-FDN,US Equity
-FEM,Foreign Equity
-FEZ,Foreign Equity
-FM,Foreign Equity
-FRI,Alternative
-FVD,US Equity
-FXA,Alternative
-FXD,US Equity
-FXE,Alternative
-FXG,US Equity
-FXH,US Equity
-FXI,Foreign Equity
-FXO,US Equity
-FXY,Alternative
-GCC,Alternative
-GDX,Global Equity
-GDXJ,Global Equity
-GLD,Alternative
-GNR,Global Equity
-GOVT,US Fixed Income
-GREK,Foreign Equity
-GSG,Alternative
-GUNR,Global Equity
-GWL,Foreign Equity
-GWX,Foreign Equity
-GXC,Foreign Equity
-GXG,Foreign Equity
-HAO,Foreign Equity
-HDGE,Alternative
-HDV,US Equity
-HEDJ,Foreign Equity
-HYD,US Fixed Income
-HYEM,Foreign Fixed Income
-HYG,US Fixed Income
-HYS,US Fixed Income
-IAU,Alternative
-IBB,US Equity
-ICF,Alternative
-IDV,Foreign Equity
-IDX,Foreign Equity
-IEF,US Fixed Income
-IEFA,Foreign Equity
-IEI,US Fixed Income
-IEMG,Foreign Equity
-IEO,US Equity
-IEV,Foreign Equity
-IEZ,US Equity
-IFGL,Foreign Equity
-IGE,US Equity
-IGF,Global Equity
-IGN,US Equity
-IJH,US Equity
-IJJ,US Equity
-IJK,US Equity
-IJR,US Equity
-IJS,US Equity
-IJT,US Equity
-ILF,Foreign Equity
-INDA,Foreign Equity
-INDY,Foreign Equity
-ITB,US Equity
-ITM,US Fixed Income
-ITOT,US Equity
-IVE,US Equity
-IVV,US Equity
-IVW,US Equity
-IWB,US Equity
-IWD,US Equity
-IWF,US Equity
-IWM,US Equity
-IWN,US Equity
-IWO,US Equity
-IWP,US Equity
-IWR,US Equity
-IWS,US Equity
-IWV,US Equity
-IXC,Global Equity
-IYE,US Equity
-IYF,US Equity
-IYJ,US Equity
-IYM,US Equity
-IYR,Alternative
-IYT,US Equity
-IYW,US Equity
-IYZ,US Equity
-JNK,US Fixed Income
-KBE,US Equity
-KBWB,US Equity
-KIE,US Equity
-KOL,Global Equity
-KRE,US Equity
-MBB,US Fixed Income
-MCHI,Foreign Equity
-MDIV,Multi-Class
-MDY,US Equity
-MINT,US Fixed Income
-MLPI,Alternative
-MLPN,Alternative
-MOO,Global Equity
-MUB,US Fixed Income
-NKY,Foreign Equity
-OEF,US Equity
-OIH,US Equity
-OIL,Alternative
-PALL,Alternative
-PBJ,US Equity
-PBP,US Equity
-PBS,US Equity
-PBW,US Equity
-PCEF,Alternative
-PCY,Foreign Fixed Income
-PDP,US Equity
-PEY,US Equity
-PFF,Alternative
-PGF,Alternative
-PGX,Alternative
-PHB,US Fixed Income
-PHO,US Equity
-PID,Foreign Equity
-PIE,Foreign Equity
-PIN,Foreign Equity
-PIZ,Foreign Equity
-PJP,US Equity
-PKW,US Equity
-PPH,US Equity
-PRF,US Equity
-PSP,Global Equity
-PSQ,Alternative
-PWV,US Equity
-PXH,Foreign Equity
-PZA,US Fixed Income
-QQQ,US Equity
-REM,Alternative
-RJA,Alternative
-RJI,Alternative
-RSP,US Equity
-RSX,Foreign Equity
-RWM,Alternative
-RWO,Global Equity
-RWR,Alternative
-RWX,Foreign Equity
-SBB,Alternative
-SCHA,US Equity
-SCHB,US Equity
-SCHD,US Equity
-SCHE,Foreign Equity
-SCHF,Foreign Equity
-SCHG,US Equity
-SCHH,Alternative
-SCHM,US Equity
-SCHV,US Equity
-SCHX,US Equity
-SCIF,Foreign Equity
-SCZ,Foreign Equity
-SDIV,Global Equity
-SDOG,US Equity
-SDY,US Equity
-SGOL,Alternative
-SH,Alternative
-SHM,US Fixed Income
-SHV,US Fixed Income
-SHY,US Fixed Income
-SIL,Global Equity
-SIVR,Alternative
-SJNK,US Fixed Income
-SLV,Alternative
-SMH,US Equity
-SOXX,US Equity
-SPHB,US Equity
-SPLV,US Equity
-SPY,US Equity
-STPZ,US Fixed Income
-SVXY,Alternative
-TAN,US Equity
-TBF,Alternative
-TDTT,US Fixed Income
-TFI,US Fixed Income
-THD,Foreign Equity
-TIP,US Fixed Income
-TLT,US Fixed Income
-TUR,Foreign Equity
-UNG,Alternative
-USMV,US Equity
-USO,Alternative
-UUP,Alternative
-VB,US Equity
-VBK,US Equity
-VBR,US Equity
-VDC,US Equity
-VEA,Foreign Equity
-VEU,Foreign Equity
-VFH,US Equity
-VGK,Foreign Equity
-VGT,US Equity
-VHT,US Equity
-VIG,US Equity
-VIIX,Alternative
-VIXY,Alternative
-VNM,Foreign Equity
-VNQ,Alternative
-VNQI,Foreign Equity
-VO,US Equity
-VOE,US Equity
-VOO,US Equity
-VPL,Foreign Equity
-VPU,US Equity
-VT,Global Equity
-VTI,US Equity
-VTIP,US Fixed Income
-VTV,US Equity
-VUG,US Equity
-VV,US Equity
-VWO,Foreign Equity
-VXF,US Equity
-VXUS,Foreign Equity
-VXX,Alternative
-VXZ,Alternative
-VYM,US Equity
-WIP,Foreign Fixed Income
-XBI,US Equity
-XES,US Equity
-XHB,US Equity
-XIV,Alternative
-XLB,US Equity
-XLE,US Equity
-XLF,US Equity
-XLI,US Equity
-XLK,US Equity
-XLP,US Equity
-XLU,US Equity
-XLV,US Equity
-XLY,US Equity
-XME,US Equity
-XOP,US Equity
-XRT,US Equity
-YMLP,Alternative
-ZIV,Alternative
-AOR,Multi-Class
-AOM,Multi-Class
-GAL,Multi-Class
-IJNK,Foreign Fixed Income
-RLY,Multi-Class
-INKM,Multi-Class
-TZV,Multi-Class
-TZO,Multi-Class
-AOA,Multi-Class
-TZD,Multi-Class
-TZE,Multi-Class
-AOK,Multi-Class
-GTAA,Multi-Class
+Ticker,Exact ClassAAXJ,Foreign EquityACWI,Global EquityACWX,Foreign EquityAGG,US Fixed IncomeAMJ,AlternativeAMLP,AlternativeAOA,Multi-ClassAOK,Multi-ClassAOM,Multi-ClassAOR,Multi-ClassBAB,US Fixed IncomeBBH,US EquityBIL,US Fixed IncomeBIV,US Fixed IncomeBKF,Foreign EquityBKLN,US Fixed IncomeBND,US Fixed IncomeBOND,US Fixed IncomeBRF,Foreign EquityBSJF,US Fixed IncomeBSV,US Fixed IncomeBWX,Foreign Fixed IncomeBWZ,Foreign Fixed IncomeCEMB,Foreign Fixed IncomeCEW,AlternativeCHIQ,Foreign EquityCVY,US EquityCWB,AlternativeCWI,Foreign EquityDBA,AlternativeDBB,AlternativeDBC,AlternativeDBE,AlternativeDBJP,Foreign EquityDBO,AlternativeDBV,AlternativeDEM,Foreign EquityDFJ,Foreign EquityDGS,Foreign EquityDGZ,AlternativeDIA,US EquityDJP,AlternativeDLN,US EquityDOG,US EquityDVY,US EquityDWX,Foreign EquityDXJ,Foreign EquityEBND,Foreign Fixed IncomeECH,Foreign EquityECON,Foreign EquityEDIV,Foreign EquityEEM,Foreign EquityEEMV,Foreign EquityEFA,Foreign EquityEFAV,Foreign EquityEFV,Foreign EquityEFZ,AlternativeEIDO,Foreign EquityELD,Foreign Fixed IncomeEMB,Foreign Fixed IncomeEMCB,Foreign Fixed IncomeEMLC,Foreign Fixed IncomeEMLP,US EquityEPHE,Foreign EquityEPI,Foreign EquityEPOL,Foreign EquityEPP,Foreign EquityEPU,Foreign EquityERUS,Foreign EquityEUM,AlternativeEWA,Foreign EquityEWC,Foreign EquityEWD,Foreign EquityEWG,Foreign EquityEWH,Foreign EquityEWI,Foreign EquityEWJ,Foreign EquityEWL,Foreign EquityEWM,Foreign EquityEWN,Foreign EquityEWP,Foreign EquityEWQ,Foreign EquityEWS,Foreign EquityEWT,Foreign EquityEWU,Foreign EquityEWW,Foreign EquityEWX,Foreign EquityEWY,Foreign EquityEWZ,Foreign EquityEZA,Foreign EquityEZU,Foreign EquityFCG,US EquityFDL,US EquityFDN,US EquityFEM,Foreign EquityFEZ,Foreign EquityFM,Foreign EquityFRI,AlternativeFVD,US EquityFXA,AlternativeFXD,US EquityFXE,AlternativeFXG,US EquityFXH,US EquityFXI,Foreign EquityFXO,US EquityFXY,AlternativeGAL,Multi-ClassGCC,AlternativeGDX,Global EquityGDXJ,Global EquityGLD,AlternativeGNR,Global EquityGOVT,US Fixed IncomeGREK,Foreign EquityGSG,AlternativeGTAA,Multi-ClassGUNR,Global EquityGWL,Foreign EquityGWX,Foreign EquityGXC,Foreign EquityGXG,Foreign EquityHAO,Foreign EquityHDGE,AlternativeHDV,US EquityHEDJ,Foreign EquityHYD,US Fixed IncomeHYEM,Foreign Fixed IncomeHYG,US Fixed IncomeHYS,US Fixed IncomeIAU,AlternativeIBB,US EquityICF,AlternativeIDV,Foreign EquityIDX,Foreign EquityIEF,US Fixed IncomeIEFA,Foreign EquityIEI,US Fixed IncomeIEMG,Foreign EquityIEO,US EquityIEV,Foreign EquityIEZ,US EquityIFGL,Foreign EquityIGE,US EquityIGF,Global EquityIGN,US EquityIJH,US EquityIJJ,US EquityIJK,US EquityIJNK,Foreign Fixed IncomeIJR,US EquityIJS,US EquityIJT,US EquityILF,Foreign EquityINDA,Foreign EquityINDY,Foreign EquityINKM,Multi-ClassITB,US EquityITM,US Fixed IncomeITOT,US EquityIVE,US EquityIVV,US EquityIVW,US EquityIWB,US EquityIWD,US EquityIWF,US EquityIWM,US EquityIWN,US EquityIWO,US EquityIWP,US EquityIWR,US EquityIWS,US EquityIWV,US EquityIXC,Global EquityIYE,US EquityIYF,US EquityIYJ,US EquityIYM,US EquityIYR,AlternativeIYT,US EquityIYW,US EquityIYZ,US EquityJNK,US Fixed IncomeKBE,US EquityKBWB,US EquityKIE,US EquityKOL,Global EquityKRE,US EquityLQD,US Fixed IncomeMBB,US Fixed IncomeMCHI,Foreign EquityMDIV,Multi-ClassMDY,US EquityMINT,US Fixed IncomeMLPI,AlternativeMLPN,AlternativeMOO,Global EquityMUB,US Fixed IncomeNKY,Foreign EquityOEF,US EquityOIH,US EquityOIL,AlternativePALL,AlternativePBJ,US EquityPBP,US EquityPBS,US EquityPBW,US EquityPCEF,AlternativePCY,Foreign Fixed IncomePDP,US EquityPEY,US EquityPFF,AlternativePGF,AlternativePGX,AlternativePHB,US Fixed IncomePHO,US EquityPID,Foreign EquityPIE,Foreign EquityPIN,Foreign EquityPIZ,Foreign EquityPJP,US EquityPKW,US EquityPPH,US EquityPRF,US EquityPSP,Global EquityPSQ,AlternativePWV,US EquityPXH,Foreign EquityPZA,US Fixed IncomeQQQ,US EquityREM,AlternativeRJA,AlternativeRJI,AlternativeRLY,Multi-ClassRSP,US EquityRSX,Foreign EquityRWM,AlternativeRWO,Global EquityRWR,AlternativeRWX,Foreign EquitySBB,AlternativeSCHA,US EquitySCHB,US EquitySCHD,US EquitySCHE,Foreign EquitySCHF,Foreign EquitySCHG,US EquitySCHH,AlternativeSCHM,US EquitySCHV,US EquitySCHX,US EquitySCIF,Foreign EquitySCZ,Foreign EquitySDIV,Global EquitySDOG,US EquitySDY,US EquitySGOL,AlternativeSH,AlternativeSHM,US Fixed IncomeSHV,US Fixed IncomeSHY,US Fixed IncomeSIL,Global EquitySIVR,AlternativeSJNK,US Fixed IncomeSLV,AlternativeSMH,US EquitySOXX,US EquitySPHB,US EquitySPLV,US EquitySPY,US EquitySTPZ,US Fixed IncomeSVXY,AlternativeTAN,US EquityTBF,AlternativeTDTT,US Fixed IncomeTFI,US Fixed IncomeTHD,Foreign EquityTIP,US Fixed IncomeTLT,US Fixed IncomeTUR,Foreign EquityTZD,Multi-ClassTZE,Multi-ClassTZO,Multi-ClassTZV,Multi-ClassUNG,AlternativeUSMV,US EquityUSO,AlternativeUUP,AlternativeVB,US EquityVBK,US EquityVBR,US EquityVDC,US EquityVEA,Foreign EquityVEU,Foreign EquityVFH,US EquityVGK,Foreign EquityVGT,US EquityVHT,US EquityVIG,US EquityVIIX,AlternativeVIXY,AlternativeVNM,Foreign EquityVNQ,AlternativeVNQI,Foreign EquityVO,US EquityVOE,US EquityVOO,US EquityVPL,Foreign EquityVPU,US EquityVT,Global EquityVTI,US EquityVTIP,US Fixed IncomeVTV,US EquityVUG,US EquityVV,US EquityVWO,Foreign EquityVXF,US EquityVXUS,Foreign EquityVXX,AlternativeVXZ,AlternativeVYM,US EquityWIP,Foreign Fixed IncomeXBI,US EquityXES,US EquityXHB,US EquityXIV,AlternativeXLB,US EquityXLE,US EquityXLF,US EquityXLI,US EquityXLK,US EquityXLP,US EquityXLU,US EquityXLV,US EquityXLY,US EquityXME,US EquityXOP,US EquityXRT,US EquityYMLP,AlternativeZIV,AlternativePFUIX,Foreign Fixed IncomeJGBIX,Foreign Fixed IncomePACEX,Foreign Fixed IncomeFNMIX,Foreign Fixed IncomeRSMIX,Foreign Fixed IncomeOIBIX,Foreign Fixed IncomeAIBDX,Foreign Fixed IncomePIFAX,Foreign Fixed IncomeFINUX,Foreign Fixed IncomePGVFX,Global EquityDODWX,Global EquityARTGX,Global EquityTOLIX,Global EquityGLVAX,Global EquityTHOIX,Global EquityMWEFX,Global EquitySFAAX,Multi-ClassGBATX,Multi-ClassEAAFX,Multi-ClassTMAFX,Multi-ClassPIBAX,Multi-ClassMPBLX,Multi-ClassLGMAX,Multi-ClassWASAX,Multi-ClassMALOX,Multi-Class
