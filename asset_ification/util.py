@@ -25,6 +25,8 @@ import pandas.io.data
 import os
 from sklearn.svm import LinearSVC
 import fish
+from sklearn import metrics
+import matplotlib.pyplot as plt
 
 def construct_training_set(trained_assets, store_path):
     """
@@ -45,7 +47,6 @@ def construct_training_set(trained_assets, store_path):
         :class:`pandas.DataFrame` of the r-squared values for each
         of the "core assets"
     """
-
     try:
         store = pandas.HDFStore(store_path, 'r')
     except IOError:
@@ -87,6 +88,55 @@ def construct_training_set(trained_assets, store_path):
     ret_df['ac_asint'] = ac_df.loc[tmp.index, 'ac_asint']
     return ret_df
 
+def keys_to_cats(cat_series, keys_values):
+    """
+    Helper function to ensure the asset class mappings from the
+    inverse maximization algorithms match those computed by
+    :meth:`construct_training_set`
+
+    :ARGS:
+
+        cat_series: :class:`pandas.Series` with tickers for Index
+        and 'Asset Class' for values
+
+        keys_values: :class:`Series` or iterable with .iteritems()
+        with ('Asset Class', int) pairings used from the
+        :meth:`construct_training_set`
+    """
+    ret_series = cat_series.copy()
+    for key, value in keys_values.iteritems():
+        ret_series[ret_series == key] = value
+    return ret_series
+
+def plot_inv_weight_methods(data, key_value_dict, trained_series, train_prop):
+    train_xs, train_ys, test_xs, test_ys = data_to_in_out_sample(
+        data, train_prop)
+    pred_train_knn = knn_inverse_weighted_r2(train_xs, trained_series, n = None)
+    pred_train_knn = keys_to_cats(pred_train_knn, key_value_dict).sort_index()
+    train_ys = train_ys.sort_index()
+    print metrics.classification_report(train_ys.values.astype(int),
+                                        pred_train_knn.values.astype(int))
+    
+    fig = plt.figure(facecolor = '#f3f3f3')
+    ax = plt.subplot2grid((1, 1), (0,0))
+    plt.imshow(pandas.crosstab(train_ys, pred_train_knn), interpolation = 'nearest')
+    plt.colorbar()
+    plt.title('KNN of R-Squared Inv Score Train', fontsize = 24)
+    plt.show()
+
+    pred_test_knn = knn_inverse_weighted_r2(test_xs, trained_series, n = None)
+    pred_test_knn = keys_to_cats(pred_test_knn, key_value_dict).sort_index()
+
+    print metrics.classification_report(test_ys.values.astype(int),
+                                        pred_test_knn.values.astype(int))
+    fig = plt.figure(facecolor = '#f3f3f3')
+    ax = plt.subplot2grid((1, 1), (0, 0))
+    plt.imshow(pandas.crosstab(test_ys, pred_test_knn), interpolation = 'nearest')
+    plt.title('KNN of R-Squared Inv Score Test', fontsize = 24)
+    plt.colorbar()
+    plt.show()
+    return None
+
 def data_to_in_out_sample(data, train_prop):
     """
     Split the data into training and testing data, wwhere training
@@ -103,17 +153,18 @@ def data_to_in_out_sample(data, train_prop):
 
         train_xs, train_ys, test_xs, test_ys ... 
     """
-    train_ind = numpy.random.choice(data.index, int(train_prop * len(data)))
+    train_ind = numpy.random.choice(data.index, int(train_prop * len(data)),
+                                    replace = False)
     test_ind = data.index[~data.index.isin(train_ind)]
     train_xs = data.loc[train_ind, :].copy()
-    train_ys = train_xs['ac_asint']
+    train_ys = train_xs['ac_asint'].copy()
     train_xs = train_xs.drop(labels = ['ac_asint'], axis = 1)
     test_xs = data.loc[test_ind, :].copy()
-    test_ys = test_xs['ac_asint']
+    test_ys = test_xs['ac_asint'].copy()
     test_xs = test_xs.drop(labels = ['ac_asint'], axis = 1)
     return train_xs, train_ys, test_xs, test_ys
-   
-def pred_max_inverse_weighted_r2(data, trained_series):
+
+def knn_inverse_weighted_r2(data, trained_series, n = None):
     """
     Training data is a m x n matrix with 'training_tickers' as columns
     and rows of r-squared for different tickers and asset_class is a
@@ -129,22 +180,23 @@ def pred_max_inverse_weighted_r2(data, trained_series):
     :RETURNS:
 
         :class:`pandas.Series` of the tickers that have been estimated
-        and the class they were assigned
+        based on the n closest neighbors
     """
-    inv_sum = data.div(1 - data)
-    wt_df = inv_sum.apply(lambda x: x.div(inv_sum.sum(axis = 1)))
+    if not n:
+        n = len(trained_series.unique()) + 1
+    inv_wts = data.div(1 - data)
     trained_series = trained_series[data.columns]
     key_map = trained_series.to_dict()
-    cum_wt = wt_df.rename(columns = key_map)
-    ac_score = cum_wt.groupby(by = cum_wt.columns, axis = 1).sum()
-    max_score = ac_score.max(axis = 1)
-    bool_df = ac_score.apply(lambda x: x == max_score)
-    pred_xs = {}
-    for i, row in enumerate(bool_df.index):
-        pred_xs[row] = bool_df.columns[bool_df.iloc[i, :]][0]
-    return pandas.Series(pred_xs)
-        
+    inv_wts = inv_wts.rename(columns = key_map)
 
+    pred_xs = {}
+    for i, ticker in enumerate(inv_wts.index):
+        row = inv_wts.iloc[i, :]
+        row.sort(ascending = False)
+        tmp = row[:n].groupby(row[:n].index).sum()
+        pred_xs[ticker] = tmp.argmax()
+
+    return pandas.Series(pred_xs)
 
 def compare_knn_svm(ticker_list, store_path):
     """
