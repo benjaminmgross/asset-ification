@@ -25,8 +25,6 @@ import pandas.io.data
 import os
 from sklearn.svm import LinearSVC
 
-def my_silly_fun(my_arg):
-    return "I changed it"
 
 def check_for_keys(ticker_list, store_path):
     """
@@ -169,7 +167,7 @@ def model_accuracy_crosstab(trained_series, store_path, calc_meth):
     :RETURNS:
 
         :class:`pandas.DataFrame` of the confusion matrix
-    """
+        """
     prob_df = model_accuracy_helper_fn(trained_series, store_path, calc_meth)
     algo_results = prob_df.apply(lambda x: x.argmax(), axis = 1)
     return pandas.crosstab(algo_results, trained_series)

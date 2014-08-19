@@ -24,6 +24,9 @@ import pandas
 import pandas.io.data
 import os
 from sklearn.svm import LinearSVC
+from sklearn.naive_bayes import GaussianNB
+from sklearn.ensemble import RandomForestClassifier
+
 import fish
 from sklearn import metrics
 import matplotlib.pyplot as plt
@@ -108,14 +111,39 @@ def keys_to_cats(cat_series, keys_values):
         ret_series[ret_series == key] = value
     return ret_series
 
+def classify_with_sklearn(linear_svc, train_x, train_y, test_x, test_y):
+    """
+    sklearn classifier to test the classificaiton of the assets
+    """
+    mu = train_x.mean(axis = 1)
+    normed = train_x.apply(lambda x: numpy.subtract(x, mu))
+    std_norm = normed.apply(lambda x: x.div(train_x.std(axis = 1)))
+    linear_svc.fit(std_norm, train_y)
+    pred_train_y = linear_svc.predict(std_norm)
+    print metrics.classification_report(train_y, pred_train_y)
+    print metrics.accuracy_score(train_y, pred_train_y)
+
+    mu = test_x.mean(axis = 1)
+    normed = test_x.apply(lambda x: numpy.subtract(x, mu))
+    std_norm = normed.apply(lambda x: x.div(test_x.std(axis = 1)))
+
+    pred_test_y = linear_svc.predict(std_norm)
+    print metrics.classification_report(train_y, pred_test_y)
+    print metrics.accuracy_score(train_y, pred_test_y)
+    return None
+
 def plot_inv_weight_methods(data, key_value_dict, trained_series, train_prop):
     train_xs, train_ys, test_xs, test_ys = data_to_in_out_sample(
         data, train_prop)
     pred_train_knn = knn_inverse_weighted_r2(train_xs, trained_series, n = None)
     pred_train_knn = keys_to_cats(pred_train_knn, key_value_dict).sort_index()
     train_ys = train_ys.sort_index()
+
+    
     print metrics.classification_report(train_ys.values.astype(int),
                                         pred_train_knn.values.astype(int))
+    print metrics.accuracy_score(train_ys.values.astype(int),
+                                 pred_train_knn.values.astype(int))
     
     fig = plt.figure(facecolor = '#f3f3f3')
     ax = plt.subplot2grid((1, 1), (0,0))
@@ -129,6 +157,9 @@ def plot_inv_weight_methods(data, key_value_dict, trained_series, train_prop):
 
     print metrics.classification_report(test_ys.values.astype(int),
                                         pred_test_knn.values.astype(int))
+    print metrics.accuracy_score(test_ys.values.astype(int),
+                                        pred_test_knn.values.astype(int))
+    
     fig = plt.figure(facecolor = '#f3f3f3')
     ax = plt.subplot2grid((1, 1), (0, 0))
     plt.imshow(pandas.crosstab(test_ys, pred_test_knn), interpolation = 'nearest')
@@ -197,6 +228,7 @@ def knn_inverse_weighted_r2(data, trained_series, n = None):
         pred_xs[ticker] = tmp.argmax()
 
     return pandas.Series(pred_xs)
+
 
 def compare_knn_svm(ticker_list, store_path):
     """
