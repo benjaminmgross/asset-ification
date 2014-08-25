@@ -172,6 +172,7 @@ def create_data_store(ticker_list, store_path):
     if success == 0: #none of it worked, delete the store
         print "Creation Failed"
         os.remove(path)
+    print 
     return None
 
 def first_valid_date(prices):
