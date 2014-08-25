@@ -1,19 +1,9 @@
 #!/usr/bin/env python
 # encoding: utf-8
 """
-.. module:: asset_ification.py
+.. module:: classify.py
 
 Created by Benjamin M. Gross
-
-.. note:: General Convention for :mod:`asset_ification`
-
-When passing around
-HDFStore to and from functions, the store is left open if the function
-does not complete.  For this reason (and until I figure out a better
-fix) the general convention is that functions are passed
-:class:`pandas.Series` of training data (tickers, and asset classes)
-and :class:`str` of the paths that lead to stores, so if there is any
-error with the function, the HDFStore can be closed within the exception
 
 """
 
@@ -22,9 +12,110 @@ import datetime
 import numpy
 import pandas
 import os
-    
+from . import util
 
-def knn_wt_inv_weighted(series, trained_series, n = None):
+def classify_series_with_store(series, trained_series, store_path,
+                               calc_meth = 'x-inv-x', n = None):
+    """
+    Determine the asset class of price series from an existing
+    HDFStore with prices
+
+    :ARGS:
+
+        series: :class:`pandas.Series` or `pandas.DataFrame` of the
+        price series to determine the asset class of
+
+        trained_series: :class:`pandas.Series` of tickers
+        and their respective asset classes
+
+        store_path: :class:`string` of the location of the HDFStore
+        to find asset prices
+
+        calc_meth: :class:`string` of either ['x-inv-x', 'inv-x', 'exp-x']
+        to determine which calculation method is used
+                
+        n: :class:`integer` of the number of highest r-squared assets
+        to include when classifying a new asset
+
+    :RETURNS:
+
+        :class:`string` of the tickers that have been estimated
+        based on the method provided
+    """
+
+    if series.name in trained_series.index:
+        return trained_series[series.name]
+    else:
+        try:
+            store = pandas.HDFStore(path = store_path, mode = 'r')
+        except IOError:
+            print store_path + " is not a valid path to HDFStore"
+            return
+        rsq_d = {}
+        ys = util.log_returns(series)
+
+        for key in store.keys():
+            key = key.strip('/')
+            p = store.get(key)
+            xs = util.log_returns(p['Adj Close'])
+            ind = util.clean_dates(xs, ys)
+            rsq_d[key] = util.adj_r2_uv(x = xs[ind], y = ys[ind])
+        rsq_df = pandas.Series(rsq_d)
+
+        if not n:
+            n = len(trained_series.unique()) + 1
+        
+    return __weighting_method_agg_fun(series = rsq_df,
+                                      trained_series = trained_series,
+                                      n = n, calc_meth = calc_meth)
+
+def classify_series_with_online(series, trained_series,
+                                calc_meth = 'x-inv-x', n = None):
+    """
+    Determine the asset class of price series from an existing
+    HDFStore with prices
+
+    :ARGS:
+
+        series: :class:`pandas.Series` or `pandas.DataFrame` of the
+        price series to determine the asset class of
+
+        trained_series: :class:`pandas.Series` of tickers
+        and their respective asset classes
+
+        calc_meth: :class:`string` of either ['x-inv-x', 'inv-x', 'exp-x']
+        to determine which calculation method is used
+                
+        n: :class:`integer` of the number of highest r-squared assets
+        to include when classifying a new asset
+
+    :RETURNS:
+
+        :class:`string` of the tickers that have been estimated
+        based on the method provided
+    """
+    if series.name in trained_series.index:
+        return trained_series[series.name]
+    else:
+        price_dict = util.tickers_to_dict(trained_series.index)
+        rsq_d = {}
+        ys = util.log_returns(series)
+        
+        for key in price_dict.keys():
+            p = price_dict[key]
+            xs = util.log_returns(p['Adj Close'])
+            ind = util.clean_dates(xs, ys)
+            rsq_d[key] = util.adj_r2_uv(x = xs[ind], y = ys[ind])
+        rsq_df = pandas.Series(rsq_d)
+
+        if not n:
+            n = len(trained_series.unique()) + 1
+        
+    return __weighting_method_agg_fun(series = rsq_df,
+                                      trained_series = trained_series,
+                                      n = n, calc_meth = calc_meth)
+
+def knn_exp_weighted(series, trained_series, n = None):
     """
     Training data is a m x n matrix with 'training_tickers' as columns
     and rows of r-squared for different tickers and asset_class is a
@@ -36,7 +127,7 @@ def knn_wt_inv_weighted(series, trained_series, n = None):
         r-squared values
 
         trained_series: :class:`pandas.Series` of the columns
-        and their respective asset clasnses
+        and their respective asset classes
 
         n: :class:`integer` of the number of highest r-squared assets
         to include when classifying a new asset
@@ -50,7 +141,7 @@ def knn_wt_inv_weighted(series, trained_series, n = None):
         n = len(trained_series.unique()) + 1
 
     return __weighting_method_agg_fun(series, trained_series, n,
-                                      calc_meth = 'x-inv-x')
+                                      calc_meth = 'exp-x')
 
 def knn_inverse_weighted(series, trained_series, n = None):
     """
@@ -80,7 +171,7 @@ def knn_inverse_weighted(series, trained_series, n = None):
     return __weighting_method_agg_fun(series, trained_series, n,
                                       calc_meth = 'inv-x')
 
-def knn_exp_weighted(series, trained_series, n = None):
+def knn_wt_inv_weighted(series, trained_series, n = None):
     """
     Training data is a m x n matrix with 'training_tickers' as columns
     and rows of r-squared for different tickers and asset_class is a
@@ -106,7 +197,9 @@ def knn_exp_weighted(series, trained_series, n = None):
         n = len(trained_series.unique()) + 1
 
     return __weighting_method_agg_fun(series, trained_series, n,
-                                      calc_meth = 'exp-x')
+                                      calc_meth = 'x-inv-x')
+
+
 
 def __weighting_method_agg_fun(series, trained_series, n, calc_meth):
     """
@@ -153,59 +246,4 @@ def __weighting_method_agg_fun(series, trained_series, n, calc_meth):
             trained_series, n, calc_meth), axis = 1)
     else:
         return weighting_method_agg_fun(series, trained_series, n, calc_meth)
-    
-
-def price_data_etf_list(write_path = None):
-    """
-    www.price-data.com has pages with all of the etf tickers
-    available on it.  This function acesses each of those pages,
-    stores the values to :class:`pandas.DataFrame` and saves to
-    file
-
-    :ARGS:
-    
-        write_path: :class:`string` of the path to save the :class:`DataFrame`
-        of tickers as a ``.csv``  If ``None`` is provided, only the 
-        :class:`pandas.DataFrame` will be returned
-    """
-
-    #the first three url's from price-data, the rest can be generated
-    p_a = ("http://www.price-data.com/"
-        "listing-of-exchange-traded-funds/")
-    p_b = ("http://www.price-data.com/listing-of-exchange-traded-funds/"
-        "listing-of-exchange-traded-funds-starting-with-b/")
-    p_c = ("http://www.price-data.com/listing-of-exchange-traded-funds/"
-        "list-of-exchange-traded-funds-starting-with-c/")
-    p_k = ("http://www.price-data.com/listing-of-exchange-traded-funds/"
-        "list-of-exchanged-traded-funds-starting-with-k/")
-
-    base_url = ("http://www.price-data.com/listing-of-exchange-traded-funds/"
-        "list-of-exchange-traded-funds-starting-with-")
-    letters = 'defghijlmnopqrstuvwxyz'
-    url_dict = dict(map(lambda x, y: [x, y], letters,
-        map(lambda s: base_url + s, letters)))
-
-    #the wonky ones
-    url_dict['a'], url_dict['b'], url_dict['c'] = p_a, p_b, p_c
-    url_dict['k'] = p_k
-
-    #pull down the tables into a list
-
-    d =[]
-    for letter in url_dict.keys():
-        try:
-            d.extend(pandas.read_html(url_dict[letter], index_col = 0, 
-                                       infer_types = False))
-            print "succeeded for letter " + letter
-        except:
-            print "Did not succeed for letter " + letter
-
-    agg_df = pandas.concat(d, axis = 0)
-    agg_df.columns = ['Description']
-    agg_df.index.name = 'Ticker'
-    if path != None:
-        agg_df.to_csv(path, encoding = 'utf-8')
-    return agg_df
-
-
 

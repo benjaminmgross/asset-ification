@@ -1,20 +1,13 @@
 #!/usr/bin/env python
 # encoding: utf-8
 """
-.. module:: ai_utils.py
+.. module:: util.py
 
 Created by Benjamin M. Gross
 
-.. note:: General Convention for :mod:`asset_ification`
-
-When passing around
-HDFStore to and from functions, the store is left open if the function
-does not complete.  For this reason (and until I figure out a better
-fix) the general convention is that functions are passed
-:class:`pandas.Series` of training data (tickers, and asset classes)
-and :class:`str` of the paths that lead to stores, so if there is any
-error with the function, the HDFStore can be closed within the exception
-
+A series of utility functions for online and HDFStore to extract price
+series and classify assets.  To be used with the asset_ification.py
+module
 """
 
 import argparse
@@ -448,6 +441,21 @@ def clean_dates(arr_a, arr_b):
         return arr_a.index & arr_b.index
     else:
         return arr_a.index
+
+def log_returns(series):
+    """
+    Return the log_returns of a price series
+
+    :ARGS:
+
+        series: :class:`pandas.Series` of prices
+
+    :RETURNS:
+
+        :class:`pandas.Series` of log returns
+    
+    """
+    return series.apply(numpy.log).diff()
 
 def update_store_prices(store_path):
     """

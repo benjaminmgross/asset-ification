@@ -2,7 +2,7 @@ from setuptools import setup
 
 
 setup(
-    name='asset-ification',
+    name='asset_ification',
     version='0.1',
     author='Benjamin M. Gross',
     author_email='benjaminmgross@gmail.com',
