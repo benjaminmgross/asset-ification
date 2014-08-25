@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 # encoding: utf-8
 """
-.. module:: asset_ification.py
+.. module:: ai_utils.py
 
 Created by Benjamin M. Gross
 
@@ -23,504 +23,113 @@ import numpy
 import pandas
 import pandas.io.data
 import os
-from sklearn.svm import LinearSVC
-from sklearn.naive_bayes import GaussianNB
-from sklearn.ensemble import RandomForestClassifier
 
-import fish
-from sklearn import metrics
-import matplotlib.pyplot as plt
-
-def construct_training_set(trained_assets, store_path):
+def append_store_prices(ticker_list, store_path, start = '01/01/1990'):
     """
-    Take in a :class:`pandas.Series` of assets with respective asset
-    class and construct a `.csv` that can be used to test different
-    machine learning techniques
+    Given an existing store located at ``path``, check to make sure
+    the tickers in ``ticker_list`` are not already in the data
+    set, and then insert the tickers into the store.
 
     :ARGS:
 
-        trained_assets: :class:`pandas.Series` of the trained asset
-        classes
+        ticker_list: :class:`list` of tickers to add to the
+        :class:`pandas.HDStore`
 
-        store_path: :class:`string` of the location of the HDFStore
-        where the asset prices are located
+        store_path: :class:`string` of the path to the     
+        :class:`pandas.HDStore`
+
+        start: :class:`string` of the date to begin the price data
 
     :RETURNS:
 
-        :class:`pandas.DataFrame` of the r-squared values for each
-        of the "core assets"
+        :class:`NoneType` but appends the store and comments the
+         successes ands failures
     """
     try:
-        store = pandas.HDFStore(store_path, 'r')
+        store = pandas.HDFStore(path = store_path,  mode = 'a')
     except IOError:
-        print store_path + " is not a valid path to HDFStore"
+        print  path + " is not a valid path to an HDFStore Object"
         return
+    store_keys = map(lambda x: x.strip('/'), store.keys())
+    not_in_store = numpy.setdiff1d(ticker_list, store_keys )
+    new_prices = tickers_to_dict(not_in_store, start = start)
 
-    keys = pandas.Index(map(lambda x: x.strip('/'), store.keys() ))
-    
-    #in-sample tickers
-    col_tickers = numpy.random.choice(keys, int(len(keys)/3.))
-
-    compl_ins = keys[~keys.isin(col_tickers)]
-
-    #create the asset clas mappings
-    ac_asint = pandas.Categorical.from_array(trained_assets)
-    cat_dict = dict( zip(ac_asint, ac_asint.labels) )
-    ac_df = pandas.DataFrame({'asset_class': trained_assets,
-                           'ac_asint': ac_asint.labels},
-                           index = trained_assets.index)
-    
-    #ticker_dict =  dict( (tick, []) for tick in col_tickers)
-    p_fish = fish.ProgressFish(total = len(compl_ins))
-    agg_d = {}
-    os_d = {}
-    for i, col in enumerate(col_tickers):
-        p_fish.animate(amount = i)
-        d = {}
-        for ticker in compl_ins:
-            xs = store.get(col)['Adj Close']
-            ys = store.get(ticker)['Adj Close']
-            ind = xs.index & ys.index
-            rsq = pandas.ols(x = xs[ind].apply(numpy.log).diff(),
-                           y = ys[ind].apply(numpy.log).diff()).r2_adj
-            d[ticker] = rsq
-        agg_d[col] = pandas.Series(d)
-
+    #attempt to add the new values to the store
+    for val in new_prices.keys():
+        try:
+            store.put(val, new_prices[val])
+            print val + " has been stored"
+        except:
+            print val + " couldn't store"
     store.close()
-    ret_df = pandas.DataFrame(agg_d)
-    ret_df['ac_asint'] = ac_df.loc[tmp.index, 'ac_asint']
-    return ret_df
+    return None
 
-def keys_to_cats(cat_series, keys_values):
+def adj_r2_mv(x, y):
     """
-    Helper function to ensure the asset class mappings from the
-    inverse maximization algorithms match those computed by
-    :meth:`construct_training_set`
+    Returns the adjusted R-Squared for multivariate regression
+    """
+    n = len(y)
+    p = x.shape[1]
+    return 1 - (1 - r2_mv(x, y))*(n - 1)/(n - p - 1)
+
+def adj_r2_uv(x, y):
+    """
+    Returns the adjusted R-Squared for multivariate regression
+    """
+    n = len(y)
+    p = 1
+    return 1 - (1 - r2_uv(x, y))*(n - 1)/(n - p - 1)
+
+def r2_mv(x, y):   
+    """
+    Multivariate r-squared
+    """
+    ones = pandas.Series(numpy.ones(len(y)), name = 'ones')
+    d = x.to_dict()
+    d['ones'] = ones
+    cols = ['ones']
+    cols.extend(x.columns)
+    X = pandas.DataFrame(d, columns = cols)
+    beta = numpy.linalg.inv(X.transpose().dot(X)).dot(
+        X.transpose().dot(y) )
+    y_est = beta[0] + x.dot(beta[1:])
+    ss_res = ((y_est - y)**2).sum()
+    ss_tot = ((y - y.mean())**2).sum()
+    return 1 - ss_res/ss_tot
+
+def r2_uv(x, y):
+    """
+    Returns the R-Squared or `Coefficient of Determination
+    <http://en.wikipedia.org/wiki/Coefficient_of_determination>`_ 
+    for a univariate regression (does not adjust for more independent 
+    variables
+    
+    .. seealso:: :meth:`r_squared_adjusted`
 
     :ARGS:
 
-        cat_series: :class:`pandas.Series` with tickers for Index
-        and 'Asset Class' for values
+        series: :class`pandas.Series` of prices
 
-        keys_values: :class:`Series` or iterable with .iteritems()
-        with ('Asset Class', int) pairings used from the
-        :meth:`construct_training_set`
-    """
-    ret_series = cat_series.copy()
-    for key, value in keys_values.iteritems():
-        ret_series[ret_series == key] = value
-    return ret_series
-
-def classify_with_sklearn(linear_svc, train_x, train_y, test_x, test_y):
-    """
-    sklearn classifier to test the classificaiton of the assets
-    """
-    mu = train_x.mean(axis = 1)
-    normed = train_x.apply(lambda x: numpy.subtract(x, mu))
-    std_norm = normed.apply(lambda x: x.div(train_x.std(axis = 1)))
-    linear_svc.fit(std_norm, train_y)
-    pred_train_y = linear_svc.predict(std_norm)
-    print metrics.classification_report(train_y, pred_train_y)
-    print metrics.accuracy_score(train_y, pred_train_y)
-
-    mu = test_x.mean(axis = 1)
-    normed = test_x.apply(lambda x: numpy.subtract(x, mu))
-    std_norm = normed.apply(lambda x: x.div(test_x.std(axis = 1)))
-
-    pred_test_y = linear_svc.predict(std_norm)
-    print metrics.classification_report(train_y, pred_test_y)
-    print metrics.accuracy_score(train_y, pred_test_y)
-    return None
-
-def plot_inv_weight_methods(data, key_value_dict, trained_series, train_prop):
-    train_xs, train_ys, test_xs, test_ys = data_to_in_out_sample(
-        data, train_prop)
-    pred_train_knn = knn_inverse_weighted_r2(train_xs, trained_series, n = None)
-    pred_train_knn = keys_to_cats(pred_train_knn, key_value_dict).sort_index()
-    train_ys = train_ys.sort_index()
-
-    
-    print metrics.classification_report(train_ys.values.astype(int),
-                                        pred_train_knn.values.astype(int))
-    print metrics.accuracy_score(train_ys.values.astype(int),
-                                 pred_train_knn.values.astype(int))
-    
-    fig = plt.figure(facecolor = '#f3f3f3')
-    ax = plt.subplot2grid((1, 1), (0,0))
-    plt.imshow(pandas.crosstab(train_ys, pred_train_knn), interpolation = 'nearest')
-    plt.colorbar()
-    plt.title('KNN of R-Squared Inv Score Train', fontsize = 24)
-    plt.show()
-
-    pred_test_knn = knn_inverse_weighted_r2(test_xs, trained_series, n = None)
-    pred_test_knn = keys_to_cats(pred_test_knn, key_value_dict).sort_index()
-
-    print metrics.classification_report(test_ys.values.astype(int),
-                                        pred_test_knn.values.astype(int))
-    print metrics.accuracy_score(test_ys.values.astype(int),
-                                        pred_test_knn.values.astype(int))
-    
-    fig = plt.figure(facecolor = '#f3f3f3')
-    ax = plt.subplot2grid((1, 1), (0, 0))
-    plt.imshow(pandas.crosstab(test_ys, pred_test_knn), interpolation = 'nearest')
-    plt.title('KNN of R-Squared Inv Score Test', fontsize = 24)
-    plt.colorbar()
-    plt.show()
-    return None
-
-def data_to_in_out_sample(data, train_prop):
-    """
-    Split the data into training and testing data, wwhere training
-    data = train_prop of the total length of data
-
-    :ARGS:
-
-        data: :class:`pandas.DataFrame` of the training data
-
-        train_prop :class:`float` of the proportion of the data to be
-        be used for training
+        benchmark: :class`pandas.Series` of prices to regress 
+        ``series`` against
 
     :RETURNS:
 
-        train_xs, train_ys, test_xs, test_ys ... 
+        float: of the coefficient of variation
     """
-    train_ind = numpy.random.choice(data.index, int(train_prop * len(data)),
-                                    replace = False)
-    test_ind = data.index[~data.index.isin(train_ind)]
-    train_xs = data.loc[train_ind, :].copy()
-    train_ys = train_xs['ac_asint'].copy()
-    train_xs = train_xs.drop(labels = ['ac_asint'], axis = 1)
-    test_xs = data.loc[test_ind, :].copy()
-    test_ys = test_xs['ac_asint'].copy()
-    test_xs = test_xs.drop(labels = ['ac_asint'], axis = 1)
-    return train_xs, train_ys, test_xs, test_ys
+    def _r2_uv(x, y):   
+        X = pandas.DataFrame({'ones':numpy.ones(len(x)), 'xs':x})
+        beta = numpy.linalg.inv(X.transpose().dot(X)).dot(
+            X.transpose().dot(y) )
+        y_est = beta[0] + beta[1]*x
+        ss_res = ((y_est - y)**2).sum()
+        ss_tot = ((y - y.mean())**2).sum()
+        return 1 - ss_res/ss_tot
 
-def knn_inverse_weighted_r2(data, trained_series, n = None):
-    """
-    Training data is a m x n matrix with 'training_tickers' as columns
-    and rows of r-squared for different tickers and asset_class is a
-    n x 1 result of the asset class
-
-    :ARGS:
-
-        data: :class:`pandas.DataFrame` of the r-squared values
-
-        trained_series: :class:`pandas.Series` of the columns
-        and their respective asset classes
-
-    :RETURNS:
-
-        :class:`pandas.Series` of the tickers that have been estimated
-        based on the n closest neighbors
-    """
-    if not n:
-        n = len(trained_series.unique()) + 1
-    inv_wts = data.div(1 - data)
-    trained_series = trained_series[data.columns]
-    key_map = trained_series.to_dict()
-    inv_wts = inv_wts.rename(columns = key_map)
-
-    pred_xs = {}
-    for i, ticker in enumerate(inv_wts.index):
-        row = inv_wts.iloc[i, :]
-        row.sort(ascending = False)
-        tmp = row[:n].groupby(row[:n].index).sum()
-        pred_xs[ticker] = tmp.argmax()
-
-    return pandas.Series(pred_xs)
-
-
-def compare_knn_svm(ticker_list, store_path):
-    """
-    Yes, I'm officially losing my mind, but who isn't.  I mean, why
-    **shouldn't** I compare the out of sample performance of a 338 
-    dimensional svm with my knn algorithm... makes total sense, fuck off
-    """
-
-    #create categorical variables and load the data
-    rsq_df = pandas.DataFrame.from_csv('../dat/rsq_matrix.csv')
-    trained_series = pandas.Series.from_csv('../dat/trained_assets.csv', header = 0)
-    acs = rsq_df.index.to_series().value_counts()
-    ac_map = pandas.Series( numpy.arange(len(acs)), index = acs.index)
-    y = numpy.array( map(lambda x: ac_map[str(x)], rsq_df.index))
-    clf = LinearSVC()
-    clf.fit(X = rsq_df.values, y = y)
-    store = pandas.HDFStore(store_path, 'r')
-
-    for ticker in ticker_list:
-
-        print "Working on " + ticker + " "  + trained_series[ticker]
-        series = store.get(ticker)['Adj Close']
-        print "Estimate from Nearest Neighbor" + '\n'
-        print lnchg_nearest_neighbors(series, store_path, trained_series)
-        rsq_d = {}
-        for dim in rsq_df.columns:
-            x2 = store.get(dim)['Adj Close']
-            ind = clean_dates(series, x2)
-            rsq_d[dim] = adj_r2_uv(x = x2[ind].apply(numpy.log).diff().dropna(),
-                                   y = series[ind].apply(numpy.log).diff().dropna())
-
-
-        print "Estimate from SVM" + '\n'
-        new_est = pandas.Series(rsq_d)
-        print ac_map[ac_map == clf.predict(new_est)[0]].index
-
-    if store.is_open:
-        store.close()
-    return None
-
-def run_classification(trained_series, store_path):
-    """
-    See the classifications as they are run
-
-    :ARGS:
-
-        trained_series: :class:`pandas.Series` of tickers for the
-        :class:`Index` and Asset Classes for ``.values``
-
-        store_path: :class:`str` pointing to the HDFStore of trained
-        data
-    """
-    etf_list = complete_etf_list()
-    notin_trained = numpy.setdiff1d(etf_list.index.tolist(), 
-                                    trained_series.index.tolist())
-    #let 'er rip!
-    for ticker in notin_trained:
-        try:
-            series = tickers_to_dict(ticker)['Adj Close']
-            print lnchg_nearest_neighbors(series, store_path,
-                                         trained_series)
-        except:
-            print "Didn't work for " + ticker
-
-    return None
-
-def model_accuracy_helper_fn(trained_series, store_path, calc_meth):
-    """
-    Helper function for both of the model accuracy functions
-
-    :ARGS:
-
-        trained_series: :class:`pandas.Series` of tickers for the
-        :class:`Index` and Asset Classes for ``.values``
-
-        store_path: :class:`str` pointing to the HDFStore of trained
-        data
-    """
-    store = pandas.HDFStore(store_path, 'r')
-    keys = map(lambda x: x.strip('/'),  store.keys())
-    d = {}
-    for i, key in enumerate(keys):
-        print ('working on ' + key + '\n' + str(i + 1) + 
-               ' of ' + str(len(keys)+ 1))
-        try:
-            series = store.get(key)['Adj Close']
-            #exclude that ticker for testing
-            not_key = trained_series.index != key
-            d[key] = nn_helper_fn(series, store_path, 
-                trained_series[not_key], calc_meth)
-        except:
-            print "Didn't work for " + key
-    if store.is_open:
-        store.close()
-    return pandas.DataFrame(d).transpose()
-
-def model_accuracy_crosstab(trained_series, store_path, calc_meth):
-    """
-    Calculate the model accuracy (returned as a confusion matrix) of 
-    asset classes that are already known, provided in the 
-    ``training_series``.
-
-    :ARGS:
-
-        store_path: :class:`string` to the HDFStore of asset 
-
-        training_series: :class:`series` where Index is the tickers 
-        and the values are the asset classes
-
-    :RETURNS:
-
-        :class:`pandas.DataFrame` of the confusion matrix
-    """
-    prob_df = model_accuracy_helper_fn(trained_series, store_path, calc_meth)
-    algo_results = prob_df.apply(lambda x: x.argmax(), axis = 1)
-    return pandas.crosstab(algo_results, trained_series)
-
-def model_accuracy_prob_matrix(trained_series, store_path, calc_meth):
-    """
-    Return the trained tickers and their asset class probabilities
-
-    
-    :ARGS:
-
-        trained_series: :class:`pandas.Series` of tickers for the
-        :class:`Index` and Asset Classes for ``.values``
-
-        store_path: :class:`str` pointing to the HDFStore of trained
-        data
-    """
-    return model_accuracy_helper_fn(trained_series, store_path, calc_meth)
-
-def plot_confusion_matrix(trained_series, store_path, calc_meth):
-    """
-    Plot the confusion matrix
-    
-    :ARGS:
-
-        trained_series: :class:`pandas.Series` of tickers for the
-        :class:`Index` and Asset Classes for ``.values``
-
-        store_path: :class:`str` pointing to the HDFStore of trained
-        data
-    """
-    cm = crosstab_model_accuracy(trained_series, store_path, calc_meth)
-    cm_pct = cm.apply(lambda x: x/float(x.sum()), axis = 0)
-    plt.imshow(cm_pct, interpolation = 'nearest')
-    plt.xticks(numpy.arange(len(cm.index)), cm.index)
-    plt.yticks(numpy.arange(len(cm.index)), cm.index)
-    plt.colorbar()
-    plt.title("Confusion Matrix for KNN Asset Classes", fontsize = 16)
-    plt.show()
-
-    
-def lnchg_nearest_neighbors(price_series, store_path, trained_series):
-    """
-    Calculate the "nearest neighbors" on trained asset class data to 
-    determine probabilities the series belongs to given asset classes
-    
-    :ARGS:
-
-        series: :class:`pandas.Series` of prices
-   
-
-        store_path: :class:`string` of a store path or an actual store
-        of the trained  asset class prices (each ticker should also 
-        appear in the  ``.csv`` located at ``training_file_path``
-
-        training_series: :class:`series` where Index is the tickers 
-        and the values are the asset classes
-
-    """
-    return nn_helper_fn(price_series, store_path, trained_series, 'ln_chg')
-
-def nrmdp_nearest_neighbor(price_series, store_path, trained_series):
-    
-    return nn_helper_fn(price_series, store_path, trained_series, 'nrmdp')
-
-def nn_helper_fn(price_series, store_path, trained_series, calc_meth):
-    """
-    Helper Function to allow for different calculation values for the 
-    nearest neighbor algorithm
-    
-    """
-    fun_d = {'ln_chg':lambda x: x.apply(numpy.log).diff().dropna(),
-             'nrmdp':lambda x: (x - x.mean())/x.std(),
-             'na': lambda x: x,}
-
-    ac_freq = trained_series.value_counts()
-    #choose k = d + 1, where d is the number of unique asset classes
-    k = len(ac_freq) + 1
-    
-    #if a path is provided, open the store, otherwise it IS a store
-
-    store = pandas.HDFStore(store_path, 'r')
-
-    prob_d = {'r2_adj': [], 'asset_class': [] }
-    for ticker in trained_series.index:
-        try:
-            comp_asset = store.get(ticker)['Adj Close']
-            ind = clean_dates(comp_asset, price_series)
-            x = comp_asset[ind]
-            y = price_series[ind]
-
-            prob_d['r2_adj'].append(adj_r2_uv(
-                fun_d[calc_meth](x), fun_d[calc_meth](y)))
-            prob_d['asset_class'].append(trained_series[ticker])
-        except:
-            print "Did not work for ticker " + ticker
-
-    prob_df = pandas.DataFrame(prob_d)
-    prob_df.sort(columns = ['r2_adj'], ascending = False, inplace = True)
-    store.close()
-    
-    #apply the weighting scheme
-    df = prob_df.iloc[:k, :]
-    wts = numpy.exp(df['r2_adj'])
-    df['weight'] = wts/wts.sum()
-    return df.groupby('asset_class').sum()['weight']
-    
-    
-#    return prob_df['asset_class'][:k].value_counts()/float(k)
-
-def clean_dates(arr_a, arr_b):
-    """
-    Return the intersection of two :class:`pandas` objects, either a
-    :class:`pandas.Series` or a :class:`pandas.DataFrame`
-
-    :ARGS:
-
-        arr_a: :class:`pandas.DataFrame` or :class:`pandas.Series`
-        arr_b: :class:`pandas.DataFrame` or :class:`pandas.Series`
-
-    :RETURNS:
-
-        :class:`pandas.DatetimeIndex` of the intersection of the two 
-        :class:`pandas` objects
-    """
-    arr_a = arr_a.sort_index()
-    arr_a.dropna(inplace = True)
-    arr_b = arr_b.sort_index()
-    arr_b.dropna(inplace = True)
-    if arr_a.index.equals(arr_b.index) == False:
-        return arr_a.index & arr_b.index
+    if isinstance(x, pandas.DataFrame):
+        return x.apply(lambda x: _r2_uv(y, x))
     else:
-        return arr_a.index
-
-def update_store_prices(store_path):
-    """
-    Update to the most recent prices for all keys of an existing store, 
-    located at path ``path``.
-
-    :ARGS:
-
-        store_path: :class:`string` the location of the ``HDFStore`` file
-
-    :RETURNS:
-
-        :class:`NoneType` but updates the ``HDF5`` file, and prints to 
-        screen which values would not update
-
-    """
-    reader = pandas.io.data.DataReader
-    strftime = datetime.datetime.strftime
-    today_str = strftime(datetime.datetime.today(), format = '%m/%d/%Y')
-    try:
-        store = pandas.HDFStore(path = store_path, mode = 'r+')
-    except IOError:
-        print  store_path + " is not a valid path to an HDFStore Object"
-        return
-
-    for key in store.keys():
-        stored_data = store.get(key)
-        last_stored_date = stored_data.dropna().index.max()
-        today = datetime.datetime.date(datetime.datetime.today())
-        if last_stored_date < pandas.Timestamp(today):
-            try:
-                tmp = reader(key.strip('/'), 'yahoo', start = strftime(
-                    last_stored_date, format = '%m/%d/%Y'))
-
-                #need to drop duplicates because there's 1 row of 
-                #overlap
-                tmp = stored_data.append(tmp)
-                tmp["index"] = tmp.index
-                tmp.drop_duplicates(cols = "index", inplace = True)
-                tmp = tmp[tmp.columns[tmp.columns != "index"]]
-                store.put(key, tmp)
-            except IOError:
-                print "could not update " + key
-
-    store.close()
-    return None
+        return _r2_uv(x, y)
 
 def setup_trained_hdfstore(trained_data, store_path):
     """
@@ -599,48 +208,295 @@ def first_valid_date(prices):
         print "prices must be a DataFrame or dictionary"
         return
 
-
-def append_store_prices(ticker_list, store_path, start = '01/01/1990'):
+def tickers_to_dict(ticker_list, api = 'yahoo', start = '01/01/1990'):
     """
-    Given an existing store located at ``path``, check to make sure
-    the tickers in ``ticker_list`` are not already in the data
-    set, and then insert the tickers into the store.
+    Utility function to return ticker data where the input is either a 
+    ticker, or a list of tickers.
 
     :ARGS:
 
-        ticker_list: :class:`list` of tickers to add to the
-        :class:`pandas.HDStore`
+        ticker_list: :class:`list` in the case of multiple tickers or 
+        :class:`str` in the case of one ticker
 
-        store_path: :class:`string` of the path to the     
-        :class:`pandas.HDStore`
+        api: :class:`string` identifying which api to call the data 
+        from.  Either 'yahoo' or 'google'
 
-        start: :class:`string` of the date to begin the price data
+        start: :class:`string` of the desired start date
+                
+    :RETURNS:
+
+        :class:`dictionary` of (ticker, price_df) mappings or a
+        :class:`pandas.DataFrame` when the ``ticker_list`` is 
+        :class:`str`
+    """
+    def __get_data(ticker, api, start):
+        reader = pandas.io.data.DataReader
+        try:
+            data = reader(ticker, api, start = start)
+            print "worked for " + ticker
+            return data
+        except:
+            print "failed for " + ticker
+            return
+    if isinstance(ticker_list, (str, unicode)):
+        return __get_data(ticker_list, api = api, start = start)
+    else:
+        d = {}
+        for ticker in ticker_list:
+            d[ticker] = __get_data(ticker, api = api, start = start)
+    return d
+
+def construct_training_set(trained_assets, store_path):
+    """
+    Take in a :class:`pandas.Series` of assets with respective asset
+    class and construct a `.csv` that can be used to test different
+    machine learning techniques
+
+    :ARGS:
+
+        trained_assets: :class:`pandas.Series` of the trained asset
+        classes
+
+        store_path: :class:`string` of the location of the HDFStore
+        where the asset prices are located
 
     :RETURNS:
 
-        :class:`NoneType` but appends the store and comments the
-         successes ands failures
+        :class:`pandas.DataFrame` of the r-squared values for each
+        of the "core assets"
     """
     try:
-        store = pandas.HDFStore(path = store_path,  mode = 'a')
+        store = pandas.HDFStore(store_path, 'r')
     except IOError:
-        print  path + " is not a valid path to an HDFStore Object"
+        print store_path + " is not a valid path to HDFStore"
         return
-    store_keys = map(lambda x: x.strip('/'), store.keys())
-    not_in_store = numpy.setdiff1d(ticker_list, store_keys )
-    new_prices = tickers_to_dict(not_in_store, start = start)
 
-    #attempt to add the new values to the store
-    for val in new_prices.keys():
-        try:
-            store.put(val, new_prices[val])
-            print val + " has been stored"
-        except:
-            print val + " couldn't store"
+    keys = pandas.Index(map(lambda x: x.strip('/'), store.keys() ))
+    
+    #in-sample tickers
+    col_tickers = numpy.random.choice(keys, int(len(keys)/3.))
+
+    compl_ins = keys[~keys.isin(col_tickers)]
+
+    #create the asset clas mappings
+    ac_asint = pandas.Categorical.from_array(trained_assets)
+    cat_dict = dict( zip(ac_asint, ac_asint.labels) )
+    ac_df = pandas.DataFrame({'asset_class': trained_assets,
+                           'ac_asint': ac_asint.labels},
+                           index = trained_assets.index)
+    
+    #ticker_dict =  dict( (tick, []) for tick in col_tickers)
+    p_fish = fish.ProgressFish(total = len(compl_ins))
+    agg_d = {}
+    os_d = {}
+    for i, col in enumerate(col_tickers):
+        p_fish.animate(amount = i)
+        d = {}
+        for ticker in compl_ins:
+            xs = store.get(col)['Adj Close']
+            ys = store.get(ticker)['Adj Close']
+            ind = xs.index & ys.index
+            rsq = pandas.ols(x = xs[ind].apply(numpy.log).diff(),
+                           y = ys[ind].apply(numpy.log).diff()).r2_adj
+            d[ticker] = rsq
+        agg_d[col] = pandas.Series(d)
+
+    store.close()
+    ret_df = pandas.DataFrame(agg_d)
+    ret_df['ac_asint'] = ac_df.loc[tmp.index, 'ac_asint']
+    return ret_df
+
+
+def data_to_in_out_sample(data, train_prop):
+    """
+    Split the data into training and testing data, wwhere training
+    data = train_prop of the total length of data
+
+    :ARGS:
+
+        data: :class:`pandas.DataFrame` of the training data
+
+        train_prop :class:`float` of the proportion of the data to be
+        be used for training
+
+    :RETURNS:
+
+        train_xs, train_ys, test_xs, test_ys ... 
+    """
+    train_ind = numpy.random.choice(data.index, int(train_prop * len(data)),
+                                    replace = False)
+    test_ind = data.index[~data.index.isin(train_ind)]
+    train_xs = data.loc[train_ind, :].copy()
+    train_ys = train_xs['ac_asint'].copy()
+    train_xs = train_xs.drop(labels = ['ac_asint'], axis = 1)
+    test_xs = data.loc[test_ind, :].copy()
+    test_ys = test_xs['ac_asint'].copy()
+    test_xs = test_xs.drop(labels = ['ac_asint'], axis = 1)
+    return train_xs, train_ys, test_xs, test_ys
+
+
+def check_for_keys(ticker_list, store_path):
+    """
+    HDFStore function to determine which, if any of the :class:`list`
+    `ticker_list` are inside of the store.  If all tickers are located
+    in the store returns 1, otherwise returns 0 (provides a "check" to see if
+    other functions can be run)
+    """
+    try:
+        store = pandas.HDFStore(path = store_path, mode = 'r+')
+    except IOError:
+        print  store_path + " is not a valid path to an HDFStore Object"
+        return
+
+    if isinstance(ticker_list, pandas.Index):
+        #pandas.Index is not sortable, so much tolist() it
+        ticker_list = ticker_list.tolist()
+
+    store_keys = map(lambda x: x.strip('/'), store.keys())
+    not_in_store = numpy.setdiff1d(ticker_list, store_keys)
+    store.close()
+
+    #if len(not_in_store) == 0, all tickers are present
+    if not len(not_in_store):
+        print "All tickers in store"
+        return 1
+    else:
+        for ticker in not_in_store:
+            print "store does not contain " + ticker
+        return 0
+
+
+def model_accuracy_crosstab(trained_series, store_path, calc_meth):
+    """
+    Calculate the model accuracy (returned as a confusion matrix) of 
+    asset classes that are already known, provided in the 
+    ``training_series``.
+
+    :ARGS:
+
+        store_path: :class:`string` to the HDFStore of asset 
+
+        training_series: :class:`series` where Index is the tickers 
+        and the values are the asset classes
+
+    :RETURNS:
+
+        :class:`pandas.DataFrame` of the confusion matrix
+    """
+    prob_df = model_accuracy_helper_fn(trained_series, store_path, calc_meth)
+    algo_results = prob_df.apply(lambda x: x.argmax(), axis = 1)
+    return pandas.crosstab(algo_results, trained_series)
+
+def model_accuracy_prob_matrix(trained_series, store_path, calc_meth):
+    """
+    Return the trained tickers and their asset class probabilities
+
+    
+    :ARGS:
+
+        trained_series: :class:`pandas.Series` of tickers for the
+        :class:`Index` and Asset Classes for ``.values``
+
+        store_path: :class:`str` pointing to the HDFStore of trained
+        data
+    """
+    return model_accuracy_helper_fn(trained_series, store_path, calc_meth)
+
+
+def plot_confusion_matrix(trained_series, store_path, calc_meth):
+    """
+    Plot the confusion matrix
+    
+    :ARGS:
+
+        trained_series: :class:`pandas.Series` of tickers for the
+        :class:`Index` and Asset Classes for ``.values``
+
+        store_path: :class:`str` pointing to the HDFStore of trained
+        data
+    """
+    cm = crosstab_model_accuracy(trained_series, store_path, calc_meth)
+    cm_pct = cm.apply(lambda x: x/float(x.sum()), axis = 0)
+    plt.imshow(cm_pct, interpolation = 'nearest')
+    plt.xticks(numpy.arange(len(cm.index)), cm.index)
+    plt.yticks(numpy.arange(len(cm.index)), cm.index)
+    plt.colorbar()
+    plt.title("Confusion Matrix for KNN Asset Classes", fontsize = 16)
+    plt.show()
+
+
+def clean_dates(arr_a, arr_b):
+    """
+    Return the intersection of two :class:`pandas` objects, either a
+    :class:`pandas.Series` or a :class:`pandas.DataFrame`
+
+    :ARGS:
+
+        arr_a: :class:`pandas.DataFrame` or :class:`pandas.Series`
+        arr_b: :class:`pandas.DataFrame` or :class:`pandas.Series`
+
+    :RETURNS:
+
+        :class:`pandas.DatetimeIndex` of the intersection of the two 
+        :class:`pandas` objects
+    """
+    arr_a = arr_a.sort_index()
+    arr_a.dropna(inplace = True)
+    arr_b = arr_b.sort_index()
+    arr_b.dropna(inplace = True)
+    if arr_a.index.equals(arr_b.index) == False:
+        return arr_a.index & arr_b.index
+    else:
+        return arr_a.index
+
+def update_store_prices(store_path):
+    """
+    Update to the most recent prices for all keys of an existing store, 
+    located at path ``path``.
+
+    :ARGS:
+
+        store_path: :class:`string` the location of the ``HDFStore`` file
+
+    :RETURNS:
+
+        :class:`NoneType` but updates the ``HDF5`` file, and prints to 
+        screen which values would not update
+
+    """
+    reader = pandas.io.data.DataReader
+    strftime = datetime.datetime.strftime
+    today_str = strftime(datetime.datetime.today(), format = '%m/%d/%Y')
+    try:
+        store = pandas.HDFStore(path = store_path, mode = 'r+')
+    except IOError:
+        print  store_path + " is not a valid path to an HDFStore Object"
+        return
+
+    for key in store.keys():
+        stored_data = store.get(key)
+        last_stored_date = stored_data.dropna().index.max()
+        today = datetime.datetime.date(datetime.datetime.today())
+        if last_stored_date < pandas.Timestamp(today):
+            try:
+                tmp = reader(key.strip('/'), 'yahoo', start = strftime(
+                    last_stored_date, format = '%m/%d/%Y'))
+
+                #need to drop duplicates because there's 1 row of 
+                #overlap
+                tmp = stored_data.append(tmp)
+                tmp["index"] = tmp.index
+                tmp.drop_duplicates(cols = "index", inplace = True)
+                tmp = tmp[tmp.columns[tmp.columns != "index"]]
+                store.put(key, tmp)
+            except IOError:
+                print "could not update " + key
+
     store.close()
     return None
 
-def complete_etf_list(write_path = None):
+
+def price_data_etf_list(write_path = None):
     """
     www.price-data.com has pages with all of the etf tickers
     available on it.  This function acesses each of those pages,
@@ -691,123 +547,5 @@ def complete_etf_list(write_path = None):
     if path != None:
         agg_df.to_csv(path, encoding = 'utf-8')
     return agg_df
-
-def adj_r2_uv(x, y):
-    """
-    Returns the adjusted R-Squared for multivariate regression
-    """
-    n = len(y)
-    p = 1
-    return 1 - (1 - r2_uv(x, y))*(n - 1)/(n - p - 1)    
-
-def r2_uv(x, y):
-    """
-    Returns the R-Squared or `Coefficient of Determination
-    <http://en.wikipedia.org/wiki/Coefficient_of_determination>`_ 
-    for a univariate regression (does not adjust for more independent 
-    variables
-    
-    .. seealso:: :meth:`r_squared_adjusted`
-
-    :ARGS:
-
-        series: :class`pandas.Series` of prices
-
-        benchmark: :class`pandas.Series` of prices to regress 
-        ``series`` against
-
-    :RETURNS:
-
-        float: of the coefficient of variation
-    """
-    def _r2_uv(x, y):   
-        X = pandas.DataFrame({'ones':numpy.ones(len(x)), 'xs':x})
-        beta = numpy.linalg.inv(X.transpose().dot(X)).dot(
-            X.transpose().dot(y) )
-        y_est = beta[0] + beta[1]*x
-        ss_res = ((y_est - y)**2).sum()
-        ss_tot = ((y - y.mean())**2).sum()
-        return 1 - ss_res/ss_tot
-
-    if isinstance(x, pandas.DataFrame):
-        return x.apply(lambda x: _r2_uv(y, x))
-    else:
-        return _r2_uv(x, y)
-
-def r2_mv(x, y):   
-    """
-    Multivariate r-squared
-    """
-    ones = pandas.Series(numpy.ones(len(y)), name = 'ones')
-    d = x.to_dict()
-    d['ones'] = ones
-    cols = ['ones']
-    cols.extend(x.columns)
-    X = pandas.DataFrame(d, columns = cols)
-    beta = numpy.linalg.inv(X.transpose().dot(X)).dot(
-        X.transpose().dot(y) )
-    y_est = beta[0] + x.dot(beta[1:])
-    ss_res = ((y_est - y)**2).sum()
-    ss_tot = ((y - y.mean())**2).sum()
-    return 1 - ss_res/ss_tot
-    
-def adj_r2_mv(x, y):
-    """
-    Returns the adjusted R-Squared for multivariate regression
-    """
-    n = len(y)
-    p = x.shape[1]
-    return 1 - (1 - r2_mv(x, y))*(n - 1)/(n - p - 1)
-
-def tickers_to_dict(ticker_list, api = 'yahoo', start = '01/01/1990'):
-    """
-    Utility function to return ticker data where the input is either a 
-    ticker, or a list of tickers.
-
-    :ARGS:
-
-        ticker_list: :class:`list` in the case of multiple tickers or 
-        :class:`str` in the case of one ticker
-
-        api: :class:`string` identifying which api to call the data 
-        from.  Either 'yahoo' or 'google'
-
-        start: :class:`string` of the desired start date
-                
-    :RETURNS:
-
-        :class:`dictionary` of (ticker, price_df) mappings or a
-        :class:`pandas.DataFrame` when the ``ticker_list`` is 
-        :class:`str`
-    """
-    def __get_data(ticker, api, start):
-        reader = pandas.io.data.DataReader
-        try:
-            data = reader(ticker, api, start = start)
-            print "worked for " + ticker
-            return data
-        except:
-            print "failed for " + ticker
-            return
-    if isinstance(ticker_list, (str, unicode)):
-        return __get_data(ticker_list, api = api, start = start)
-    else:
-        d = {}
-        for ticker in ticker_list:
-            d[ticker] = __get_data(ticker, api = api, start = start)
-    return d
-    
-    
-if __name__ == '__main__':
-	
-	usage = sys.argv[0] + "usage instructions"
-	description = "describe the function"
-	parser = argparse.ArgumentParser(description = description, usage = usage)
-	parser.add_argument('name_1', nargs = 1, type = str, help = 'describe input 1')
-	parser.add_argument('name_2', nargs = '+', type = int, help = "describe input 2")
-
-	args = parser.parse_args()
-	
-	script_function(input_1 = args.name_1[0], input_2 = args.name_2)
 
 
